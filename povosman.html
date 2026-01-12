@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج الشكاوى</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%); padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 5px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; font-size: 2.5rem; margin: 15px 0; }
+        
+        .card { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        
+        .form-group { margin-bottom: 25px; }
+        label { display: block; margin-bottom: 10px; font-weight: 600; color: #2c3e50; }
+        input, select, textarea { width: 100%; padding: 15px; border: 2px solid #e1e5eb; border-radius: 10px; font-size: 1rem; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #3498db; }
+        
+        .file-upload { border: 3px dashed #bdc3c7; padding: 40px; text-align: center; border-radius: 10px; cursor: pointer; margin-top: 10px; }
+        .file-upload:hover { border-color: #3498db; }
+        
+        .btn { background: linear-gradient(to right, #3498db, #2980b9); color: white; padding: 18px; border: none; border-radius: 10px; font-size: 1.2rem; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(52,152,219,0.3); }
+        
+        .loading, .success { display: none; text-align: center; padding: 40px; background: white; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
+        .spinner { border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" alt="شعار" class="logo">
+            <h1>نموذج تقديم الشكاوى</h1>
+            <p>سنقوم بمتابعة شكواك في أقرب وقت ممكن</p>
+        </div>
+        
+        <!-- كارت الانتظار -->
+        <div class="loading" id="loadingCard">
+            <div class="spinner"></div>
+            <h2>جاري معالجة شكواك</h2>
+            <p>برجاء الانتظار، نقوم بإرسال البيانات...</p>
+        </div>
+        
+        <!-- كارت النجاح -->
+        <div class="success" id="successCard">
+            <i class="fas fa-check-circle" style="font-size: 4rem; color: #27ae60; margin-bottom: 20px;"></i>
+            <h2>تم الإرسال بنجاح!</h2>
+            <p>رقم الشكوى: <strong id="complaintId"></strong></p>
+            <p style="color: #7f8c8d; margin-top: 20px;">سيتم إغلاق هذه الرسالة خلال 5 ثوانٍ</p>
+        </div>
+        
+        <!-- النموذج -->
+        <div class="card" id="formCard">
+            <form id="complaintForm">
+                <div class="form-group">
+                    <label>الاسم الكامل *</label>
+                    <input type="text" id="name" required placeholder="أدخل اسمك الكامل">
+                </div>
+                
+                <div class="form-group">
+                    <label>رقم الجوال المصري *</label>
+                    <input type="tel" id="phone" required placeholder="مثال: 01288222040" pattern="01[0-9]{9}">
+                    <small style="color: #7f8c8d;">يبدأ بـ 01 ويتكون من 11 رقماً</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>نوع الشكوى *</label>
+                    <select id="complaintType" required>
+                        <option value="" disabled selected>اختر نوع الشكوى</option>
+                        <option value="تأخر في التوصيل">تأخر في التوصيل</option>
+                        <option value="جودة المنتج">جودة المنتج</option>
+                        <option value="خدمة العملاء">خدمة العملاء</option>
+                        <option value="أخرى">أخرى</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>تفاصيل الشكوى *</label>
+                    <textarea id="complaintDetails" rows="5" required placeholder="اشرح شكواك بالتفصيل..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>رفع الفاتورة (اختياري)</label>
+                    <div class="file-upload" id="uploadArea">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #3498db; margin-bottom: 15px;"></i>
+                        <p>انقر لرفع صورة الفاتورة</p>
+                        <p style="color: #7f8c8d; font-size: 0.9rem;">JPG, PNG, PDF - الحد الأقصى 5 ميجابايت</p>
+                    </div>
+                    <input type="file" id="fileInput" accept="image/*,.pdf" style="display: none;">
+                    <div id="filePreview" style="margin-top: 15px; display: none;">
+                        <p>الملف المرفوع: <span id="fileName"></span></p>
+                        <button type="button" onclick="removeFile()" style="background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 5px; margin-top: 10px;">إزالة الملف</button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn">
+                    <i class="fas fa-paper-plane"></i> إرسال الشكوى
+                </button>
+            </form>
+            
+            <div style="text-align: center; margin-top: 30px; color: #7f8c8d;">
+                <p>للدعم الفوري: <strong style="color: #2c3e50;">01288222040</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 🔗 رابط نشر Google Apps Script - ضع رابطك هنا
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby2EgVPljZaKeolOmivqXkXHQbwa7r5qiY5DSMW61kl5pC_kPS_l03CXoEoTnNlrbpZ1Q/exec';
+        
+        // العناصر
+        const formCard = document.getElementById('formCard');
+        const loadingCard = document.getElementById('loadingCard');
+        const successCard = document.getElementById('successCard');
+        const complaintForm = document.getElementById('complaintForm');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const filePreview = document.getElementById('filePreview');
+        const fileName = document.getElementById('fileName');
+        
+        // رفع الملف
+        uploadArea.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('حجم الملف كبير جداً (الحد الأقصى 5 ميجابايت)');
+                    return;
+                }
+                fileName.textContent = file.name;
+                filePreview.style.display = 'block';
+            }
+        });
+        
+        // إزالة الملف
+        window.removeFile = function() {
+            fileInput.value = '';
+            filePreview.style.display = 'none';
+        };
+        
+        // تحويل الملف لـ Base64
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+        
+        // إرسال النموذج
+        complaintForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // التحقق من البيانات
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const complaintType = document.getElementById('complaintType').value;
+            const complaintDetails = document.getElementById('complaintDetails').value.trim();
+            
+            if (!name || !phone || !complaintType || !complaintDetails) {
+                alert('يرجى ملء جميع الحقول الإلزامية');
+                return;
+            }
+            
+            if (!/^01[0-9]{9}$/.test(phone)) {
+                alert('رقم الهاتف غير صحيح. يجب أن يبدأ بـ 01 ويتكون من 11 رقماً');
+                return;
+            }
+            
+            // معالجة الملف
+            let fileData = null, fileName = null, fileType = null;
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                fileData = await toBase64(file);
+                fileName = file.name;
+                fileType = file.type;
+            }
+            
+            // إظهار كارت الانتظار
+            formCard.style.display = 'none';
+            loadingCard.style.display = 'block';
+            
+            // إعداد البيانات للإرسال
+            const formData = {
+                name: name,
+                phone: phone,
+                complaintType: complaintType,
+                complaintDetails: complaintDetails,
+                ...(fileData && { 
+                    fileData: fileData.split(',')[1],
+                    fileName: fileName,
+                    fileType: fileType 
+                })
+            };
+            
+            try {
+                // إرسال البيانات
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                if (!response.ok) throw new Error('خطأ في الشبكة');
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // إظهار كارت النجاح
+                    loadingCard.style.display = 'none';
+                    document.getElementById('complaintId').textContent = result.complaintId;
+                    successCard.style.display = 'block';
+                    
+                    // العد التنازلي
+                    let countdown = 5;
+                    const interval = setInterval(() => {
+                        countdown--;
+                        if (countdown <= 0) {
+                            clearInterval(interval);
+                            resetForm();
+                        }
+                    }, 1000);
+                    
+                } else {
+                    throw new Error(result.message);
+                }
+                
+            } catch (error) {
+                loadingCard.style.display = 'none';
+                formCard.style.display = 'block';
+                alert('خطأ: ' + error.message);
+            }
+        });
+        
+        // إعادة تعيين النموذج
+        function resetForm() {
+            successCard.style.display = 'none';
+            formCard.style.display = 'block';
+            complaintForm.reset();
+            filePreview.style.display = 'none';
+            fileInput.value = '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
