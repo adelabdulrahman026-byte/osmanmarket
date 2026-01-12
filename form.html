@@ -183,103 +183,6 @@
             resize: vertical;
         }
 
-        /* رفع الملفات */
-        .file-upload-area {
-            border: 3px dashed #cbd5e1;
-            border-radius: 10px;
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: #f8fafc;
-            position: relative;
-        }
-
-        .file-upload-area:hover {
-            border-color: var(--primary);
-            background: #f0f9ff;
-        }
-
-        .upload-icon {
-            font-size: 3rem;
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-
-        .upload-text {
-            font-size: 1.2rem;
-            color: var(--dark);
-            margin-bottom: 10px;
-        }
-
-        .upload-hint {
-            color: #64748b;
-            font-size: 0.9rem;
-        }
-
-        #fileInput {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .file-preview {
-            margin-top: 20px;
-            display: none;
-        }
-
-        .preview-container {
-            display: flex;
-            align-items: center;
-            background: #f1f5f9;
-            padding: 15px;
-            border-radius: 10px;
-            gap: 15px;
-        }
-
-        .preview-image {
-            width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: 3px solid white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .preview-info {
-            flex: 1;
-        }
-
-        .preview-name {
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 5px;
-        }
-
-        .preview-size {
-            color: #64748b;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
-
-        .remove-btn {
-            background: var(--danger);
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .remove-btn:hover {
-            background: #ef4444;
-        }
-
         /* زر الإرسال */
         .submit-btn {
             width: 100%;
@@ -351,8 +254,11 @@
         .footer {
             text-align: center;
             margin-top: 30px;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
         }
 
         @media (max-width: 768px) {
@@ -449,31 +355,6 @@
                     <div class="error-message" id="detailsError">يرجى إدخال تفاصيل الشكوى</div>
                 </div>
 
-                <!-- رفع المرفقات -->
-                <div class="form-group">
-                    <label>
-                        <i class="fas fa-paperclip"></i> رفع المرفقات (اختياري)
-                    </label>
-                    <div class="file-upload-area" id="uploadArea">
-                        <input type="file" id="fileInput" accept="image/*,.pdf">
-                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                        <div class="upload-text">انقر لرفع الملف</div>
-                        <div class="upload-hint">JPG, PNG, PDF - الحد الأقصى 5 ميجابايت</div>
-                    </div>
-                    <div class="file-preview" id="filePreview">
-                        <div class="preview-container">
-                            <img class="preview-image" id="previewImage" src="" alt="معاينة" style="display: none;">
-                            <div class="preview-info">
-                                <div class="preview-name" id="fileName"></div>
-                                <div class="preview-size" id="fileSize"></div>
-                                <button type="button" class="remove-btn" id="removeFile">
-                                    <i class="fas fa-trash"></i> إزالة
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- زر الإرسال -->
                 <button type="submit" class="submit-btn" id="submitBtn">
                     <i class="fas fa-paper-plane"></i> إرسال الشكوى
@@ -490,20 +371,19 @@
         </div>
 
         <div class="footer">
-            <p>© 2024 نظام إدارة الشكاوى</p>
+            <p>© 2026 جميع الحقوق محفوظة لـ Osman Market</p>
+            <p style="margin-top: 8px; font-size: 0.9rem;">تنفيذ: Abdulrahman Adel</p>
         </div>
     </div>
 
     <script>
-        // 🔥 رابط Google Apps Script - ضع رابط نشرك هنا
-        // تأكد من نشر Apps Script أولاً ثم استبدل هذا الرابط
+        // 🔥 رابط Google Apps Script
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzMCZVyKgfJSuwfG0BrolLbdzQALKbpUCIsaQrFQrgdxcQgvPEiwWd6Zf8HSyDPLkWWRQ/exec';
         
-        // 🔥 الحل: اختبار الاتصال أولاً
+        // 🔥 اختبار الاتصال أولاً (بدون عرض رسالة تحذير)
         async function testConnection() {
             console.log('🔍 اختبار الاتصال...');
             try {
-                // استخدم fetch بدون mode: 'cors' للاختبار
                 const testResponse = await fetch(GOOGLE_SCRIPT_URL + '?test=true');
                 console.log('✅ اختبار الاتصال:', testResponse.status);
                 return testResponse.ok;
@@ -518,74 +398,7 @@
         const loadingCard = document.getElementById('loadingCard');
         const successCard = document.getElementById('successCard');
         const complaintForm = document.getElementById('complaintForm');
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const filePreview = document.getElementById('filePreview');
-        const previewImage = document.getElementById('previewImage');
-        const fileName = document.getElementById('fileName');
-        const fileSize = document.getElementById('fileSize');
-        const removeFileBtn = document.getElementById('removeFile');
         const submitBtn = document.getElementById('submitBtn');
-
-        // رفع الملفات
-        uploadArea.addEventListener('click', () => fileInput.click());
-
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                handleFileSelection(file);
-            }
-        });
-
-        // معالجة اختيار الملف
-        function handleFileSelection(file) {
-            // التحقق من الحجم
-            if (file.size > 5 * 1024 * 1024) {
-                alert('حجم الملف كبير جداً. الحد الأقصى 5 ميجابايت');
-                return;
-            }
-            
-            // التحقق من النوع
-            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
-            if (!validTypes.includes(file.type)) {
-                alert('نوع الملف غير مدعوم. يرجى رفع صورة أو PDF');
-                return;
-            }
-            
-            // عرض المعلومات
-            fileName.textContent = file.name;
-            fileSize.textContent = formatFileSize(file.size);
-            
-            // معاينة الصورة
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImage.src = e.target.result;
-                    previewImage.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            } else {
-                previewImage.style.display = 'none';
-            }
-            
-            filePreview.style.display = 'block';
-        }
-
-        // إزالة الملف
-        removeFileBtn.addEventListener('click', function() {
-            fileInput.value = '';
-            filePreview.style.display = 'none';
-            previewImage.src = '';
-        });
-
-        // تنسيق حجم الملف
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 بايت';
-            const k = 1024;
-            const sizes = ['بايت', 'كيلوبايت', 'ميجابايت'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
 
         // التحقق من صحة النموذج
         function validateForm() {
@@ -636,17 +449,7 @@
             return isValid;
         }
 
-        // تحويل الملف إلى Base64
-        function toBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
-        }
-
-        // 🔥 إرسال النموذج - الحل الجديد
+        // 🔥 إرسال النموذج
         complaintForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -668,19 +471,6 @@
                 timestamp: new Date().toISOString()
             };
             
-            // إضافة الملف
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                try {
-                    const base64Data = await toBase64(file);
-                    formData.fileData = base64Data.split(',')[1];
-                    formData.fileName = file.name;
-                    formData.fileType = file.type;
-                } catch (error) {
-                    console.error('خطأ في تحويل الملف:', error);
-                }
-            }
-            
             // إظهار كارت التحميل
             formCard.style.display = 'none';
             loadingCard.style.display = 'block';
@@ -688,7 +478,6 @@
             try {
                 console.log('🚀 إرسال البيانات...');
                 
-                // 🔥 الحل: استخدم fetch مع mode: 'no-cors' إذا فشل الاتصال
                 let response;
                 try {
                     response = await fetch(GOOGLE_SCRIPT_URL, {
@@ -700,7 +489,6 @@
                     });
                 } catch (fetchError) {
                     console.log('⚠️ محاولة الاتصال بطريقة بديلة...');
-                    // جرب طريقة بديلة
                     response = await fetch(GOOGLE_SCRIPT_URL, {
                         method: 'POST',
                         mode: 'no-cors',
@@ -715,7 +503,6 @@
                 
                 let result;
                 if (response.status === 0 && response.type === 'opaque') {
-                    // إذا كان no-cors، افترض النجاح
                     result = {
                         success: true,
                         complaintId: 'COMP-' + Date.now().toString().slice(-6)
@@ -762,7 +549,6 @@
                 
                 if (error.message.includes('Network') || error.message.includes('fetch')) {
                     errorMessage += '• تحقق من اتصال الإنترنت\n';
-                    errorMessage += '• تأكد من نشر Google Apps Script\n';
                     errorMessage += '• رابط النشر: ' + GOOGLE_SCRIPT_URL + '\n';
                 } else {
                     errorMessage += '• الخطأ: ' + error.message + '\n';
@@ -777,8 +563,6 @@
             successCard.style.display = 'none';
             formCard.style.display = 'block';
             complaintForm.reset();
-            filePreview.style.display = 'none';
-            fileInput.value = '';
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الشكوى';
         }
@@ -787,12 +571,8 @@
         window.addEventListener('load', async function() {
             console.log('✅ الصفحة جاهزة');
             
-            // اختبار الاتصال
-            const isConnected = await testConnection();
-            if (!isConnected) {
-                console.warn('⚠️ تحذير: قد تكون هناك مشكلة في الاتصال');
-                alert('⚠️ تنبيه: تأكد من نشر Google Apps Script بشكل صحيح');
-            }
+            // اختبار الاتصال بدون عرض رسائل للمستخدم
+            await testConnection();
         });
     </script>
 </body>
