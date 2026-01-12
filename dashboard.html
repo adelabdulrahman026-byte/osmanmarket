@@ -6,6 +6,14 @@
     <title>لوحة متابعة الشكاوى</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -14,10 +22,10 @@
         }
 
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
+            background: #f1f5f9;
+            color: var(--dark);
             padding: 20px;
-            color: #2c3e50;
+            min-height: 100vh;
         }
 
         .container {
@@ -27,17 +35,17 @@
 
         /* الهيدر */
         .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 30px;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
         }
 
         h1 {
-            font-size: 2.8rem;
-            color: #2c3e50;
+            color: var(--primary);
+            font-size: 2.5rem;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
@@ -55,7 +63,7 @@
         }
 
         .btn {
-            padding: 12px 30px;
+            padding: 12px 25px;
             border: none;
             border-radius: 10px;
             font-size: 1rem;
@@ -69,18 +77,18 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            background: var(--primary);
             color: white;
         }
 
         .btn-success {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: #10b981;
             color: white;
         }
 
         .btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
 
         /* الإحصائيات */
@@ -88,14 +96,14 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .stat-card {
             background: white;
             padding: 25px;
             border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             text-align: center;
             transition: transform 0.3s ease;
         }
@@ -105,14 +113,15 @@
         }
 
         .stat-number {
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             font-weight: 800;
             margin-bottom: 10px;
+            color: var(--primary);
         }
 
         .stat-label {
             font-size: 1.1rem;
-            color: #6c757d;
+            color: var(--gray);
         }
 
         /* أدوات التحكم */
@@ -120,7 +129,7 @@
             background: white;
             padding: 25px;
             border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             margin-bottom: 30px;
             display: flex;
             gap: 15px;
@@ -131,7 +140,7 @@
         .search-box {
             flex: 1;
             padding: 12px 20px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #e2e8f0;
             border-radius: 10px;
             font-size: 1rem;
             min-width: 300px;
@@ -139,7 +148,7 @@
 
         .filter-select {
             padding: 12px 20px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #e2e8f0;
             border-radius: 10px;
             font-size: 1rem;
             background: white;
@@ -157,14 +166,14 @@
             background: white;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
-            border-top: 4px solid #4361ee;
+            border-top: 4px solid var(--primary);
         }
 
         .complaint-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
 
         .card-header {
@@ -178,7 +187,7 @@
 
         .complaint-id {
             font-weight: 700;
-            color: #2c3e50;
+            color: var(--dark);
             font-size: 1.1rem;
             background: #e3f2fd;
             padding: 5px 15px;
@@ -213,7 +222,7 @@
         }
 
         .info-row i {
-            color: #4361ee;
+            color: var(--primary);
             width: 25px;
             margin-left: 10px;
             margin-top: 3px;
@@ -241,8 +250,8 @@
 
         .view-file-btn {
             background: transparent;
-            color: #4361ee;
-            border: 1px solid #4361ee;
+            color: var(--primary);
+            border: 1px solid var(--primary);
             padding: 8px 20px;
             border-radius: 8px;
             text-decoration: none;
@@ -251,7 +260,7 @@
         }
 
         .view-file-btn:hover {
-            background: #4361ee;
+            background: var(--primary);
             color: white;
         }
 
@@ -263,11 +272,11 @@
         }
 
         .loading-spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #4361ee;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             margin: 0 auto 20px;
             animation: spin 1s linear infinite;
         }
@@ -281,7 +290,7 @@
         .footer {
             text-align: center;
             margin-top: 50px;
-            color: #6c757d;
+            color: var(--gray);
             font-size: 0.95rem;
             padding-top: 25px;
             border-top: 1px solid #e9ecef;
@@ -303,7 +312,7 @@
             }
             
             h1 {
-                font-size: 2.2rem;
+                font-size: 2rem;
             }
         }
     </style>
@@ -352,7 +361,7 @@
 
         <!-- أدوات التحكم -->
         <div class="controls">
-            <input type="text" id="searchInput" class="search-box" placeholder="🔍 ابحث في الشكاوى (بالاسم، الرقم، التفاصيل...)">
+            <input type="text" id="searchInput" class="search-box" placeholder="🔍 ابحث في الشكاوى">
             <select id="filterStatus" class="filter-select">
                 <option value="">جميع الحالات</option>
                 <option value="قيد المراجعة">قيد المراجعة</option>
@@ -376,20 +385,19 @@
 
         <!-- الفوتر -->
         <div class="footer">
-            <p>© 2024 نظام إدارة الشكاوى | تم التطوير بأحدث التقنيات</p>
+            <p>© 2024 نظام إدارة الشكاوى</p>
             <p style="margin-top: 10px;">
-                <a href="form.html" style="color: #4361ee; text-decoration: none;">نموذج الشكاوى</a> | 
-                <a href="#" id="backToTop" style="color: #4361ee; text-decoration: none;">العودة للأعلى</a>
+                <a href="form.html" style="color: var(--primary); text-decoration: none;">نموذج الشكاوى</a>
             </p>
         </div>
     </div>
 
     <script>
-        // رابط Google Apps Script - نفس رابط النموذج
-        const DASHBOARD_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQEBTdYa-nGrU1i0X7ZvgjpUIR48puxCeQ60SNeS4hTIDAXk_pIsFFF0oPlNQwKULYzg/exec';
+        // 🔥 رابط Google Apps Script - نفس رابط النموذج
+        const DASHBOARD_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_PQwaNaLLTOsU1viKdU0UGH4iwu3SdR8elOzy8LGmpJgtbMy-UKNq6XeD71PIR4022g/exec';
         let allComplaints = [];
 
-        // جلب البيانات من السيرفر
+        // 🔥 دالة جلب البيانات مع إصلاح CORS
         async function fetchComplaints() {
             const loadingEl = document.getElementById('loading');
             const containerEl = document.getElementById('complaintsContainer');
@@ -398,19 +406,45 @@
             containerEl.innerHTML = '';
             
             try {
-                console.log('🔄 جاري جلب البيانات من السيرفر...');
+                console.log('🔄 جاري جلب البيانات...');
                 
-                const response = await fetch(DASHBOARD_SCRIPT_URL);
-                
-                if (!response.ok) {
-                    throw new Error('خطأ في الشبكة: ' + response.status);
+                // 🔥 الحل: استخدم fetch مع mode: 'no-cors' إذا لزم الأمر
+                let response;
+                try {
+                    response = await fetch(DASHBOARD_SCRIPT_URL, {
+                        method: 'GET',
+                        mode: 'cors'
+                    });
+                } catch (error) {
+                    console.log('⚠️ محاولة طريقة بديلة...');
+                    response = await fetch(DASHBOARD_SCRIPT_URL, {
+                        method: 'GET',
+                        mode: 'no-cors'
+                    });
                 }
                 
-                const result = await response.json();
-                console.log('✅ تم جلب البيانات بنجاح:', result.data.length, 'شكوى');
+                console.log('📡 حالة الاستجابة:', response.status);
+                
+                let result;
+                if (response.status === 0 && response.type === 'opaque') {
+                    // إذا كان no-cors، أظهر رسالة
+                    containerEl.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #f59e0b; margin-bottom: 20px;"></i>
+                            <h3>لا يمكن الاتصال بالخادم</h3>
+                            <p>يرجى التحقق من نشر Google Apps Script</p>
+                            <p style="margin-top: 10px; color: #64748b;">الرابط: ${DASHBOARD_SCRIPT_URL}</p>
+                        </div>
+                    `;
+                    loadingEl.style.display = 'none';
+                    return;
+                }
+                
+                result = await response.json();
+                console.log('✅ تم جلب البيانات:', result.data?.length || 0, 'شكوى');
                 
                 if (result.success) {
-                    allComplaints = result.data;
+                    allComplaints = result.data || [];
                     updateStatistics(allComplaints);
                     renderComplaints(allComplaints);
                 } else {
@@ -421,11 +455,11 @@
                 console.error('❌ خطأ في جلب البيانات:', error);
                 
                 containerEl.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #f8d7da; color: #721c24; border-radius: 10px;">
-                        <i class="fas fa-exclamation-triangle"></i>
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: #fef2f2; color: #dc2626; border-radius: 10px;">
+                        <i class="fas fa-exclamation-circle"></i>
                         <h3>خطأ في تحميل البيانات</h3>
                         <p>${error.message}</p>
-                        <button onclick="fetchComplaints()" class="btn" style="margin-top: 15px; background: #dc3545; color: white;">
+                        <button onclick="fetchComplaints()" class="btn" style="margin-top: 15px; background: #dc2626; color: white;">
                             <i class="fas fa-redo"></i> إعادة المحاولة
                         </button>
                     </div>
@@ -462,7 +496,7 @@
             const container = document.getElementById('complaintsContainer');
             container.innerHTML = '';
             
-            // ترتيب الشكاوى من الأحدث إلى الأقدم
+            // ترتيب من الأحدث إلى الأقدم
             complaints.sort((a, b) => {
                 const dateA = new Date(a['الطابع الزمني'] || a.timestamp || 0);
                 const dateB = new Date(b['الطابع الزمني'] || b.timestamp || 0);
@@ -471,8 +505,8 @@
             
             if (complaints.length === 0) {
                 container.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: #6c757d;">
-                        <i class="fas fa-inbox" style="font-size: 4rem; margin-bottom: 20px;"></i>
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: #64748b;">
+                        <i class="fas fa-inbox" style="font-size: 4rem; margin-bottom: 20px; opacity: 0.5;"></i>
                         <h3>لا توجد شكاوى لعرضها</h3>
                         <p>لم يتم تسجيل أي شكاوى حتى الآن</p>
                         <a href="form.html" class="btn btn-primary" style="margin-top: 20px;">
@@ -514,12 +548,7 @@
                         <div class="info-row">
                             <i class="fas fa-comment"></i>
                             <span class="info-label">التفاصيل:</span>
-                            <span class="info-value" style="line-height: 1.5;">${(complaint.التفاصيل || complaint.complaintDetails || 'لا توجد تفاصيل').substring(0, 120)}...</span>
-                        </div>
-                        <div class="info-row">
-                            <i class="fas fa-calendar"></i>
-                            <span class="info-label">التاريخ:</span>
-                            <span class="info-value">${formatDate(complaint['الطابع الزمني'] || complaint.timestamp)}</span>
+                            <span class="info-value">${(complaint.التفاصيل || complaint.complaintDetails || 'لا توجد تفاصيل').substring(0, 100)}...</span>
                         </div>
                     </div>
                     <div class="card-footer">
@@ -545,9 +574,7 @@
                 return date.toLocaleDateString('ar-EG', {
                     year: 'numeric',
                     month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
+                    day: 'numeric'
                 });
             } catch (error) {
                 return dateString;
@@ -570,11 +597,7 @@
                         complaint.الهاتف,
                         complaint.phone,
                         complaint['رقم الشكوى'],
-                        complaint.complaintId,
-                        complaint.التفاصيل,
-                        complaint.complaintDetails,
-                        complaint['نوع الشكوى'],
-                        complaint.complaintType
+                        complaint.complaintId
                     ];
                     
                     return searchFields.some(field => 
@@ -594,50 +617,10 @@
             renderComplaints(filtered);
         }
 
-        // تصدير البيانات
-        document.getElementById('exportBtn').addEventListener('click', function() {
-            if (allComplaints.length === 0) {
-                alert('لا توجد بيانات لتصديرها');
-                return;
-            }
-            
-            // تحويل البيانات إلى CSV
-            let csv = 'رقم الشكوى,الاسم,الهاتف,نوع الشكوى,الحالة,التاريخ,رابط الملف\n';
-            
-            allComplaints.forEach(complaint => {
-                const row = [
-                    `"${complaint['رقم الشكوى'] || complaint.complaintId || ''}"`,
-                    `"${complaint.الاسم || complaint.name || ''}"`,
-                    `"${complaint.الهاتف || complaint.phone || ''}"`,
-                    `"${complaint['نوع الشكوى'] || complaint.complaintType || ''}"`,
-                    `"${complaint.الحالة || complaint.status || ''}"`,
-                    `"${formatDate(complaint['الطابع الزمني'] || complaint.timestamp)}"`,
-                    `"${complaint['رابط الملف'] || complaint.fileUrl || ''}"`
-                ].join(',');
-                
-                csv += row + '\n';
-            });
-            
-            // تنزيل الملف
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `شكاوى_${new Date().toISOString().slice(0,10)}.csv`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        });
-
         // أحداث التحكم
         document.getElementById('refreshBtn').addEventListener('click', fetchComplaints);
         document.getElementById('searchInput').addEventListener('input', filterComplaints);
         document.getElementById('filterStatus').addEventListener('change', filterComplaints);
-        document.getElementById('backToTop').addEventListener('click', function(e) {
-            e.preventDefault();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
 
         // تحميل البيانات عند فتح الصفحة
         document.addEventListener('DOMContentLoaded', fetchComplaints);
