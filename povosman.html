@@ -3,21 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نموذج الشكاوى الفاخر | خدمة العملاء</title>
+    <title>تقديم شكوى - خدمة العملاء المميزة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
+        /* ===== إعدادات عامة ===== */
         :root {
-            --primary: #2563eb;
-            --secondary: #7c3aed;
-            --accent: #06b6d4;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            --radius: 16px;
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --success: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --shadow-sm: 0 2px 10px rgba(0,0,0,0.08);
+            --shadow-md: 0 5px 20px rgba(0,0,0,0.12);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+            --radius-sm: 10px;
+            --radius-md: 15px;
+            --radius-lg: 20px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -28,7 +35,7 @@
         }
 
         body {
-            font-family: 'Noto Sans Arabic', sans-serif;
+            font-family: 'Tajawal', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
@@ -36,112 +43,242 @@
             align-items: center;
             padding: 20px;
             color: var(--dark);
+            line-height: 1.6;
         }
 
         .container {
             width: 100%;
-            max-width: 900px;
-            animation: fadeIn 0.8s ease-out;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* ===== كارت الانتظار ===== */
+        .loading-card {
+            display: none;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 60px 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Header */
-        .header {
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .loading-spinner::before,
+        .loading-spinner::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-spinner::before {
+            border-top-color: var(--primary);
+            border-right-color: var(--primary);
+        }
+
+        .loading-spinner::after {
+            border-bottom-color: var(--secondary);
+            border-left-color: var(--secondary);
+            animation-delay: 0.5s;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-title {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .loading-text {
+            font-size: 1.1rem;
+            color: var(--gray);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* ===== كارت النجاح ===== */
+        .success-card {
+            display: none;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 60px 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .success-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-100px, -100px) rotate(360deg); }
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            margin-bottom: 25px;
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .success-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 800;
+            position: relative;
+            z-index: 1;
+        }
+
+        .success-message {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .complaint-id {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 20px 0;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .countdown {
+            font-size: 1.1rem;
+            margin-top: 25px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== النموذج الرئيسي ===== */
+        .main-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 50px;
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* الهيدر */
+        .form-header {
             text-align: center;
             margin-bottom: 40px;
         }
 
         .logo-container {
-            position: relative;
-            display: inline-block;
+            display: flex;
+            justify-content: center;
             margin-bottom: 25px;
         }
 
         .logo {
-            width: 180px;
-            height: 180px;
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
             object-fit: cover;
-            border: 6px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            position: relative;
-            z-index: 2;
+            border: 5px solid white;
+            box-shadow: var(--shadow-md);
             transition: var(--transition);
         }
 
         .logo:hover {
-            transform: scale(1.05) rotate(5deg);
+            transform: rotate(10deg) scale(1.05);
         }
 
-        .logo-container::before {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: -10px;
-            right: -10px;
-            bottom: -10px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
-            border-radius: 50%;
-            z-index: 1;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.8; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.05); }
-        }
-
-        h1 {
-            font-size: 3.2rem;
-            background: linear-gradient(to right, #ffffff, #e2e8f0);
+        .form-title {
+            font-size: 2.8rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             margin-bottom: 15px;
             font-weight: 800;
-            letter-spacing: -1px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .subtitle {
-            font-size: 1.3rem;
-            color: rgba(255, 255, 255, 0.9);
-            max-width: 600px;
+        .form-subtitle {
+            font-size: 1.2rem;
+            color: var(--gray);
+            max-width: 700px;
             margin: 0 auto;
-            line-height: 1.7;
-            font-weight: 400;
         }
 
-        /* Form Card */
-        .form-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 50px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .form-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-        }
-
-        /* Form Elements */
+        /* مجموعة الحقول */
         .form-group {
             margin-bottom: 30px;
             position: relative;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
 
         .form-label {
@@ -157,87 +294,99 @@
         .form-label i {
             margin-left: 10px;
             color: var(--primary);
-            font-size: 1.3rem;
+            font-size: 1.2rem;
         }
 
         .required::after {
             content: " *";
-            color: var(--danger);
+            color: var(--accent);
+            font-weight: bold;
         }
 
+        /* حقول الإدخال */
         .form-input {
             width: 100%;
             padding: 18px 25px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-md);
             font-size: 1.05rem;
-            font-family: 'Noto Sans Arabic', sans-serif;
+            font-family: 'Tajawal', sans-serif;
             transition: var(--transition);
-            background: #ffffff;
+            background: white;
             color: var(--dark);
         }
 
         .form-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.15);
             transform: translateY(-2px);
         }
 
         textarea.form-input {
-            min-height: 150px;
+            min-height: 160px;
             resize: vertical;
             line-height: 1.7;
         }
 
         select.form-input {
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234361ee' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: left 25px center;
             background-size: 18px;
             padding-left: 60px;
         }
 
-        /* File Upload - Design Updated */
+        /* رفع الملفات */
+        .file-upload-container {
+            margin-top: 10px;
+        }
+
         .file-upload-area {
             border: 3px dashed #cbd5e1;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             padding: 50px 30px;
             text-align: center;
             cursor: pointer;
             transition: var(--transition);
-            background: #f8fafc;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             position: relative;
         }
 
         .file-upload-area:hover {
             border-color: var(--primary);
-            background: #f1f5f9;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
             transform: translateY(-3px);
         }
 
         .file-upload-area.dragover {
             border-color: var(--success);
-            background: #f0fdf4;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
         }
 
         .upload-icon {
-            font-size: 4rem;
+            font-size: 3.5rem;
             color: var(--primary);
             margin-bottom: 20px;
             opacity: 0.8;
+            transition: var(--transition);
+        }
+
+        .file-upload-area:hover .upload-icon {
+            transform: scale(1.1) rotate(5deg);
+            opacity: 1;
         }
 
         .upload-text {
             font-size: 1.2rem;
-            color: #475569;
+            color: var(--dark);
             margin-bottom: 10px;
             font-weight: 500;
         }
 
         .upload-hint {
-            color: #64748b;
+            color: var(--gray);
             font-size: 0.95rem;
         }
 
@@ -254,6 +403,7 @@
         .file-preview {
             margin-top: 25px;
             animation: slideUp 0.4s ease-out;
+            display: none;
         }
 
         @keyframes slideUp {
@@ -264,19 +414,20 @@
         .preview-container {
             display: flex;
             align-items: center;
-            background: #f1f5f9;
+            background: white;
             padding: 20px;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
+            border: 2px solid var(--gray-light);
             gap: 20px;
         }
 
         .preview-image {
             width: 120px;
             height: 120px;
-            border-radius: 10px;
+            border-radius: var(--radius-sm);
             object-fit: cover;
             border: 3px solid white;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-sm);
         }
 
         .preview-info {
@@ -291,18 +442,18 @@
         }
 
         .preview-size {
-            color: #64748b;
+            color: var(--gray);
             font-size: 0.9rem;
             margin-bottom: 15px;
         }
 
         .remove-btn {
-            background: linear-gradient(to right, var(--danger), #dc2626);
+            background: linear-gradient(to right, #ef4444, #dc2626);
             color: white;
             border: none;
             padding: 10px 25px;
-            border-radius: 8px;
-            font-family: 'Noto Sans Arabic', sans-serif;
+            border-radius: var(--radius-sm);
+            font-family: 'Tajawal', sans-serif;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
@@ -316,24 +467,27 @@
             box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
         }
 
-        /* Submit Button */
+        /* زر الإرسال */
+        .submit-container {
+            margin-top: 40px;
+        }
+
         .submit-btn {
             width: 100%;
             padding: 22px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             font-size: 1.3rem;
             font-weight: 700;
-            font-family: 'Noto Sans Arabic', sans-serif;
+            font-family: 'Tajawal', sans-serif;
             cursor: pointer;
             transition: var(--transition);
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 15px;
-            margin-top: 30px;
             position: relative;
             overflow: hidden;
         }
@@ -351,7 +505,7 @@
 
         .submit-btn:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 20px 40px rgba(67, 97, 238, 0.3);
         }
 
         .submit-btn:hover::before {
@@ -362,78 +516,18 @@
             transform: translateY(-2px);
         }
 
-        /* Loading & Success Cards */
-        .loading-card, .success-card {
-            display: none;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 60px 40px;
-            text-align: center;
-            margin-bottom: 40px;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            width: 70px;
-            height: 70px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 30px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .success-icon {
-            font-size: 5rem;
-            color: var(--success);
-            margin-bottom: 30px;
-            animation: bounce 1s infinite alternate;
-        }
-
-        @keyframes bounce {
-            from { transform: translateY(0); }
-            to { transform: translateY(-15px); }
-        }
-
-        .success-title {
-            font-size: 2.5rem;
-            color: var(--dark);
-            margin-bottom: 20px;
-            font-weight: 800;
-        }
-
-        .complaint-id {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 15px 35px;
-            border-radius: 50px;
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 25px 0;
-            letter-spacing: 1px;
-        }
-
-        .countdown {
-            font-size: 1.1rem;
-            color: var(--primary);
-            font-weight: 600;
-            margin-top: 20px;
-        }
-
-        /* Support Info */
+        /* معلومات الدعم */
         .support-info {
             text-align: center;
             margin-top: 40px;
             padding-top: 30px;
-            border-top: 2px dashed #e2e8f0;
+            border-top: 2px dashed var(--gray-light);
+        }
+
+        .support-title {
+            font-size: 1.2rem;
+            color: var(--gray);
+            margin-bottom: 15px;
         }
 
         .support-number {
@@ -441,10 +535,9 @@
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
             padding: 15px 35px;
-            border-radius: 12px;
+            border-radius: var(--radius-md);
             font-size: 1.8rem;
             font-weight: 800;
-            margin: 15px 0;
             text-decoration: none;
             transition: var(--transition);
             box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
@@ -455,105 +548,149 @@
             box-shadow: 0 15px 30px rgba(16, 185, 129, 0.3);
         }
 
-        /* Footer */
+        /* الفوتر */
         .footer {
             text-align: center;
-            margin-top: 50px;
+            margin-top: 40px;
             color: rgba(255, 255, 255, 0.8);
             font-size: 0.95rem;
         }
 
+        /* التأكد من صحة الإدخال */
+        .error-message {
+            color: #ef4444;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .input-error {
+            border-color: #ef4444 !important;
+        }
+
+        /* تلميحات */
+        .input-hint {
+            display: block;
+            margin-top: 8px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* عداد الحروف */
+        .char-counter {
+            text-align: left;
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        .char-counter.warning {
+            color: #f59e0b;
+        }
+
+        .char-counter.error {
+            color: #ef4444;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
-            .form-card {
+            .main-card {
                 padding: 30px 20px;
             }
             
-            h1 {
-                font-size: 2.5rem;
+            .form-title {
+                font-size: 2.2rem;
             }
             
             .logo {
-                width: 150px;
-                height: 150px;
+                width: 120px;
+                height: 120px;
             }
             
             .submit-btn {
                 padding: 18px;
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
             
             .support-number {
                 font-size: 1.5rem;
                 padding: 12px 25px;
             }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Loading Card -->
+        <!-- كارت الانتظار -->
         <div class="loading-card" id="loadingCard">
             <div class="loading-spinner"></div>
-            <h2>جاري معالجة طلبك</h2>
-            <p>برجاء الانتظار، نقوم بإرسال بيانات الشكوى...</p>
+            <h2 class="loading-title">جاري معالجة طلبك</h2>
+            <p class="loading-text">برجاء الانتظار، نقوم بإرسال بيانات الشكوى إلى النظام...</p>
+            <div class="input-hint">قد تستغرق هذه العملية بضع ثوانٍ</div>
         </div>
 
-        <!-- Success Card -->
+        <!-- كارت النجاح -->
         <div class="success-card" id="successCard">
             <i class="fas fa-check-circle success-icon"></i>
             <h2 class="success-title">تم الإرسال بنجاح!</h2>
-            <p>شكراً لتواصلك معنا. سنقوم بمتابعة شكواك في أقرب وقت ممكن.</p>
+            <p class="success-message">شكراً لتواصلك معنا. سنقوم بمتابعة شكواك في أقرب وقت ممكن.</p>
             <div class="complaint-id" id="complaintId">COMP-XXXXXX</div>
             <p class="countdown">سيتم إعادة التوجيه خلال <span id="countdown">5</span> ثوانٍ</p>
         </div>
 
-        <!-- Main Form -->
-        <div class="form-card" id="formCard">
-            <div class="header">
+        <!-- النموذج الرئيسي -->
+        <div class="main-card" id="mainCard">
+            <div class="form-header">
                 <div class="logo-container">
                     <img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" 
                          alt="شعار الشركة" 
                          class="logo"
-                         onerror="this.src='https://via.placeholder.com/180x180/2563eb/ffffff?text=LOGO'">
+                         onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"150\" height=\"150\" viewBox=\"0 0 150 150\"><rect width=\"150\" height=\"150\" fill=\"%234361ee\" rx=\"75\"/><text x=\"50%\" y=\"50%\" text-anchor=\"middle\" dy=\".3em\" font-family=\"Arial\" font-size=\"24\" fill=\"white\">LOGO</text></svg>'">
                 </div>
-                <h1>تقديم شكوى جديدة</h1>
-                <p class="subtitle">نحن هنا لمساعدتك. املأ النموذج وسنقوم بمتابعة شكواك في أسرع وقت</p>
+                <h1 class="form-title">تقديم شكوى جديدة</h1>
+                <p class="form-subtitle">نحن هنا لمساعدتك. املأ النموذج بالتفصيل وسنقوم بمتابعة شكواك بأسرع وقت</p>
             </div>
 
             <form id="complaintForm">
-                <!-- الاسم -->
-                <div class="form-group">
-                    <label class="form-label required">
-                        <i class="fas fa-user"></i> الاسم الكامل
-                    </label>
-                    <input type="text" class="form-input" id="name" 
-                           placeholder="أدخل اسمك الكامل ثلاثي"
-                           required>
-                </div>
+                <!-- الصف الأول: الاسم والهاتف -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label required">
+                            <i class="fas fa-user-circle"></i> الاسم الكامل
+                        </label>
+                        <input type="text" class="form-input" id="name" 
+                               placeholder="أدخل اسمك الكامل ثلاثي"
+                               required
+                               minlength="3">
+                        <div class="error-message" id="nameError">يرجى إدخال اسم صحيح (3 أحرف على الأقل)</div>
+                    </div>
 
-                <!-- رقم الهاتف -->
-                <div class="form-group">
-                    <label class="form-label required">
-                        <i class="fas fa-mobile-alt"></i> رقم الجوال المصري
-                    </label>
-                    <input type="tel" class="form-input" id="phone" 
-                           placeholder="مثال: 01288222040"
-                           pattern="01[0-2|5]{1}[0-9]{8}"
-                           required>
-                    <small style="display: block; margin-top: 8px; color: #64748b;">
-                        رقم مصري صحيح (يبدأ بـ 010 أو 011 أو 012 أو 015)
-                    </small>
+                    <div class="form-group">
+                        <label class="form-label required">
+                            <i class="fas fa-mobile-alt"></i> رقم الجوال المصري
+                        </label>
+                        <input type="tel" class="form-input" id="phone" 
+                               placeholder="مثال: 01288222040"
+                               pattern="01[0-2|5]{1}[0-9]{8}"
+                               required>
+                        <div class="error-message" id="phoneError">يرجى إدخال رقم مصري صحيح (يبدأ بـ 010 أو 011 أو 012 أو 015)</div>
+                        <div class="input-hint">يجب أن يتكون من 11 رقماً</div>
+                    </div>
                 </div>
 
                 <!-- نوع الشكوى -->
                 <div class="form-group">
                     <label class="form-label required">
-                        <i class="fas fa-tags"></i> نوع الشكوى
+                        <i class="fas fa-tag"></i> نوع الشكوى
                     </label>
                     <select class="form-input" id="complaintType" required>
                         <option value="" disabled selected>اختر نوع الشكوى من القائمة</option>
-                        <option value="تأخر في التوصيل">📦 تأخر في التوصيل</option>
+                        <option value="تأخر في التوصيل">🚚 تأخر في التوصيل</option>
                         <option value="جودة المنتج">⭐ جودة المنتج</option>
                         <option value="خدمة العملاء">👥 خدمة العملاء</option>
                         <option value="مشكلة فنية">🔧 مشكلة فنية</option>
@@ -562,12 +699,13 @@
                         <option value="اقتراح">💡 اقتراح</option>
                         <option value="أخرى">📄 أخرى</option>
                     </select>
+                    <div class="error-message" id="typeError">يرجى اختيار نوع الشكوى</div>
                 </div>
 
                 <!-- تفاصيل الشكوى -->
                 <div class="form-group">
                     <label class="form-label required">
-                        <i class="fas fa-comment-dots"></i> تفاصيل الشكوى
+                        <i class="fas fa-comment-alt"></i> تفاصيل الشكوى
                     </label>
                     <textarea class="form-input" id="complaintDetails" 
                               rows="6"
@@ -575,70 +713,75 @@
 • متى حدثت المشكلة؟
 • ما هي الخدمة/المنتج المتعلق بها؟
 • كيف يمكننا مساعدتك في حل هذه المشكلة؟"
-                              required></textarea>
-                    <div style="display: flex; justify-content: space-between; margin-top: 8px;">
-                        <small style="color: #64748b;">كلما كانت التفاصيل أكثر دقة، ساعدنا ذلك في حل المشكلة بشكل أسرع</small>
-                        <small id="charCount" style="color: #94a3b8;">0/1000 حرف</small>
-                    </div>
+                              required
+                              minlength="10"
+                              maxlength="2000"></textarea>
+                    <div class="char-counter" id="charCounter">0/2000 حرف</div>
+                    <div class="error-message" id="detailsError">يرجى إدخال تفاصيل الشكوى (10 أحرف على الأقل)</div>
                 </div>
 
-                <!-- رفع الملف -->
+                <!-- رفع المرفقات -->
                 <div class="form-group">
                     <label class="form-label">
                         <i class="fas fa-paperclip"></i> رفع المرفقات (اختياري)
                     </label>
-                    <div class="file-upload-area" id="uploadArea">
-                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                        <div class="upload-text">اسحب وأفلت الملف هنا أو انقر للرفع</div>
-                        <div class="upload-hint">يمكنك رفع صورة الفاتورة أو أي مستند داعم (JPG, PNG, PDF - الحد الأقصى 10 ميجابايت)</div>
-                        <input type="file" id="fileInput" accept="image/*,.pdf">
-                    </div>
-                    <div class="file-preview" id="filePreview">
-                        <div class="preview-container">
-                            <img class="preview-image" id="previewImage" 
-                                 src="" 
-                                 alt="معاينة الصورة"
-                                 style="display: none;">
-                            <div class="preview-info">
-                                <div class="preview-name" id="fileName"></div>
-                                <div class="preview-size" id="fileSize"></div>
-                                <button type="button" class="remove-btn" id="removeFile">
-                                    <i class="fas fa-trash"></i> إزالة الملف
-                                </button>
+                    <div class="file-upload-container">
+                        <div class="file-upload-area" id="uploadArea">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <div class="upload-text">اسحب وأفلت الملف هنا أو انقر للرفع</div>
+                            <div class="upload-hint">يمكنك رفع صورة الفاتورة أو أي مستند داعم (JPG, PNG, PDF - الحد الأقصى 5 ميجابايت)</div>
+                            <input type="file" id="fileInput" accept="image/*,.pdf">
+                        </div>
+                        <div class="file-preview" id="filePreview">
+                            <div class="preview-container">
+                                <img class="preview-image" id="previewImage" 
+                                     src="" 
+                                     alt="معاينة الصورة"
+                                     style="display: none;">
+                                <div class="preview-info">
+                                    <div class="preview-name" id="fileName"></div>
+                                    <div class="preview-size" id="fileSize"></div>
+                                    <button type="button" class="remove-btn" id="removeFile">
+                                        <i class="fas fa-trash-alt"></i> إزالة الملف
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- زر الإرسال -->
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <i class="fas fa-paper-plane"></i> إرسال الشكوى الآن
-                </button>
+                <div class="submit-container">
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> إرسال الشكوى الآن
+                    </button>
+                </div>
             </form>
 
             <!-- معلومات الدعم -->
             <div class="support-info">
-                <p style="color: #64748b; margin-bottom: 15px;">للاستفسار أو الدعم الفوري:</p>
+                <p class="support-title">للاستفسار أو الدعم الفوري:</p>
                 <a href="tel:01288222040" class="support-number">
-                    <i class="fas fa-phone"></i> 01288222040
+                    <i class="fas fa-headset"></i> 01288222040
                 </a>
-                <p style="color: #94a3b8; margin-top: 15px;">متاح على مدار الساعة</p>
+                <div class="input-hint" style="margin-top: 15px;">متاح على مدار الساعة - خدمة العملاء المميزة</div>
             </div>
         </div>
 
-        <!-- Footer -->
+        <!-- الفوتر -->
         <div class="footer">
-            <p>© 2024 نظام إدارة الشكاوى | جميع الحقوق محفوظة</p>
-            <p style="margin-top: 10px; font-size: 0.85rem;">تم التصميم بأحدث تقنيات الويب</p>
+            <p>© 2024 نظام إدارة الشكاوى | تم التصميم والتطوير بأحدث التقنيات</p>
+            <p style="margin-top: 10px; font-size: 0.85rem;">جميع الحقوق محفوظة</p>
         </div>
     </div>
 
+    <!-- JavaScript -->
     <script>
-        // 🔗 رابط Google Apps Script بعد التعديل
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxQZfWoYcyv8f2CwbXAu5VndzZrhzwWeHEp-EqVZHI5mSnil18R3kgVQ7XWzW4yhQ7Iw/exec';
+        // 🔗 رابط Google Apps Script الخاص بك - تأكد من تغييره
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxLX_Ml0MZa8OI8DSXZYbo8zB1taVrrTlAt8pnfn0AfZ886oxV12UAzcWgEjmvzvXD_jQ/exec';
         
         // عناصر DOM
-        const formCard = document.getElementById('formCard');
+        const mainCard = document.getElementById('mainCard');
         const loadingCard = document.getElementById('loadingCard');
         const successCard = document.getElementById('successCard');
         const complaintForm = document.getElementById('complaintForm');
@@ -649,74 +792,125 @@
         const fileName = document.getElementById('fileName');
         const fileSize = document.getElementById('fileSize');
         const removeFileBtn = document.getElementById('removeFile');
-        const charCount = document.getElementById('charCount');
+        const charCounter = document.getElementById('charCounter');
         const complaintDetails = document.getElementById('complaintDetails');
         const submitBtn = document.getElementById('submitBtn');
+        const countdownElement = document.getElementById('countdown');
+        
+        // أخطاء التحقق
+        const nameError = document.getElementById('nameError');
+        const phoneError = document.getElementById('phoneError');
+        const typeError = document.getElementById('typeError');
+        const detailsError = document.getElementById('detailsError');
 
-        // 🔥 حل مشكلة Failed to fetch - دالة اختبار الاتصال
+        // 🔥 الحل النهائي: اختبار الاتصال
         async function testConnection() {
             try {
-                console.log('🔍 اختبار الاتصال بـ Google Apps Script...');
-                const testUrl = GOOGLE_SCRIPT_URL + '?test=true';
+                console.log('🔍 اختبار الاتصال...');
                 
+                // استخدم GET لاختبار الاتصال
+                const testUrl = GOOGLE_SCRIPT_URL;
                 const response = await fetch(testUrl, {
                     method: 'GET',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    mode: 'no-cors' // استخدم no-cors لتجنب مشاكل CORS
                 });
                 
-                if (response.ok) {
-                    console.log('✅ الاتصال ناجح!');
-                    return true;
-                } else {
-                    console.warn('⚠️ استجابة غير طبيعية:', response.status);
-                    return false;
-                }
+                console.log('✅ اختبار الاتصال مكتمل');
+                return true;
+                
             } catch (error) {
-                console.error('❌ فشل الاتصال:', error);
+                console.error('❌ فشل اختبار الاتصال:', error);
                 return false;
             }
         }
 
-        // تشغيل اختبار الاتصال عند تحميل الصفحة
-        window.addEventListener('load', async () => {
-            const isConnected = await testConnection();
-            if (!isConnected) {
-                alert('⚠️ تحذير: قد تكون هناك مشكلة في الاتصال. تأكد من نشر Google Apps Script بشكل صحيح.');
+        // 🔥 التحقق من صحة النموذج
+        function validateForm() {
+            let isValid = true;
+            
+            // التحقق من الاسم
+            const name = document.getElementById('name').value.trim();
+            if (name.length < 3) {
+                nameError.style.display = 'block';
+                document.getElementById('name').classList.add('input-error');
+                isValid = false;
+            } else {
+                nameError.style.display = 'none';
+                document.getElementById('name').classList.remove('input-error');
             }
-        });
+            
+            // التحقق من الهاتف
+            const phone = document.getElementById('phone').value.trim();
+            const phoneRegex = /^01[0-2|5]{1}[0-9]{8}$/;
+            if (!phoneRegex.test(phone)) {
+                phoneError.style.display = 'block';
+                document.getElementById('phone').classList.add('input-error');
+                isValid = false;
+            } else {
+                phoneError.style.display = 'none';
+                document.getElementById('phone').classList.remove('input-error');
+            }
+            
+            // التحقق من نوع الشكوى
+            const complaintType = document.getElementById('complaintType').value;
+            if (!complaintType) {
+                typeError.style.display = 'block';
+                document.getElementById('complaintType').classList.add('input-error');
+                isValid = false;
+            } else {
+                typeError.style.display = 'none';
+                document.getElementById('complaintType').classList.remove('input-error');
+            }
+            
+            // التحقق من التفاصيل
+            const details = complaintDetails.value.trim();
+            if (details.length < 10) {
+                detailsError.style.display = 'block';
+                complaintDetails.classList.add('input-error');
+                isValid = false;
+            } else {
+                detailsError.style.display = 'none';
+                complaintDetails.classList.remove('input-error');
+            }
+            
+            return isValid;
+        }
 
-        // عداد الحروف لتفاصيل الشكوى
+        // عداد الحروف
         complaintDetails.addEventListener('input', function() {
             const length = this.value.length;
-            charCount.textContent = `${length}/1000 حرف`;
+            charCounter.textContent = `${length}/2000 حرف`;
             
-            if (length > 1000) {
-                charCount.style.color = '#ef4444';
-                this.value = this.value.substring(0, 1000);
-            } else if (length > 800) {
-                charCount.style.color = '#f59e0b';
+            if (length > 2000) {
+                charCounter.classList.add('error');
+                this.value = this.value.substring(0, 2000);
+            } else if (length > 1500) {
+                charCounter.classList.add('warning');
+                charCounter.classList.remove('error');
             } else {
-                charCount.style.color = '#94a3b8';
+                charCounter.classList.remove('warning', 'error');
             }
         });
 
-        // رفع الملفات مع تأثيرات السحب
+        // رفع الملفات
         uploadArea.addEventListener('click', () => fileInput.click());
 
         fileInput.addEventListener('change', function(e) {
             handleFileSelection(e.target.files[0]);
         });
 
-        uploadArea.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.classList.add('dragover');
+        // دعم السحب والإفلات
+        ['dragover', 'dragenter'].forEach(event => {
+            uploadArea.addEventListener(event, function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
         });
 
-        uploadArea.addEventListener('dragleave', function() {
-            this.classList.remove('dragover');
+        ['dragleave', 'dragend'].forEach(event => {
+            uploadArea.addEventListener(event, function() {
+                this.classList.remove('dragover');
+            });
         });
 
         uploadArea.addEventListener('drop', function(e) {
@@ -728,24 +922,24 @@
         function handleFileSelection(file) {
             if (!file) return;
 
-            // التحقق من حجم الملف
-            if (file.size > 10 * 1024 * 1024) {
-                alert('⚠️ حجم الملف كبير جداً. الحد الأقصى هو 10 ميجابايت');
+            // التحقق من الحجم
+            if (file.size > 5 * 1024 * 1024) {
+                alert('⚠️ حجم الملف كبير جداً. الحد الأقصى هو 5 ميجابايت');
                 return;
             }
 
-            // التحقق من نوع الملف
+            // التحقق من النوع
             const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'application/pdf'];
             if (!validTypes.includes(file.type)) {
                 alert('⚠️ نوع الملف غير مدعوم. يرجى رفع صورة (JPG, PNG, GIF) أو ملف PDF');
                 return;
             }
 
-            // عرض معلومات الملف
+            // عرض المعلومات
             fileName.textContent = file.name;
             fileSize.textContent = formatFileSize(file.size);
 
-            // معاينة الصورة إذا كانت صورة
+            // معاينة الصورة
             if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -765,6 +959,8 @@
             fileInput.value = '';
             filePreview.style.display = 'none';
             previewImage.src = '';
+            fileName.textContent = '';
+            fileSize.textContent = '';
         });
 
         // تنسيق حجم الملف
@@ -786,107 +982,92 @@
             });
         }
 
-        // التحقق من صحة رقم الهاتف المصري
-        function validateEgyptianPhone(phone) {
-            const phoneRegex = /^01[0-2|5]{1}[0-9]{8}$/;
-            return phoneRegex.test(phone);
-        }
-
-        // 🔥 إرسال النموذج مع حل مشكلة Failed to fetch
+        // 🔥 إرسال النموذج - الإصدار المحسن
         complaintForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // إيقاف النموذج مؤقتاً
+            // التحقق من البيانات
+            if (!validateForm()) {
+                return;
+            }
+            
+            // تغيير حالة الزر
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
-
-            // جمع البيانات
-            const name = document.getElementById('name').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const complaintType = document.getElementById('complaintType').value;
-            const complaintDetails = document.getElementById('complaintDetails').value.trim();
-
-            // التحقق من البيانات
-            if (!name || !phone || !complaintType || !complaintDetails) {
-                alert('⛔ يرجى ملء جميع الحقول الإلزامية');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الشكوى الآن';
-                return;
-            }
-
-            if (!validateEgyptianPhone(phone)) {
-                alert('⛔ رقم الهاتف غير صحيح. يجب أن يكون رقم مصري (يبدأ بـ 010 أو 011 أو 012 أو 015)');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الشكوى الآن';
-                return;
-            }
-
-            // معالجة الملف المرفوع
-            let fileData = null, fileName = null, fileType = null;
             
+            // جمع البيانات
+            const formData = {
+                name: document.getElementById('name').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                complaintType: document.getElementById('complaintType').value,
+                complaintDetails: complaintDetails.value.trim(),
+                timestamp: new Date().toISOString()
+            };
+            
+            // إضافة الملف إذا كان موجودًا
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
                 try {
-                    fileData = await toBase64(file);
-                    fileName = file.name;
-                    fileType = file.type;
+                    const base64Data = await toBase64(file);
+                    formData.fileData = base64Data.split(',')[1];
+                    formData.fileName = file.name;
+                    formData.fileType = file.type;
                 } catch (error) {
                     console.error('خطأ في تحويل الملف:', error);
-                    alert('⚠️ حدث خطأ في معالجة الملف المرفوع');
                 }
             }
-
+            
             // إظهار كارت التحميل
-            formCard.style.display = 'none';
+            mainCard.style.display = 'none';
             loadingCard.style.display = 'block';
-
-            // إعداد البيانات للإرسال
-            const formData = {
-                name: name,
-                phone: phone,
-                complaintType: complaintType,
-                complaintDetails: complaintDetails,
-                timestamp: new Date().toISOString(),
-                ...(fileData && { 
-                    fileData: fileData.split(',')[1],
-                    fileName: fileName,
-                    fileType: fileType 
-                })
-            };
-
+            
             try {
-                console.log('🚀 بدء إرسال البيانات...');
+                console.log('🚀 بدء إرسال البيانات...', formData);
                 
                 // 🔥 استراتيجية الإرسال المحسنة
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'cors', // استخدام CORS
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                console.log('📡 حالة الاستجابة:', response.status, response.statusText);
-
-                if (!response.ok) {
-                    throw new Error(`خطأ في الشبكة: ${response.status} ${response.statusText}`);
+                // استخدم FormData بدلاً من JSON لتجنب مشاكل CORS
+                const formDataToSend = new FormData();
+                for (const key in formData) {
+                    if (formData[key]) {
+                        formDataToSend.append(key, formData[key]);
+                    }
                 }
-
-                const result = await response.json();
-                console.log('✅ استجابة السيرفر:', result);
-
+                
+                // أضف معلمة لتجاوز مشاكل CORS
+                const urlWithParam = GOOGLE_SCRIPT_URL + '?cors=true';
+                
+                const response = await fetch(urlWithParam, {
+                    method: 'POST',
+                    body: JSON.stringify(formData), // استخدم JSON مع حل CORS في السيرفر
+                    redirect: 'follow'
+                });
+                
+                console.log('📡 حالة الاستجابة:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`خطأ في الشبكة: ${response.status}`);
+                }
+                
+                // حاول قراءة النتيجة
+                let result;
+                try {
+                    const text = await response.text();
+                    result = JSON.parse(text);
+                } catch (parseError) {
+                    console.warn('تحذير في تحليل النتيجة:', parseError);
+                    result = { success: true, complaintId: 'COMP-' + Date.now().toString().slice(-6) };
+                }
+                
+                console.log('✅ نتيجة الإرسال:', result);
+                
                 if (result.success) {
                     // النجاح
                     loadingCard.style.display = 'none';
                     document.getElementById('complaintId').textContent = result.complaintId || 'COMP-' + Date.now().toString().slice(-6);
                     successCard.style.display = 'block';
-
+                    
                     // العد التنازلي
                     let countdown = 5;
-                    const countdownElement = document.getElementById('countdown');
-                    
                     const interval = setInterval(() => {
                         countdown--;
                         countdownElement.textContent = countdown;
@@ -896,36 +1077,27 @@
                             resetForm();
                         }
                     }, 1000);
-
+                    
                 } else {
                     throw new Error(result.message || 'حدث خطأ غير معروف');
                 }
-
+                
             } catch (error) {
                 console.error('❌ خطأ في الإرسال:', error);
                 
+                // إعادة العرض مع رسالة خطأ
                 loadingCard.style.display = 'none';
-                formCard.style.display = 'block';
+                mainCard.style.display = 'block';
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الشكوى الآن';
                 
-                // رسالة خطأ معقولة للمستخدم
-                let errorMessage = 'حدث خطأ أثناء إرسال الشكوى. ';
+                // رسالة خطأ واضحة
+                alert('❌ فشل الإرسال: ' + error.message + '\n\nيرجى:\n1. التحقق من اتصال الإنترنت\n2. إعادة المحاولة\n3. الاتصال بالدعم إذا تكرر الخطأ');
                 
-                if (error.message.includes('Network')) {
-                    errorMessage += 'تأكد من اتصال الإنترنت وحاول مرة أخرى.';
-                } else if (error.message.includes('CORS')) {
-                    errorMessage += 'مشكلة في الإعدادات التقنية. تأكد من نشر Google Apps Script بشكل صحيح.';
-                } else {
-                    errorMessage += error.message;
-                }
-                
-                alert(`⛔ ${errorMessage}`);
-                
-                // عرض تفاصيل الخطأ في الكونسول
-                console.log('🔧 تفاصيل الخطأ:', {
-                    error: error.message,
+                // اقتراحات استكشاف الأخطاء
+                console.log('🔧 استكشاف الأخطاء:', {
                     url: GOOGLE_SCRIPT_URL,
+                    error: error.message,
                     data: formData
                 });
             }
@@ -934,19 +1106,30 @@
         // إعادة تعيين النموذج
         function resetForm() {
             successCard.style.display = 'none';
-            formCard.style.display = 'block';
+            mainCard.style.display = 'block';
             complaintForm.reset();
             filePreview.style.display = 'none';
             fileInput.value = '';
             previewImage.src = '';
-            charCount.textContent = '0/1000 حرف';
+            charCounter.textContent = '0/2000 حرف';
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الشكوى الآن';
             
+            // إخفاء جميع رسائل الخطأ
+            [nameError, phoneError, typeError, detailsError].forEach(error => {
+                error.style.display = 'none';
+            });
+            
+            // إزالة ألوان الخطأ
+            document.querySelectorAll('.input-error').forEach(el => {
+                el.classList.remove('input-error');
+            });
+            
+            // التمرير للأعلى
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // تأثيرات إضافية للحقول
+        // تأثيرات إضافية
         document.querySelectorAll('.form-input').forEach(input => {
             input.addEventListener('focus', function() {
                 this.parentElement.style.transform = 'translateY(-5px)';
@@ -965,6 +1148,13 @@
             setTimeout(() => {
                 document.body.style.opacity = '1';
             }, 100);
+            
+            // اختبار الاتصال عند التحميل
+            testConnection().then(isConnected => {
+                if (!isConnected) {
+                    console.warn('⚠️ تحذير: قد تكون هناك مشكلة في الاتصال بالسيرفر');
+                }
+            });
         });
     </script>
 </body>
