@@ -1,219 +1,107 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>عثمان ماركت | سوبر ماركت متكامل</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/x-icon" href="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>القاضي في التاريخ</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Cairo,sans-serif}
+body{background:#0b0f19;color:#fff;overflow-x:hidden}
+.splash{position:fixed;inset:0;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;animation:hide 6s forwards}
+.splash img{width:90%;max-width:420px;border-radius:30px;box-shadow:0 0 40px gold;animation:zoom 4s ease}
+.splash h1{margin-top:20px;color:gold;font-size:2rem;opacity:0;animation:text 2s 1.5s forwards}
+@keyframes zoom{from{transform:scale(1.3);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes text{to{opacity:1;letter-spacing:2px}}
+@keyframes hide{0%,85%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden}}
+
+.menu-btn{position:fixed;top:20px;right:20px;width:55px;height:55px;border-radius:50%;background:gold;color:#000;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;z-index:1000}
+.sidebar{position:fixed;right:-300px;top:0;width:280px;height:100%;background:#111827;transition:.6s;padding-top:90px;z-index:999}
+.sidebar.active{right:0}
+.sidebar a{display:block;padding:18px;color:#fff;text-decoration:none;border-bottom:1px solid #333}
+.hero{min-height:100vh;background:linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.85)),url('https://adelabdulrahman026-byte.github.io/dashboard/ChatGPT%20Image%20Jun%202,%202026,%2005_32_20%20AM.png') center/cover;display:flex;align-items:center;justify-content:center;text-align:center}
+.hero h1{font-size:3rem;color:gold;text-shadow:0 0 20px gold}
+.hero p{font-size:1.2rem;margin-top:10px}
+.slider{margin:20px auto;width:95%;overflow:hidden;border-radius:25px}
+.track{display:flex;width:400%;animation:slide 16s infinite}
+.track img{width:100%;height:230px;object-fit:cover}
+@keyframes slide{0%,20%{transform:translateX(0)}25%,45%{transform:translateX(-100%)}50%,70%{transform:translateX(-200%)}75%,95%{transform:translateX(-300%)}100%{transform:translateX(0)}}
+.buttons{padding:20px;display:flex;flex-direction:column;gap:15px}
+.btn{padding:18px;border:none;border-radius:20px;background:linear-gradient(45deg,#d4af37,#ffd700);font-size:22px;font-weight:bold;cursor:pointer}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);align-items:center;justify-content:center;z-index:2000}
+.box{width:90%;max-width:380px;background:#161b22;padding:25px;border-radius:20px}
+.box h2{color:gold;margin-bottom:15px}
+.box input{width:100%;padding:14px;margin:8px 0;border:none;border-radius:12px}
+.box button{width:100%;padding:14px;border:none;border-radius:12px;background:gold}
+.footer{text-align:center;padding:30px;color:#aaa}
+</style>
 </head>
 <body>
-    <!-- الشاشة الافتتاحية -->
-    <div class="welcome-screen" id="welcomeScreen">
-        <div class="welcome-content">
-            <div class="logo-container">
-                <img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" alt="عثمان ماركت لوجو" class="welcome-logo">
-            </div>
-            <h1 class="welcome-text">مرحباً بكم في</h1>
-            <h2 class="market-name">عثمان ماركت</h2>
-            <div class="loading-bar">
-                <div class="loading-progress"></div>
-            </div>
-            <p class="loading-text">جاري تحميل المتجر...</p>
-        </div>
-    </div>
 
-    <!-- الصفحة الرئيسية -->
-    <div class="main-content" id="mainContent">
-        <!-- الهيدر -->
-        <header class="main-header">
-            <div class="container">
-                <div class="header-content">
-                    <div class="logo">
-                        <img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" alt="عثمان ماركت">
-                        <span>عثمان ماركت</span>
-                    </div>
-                    <nav class="main-nav">
-                        <ul>
-                            <li><a href="#" class="active">الرئيسية</a></li>
-                            <li><a href="#departments">الأقسام</a></li>
-                            <li><a href="#products">المنتجات</a></li>
-                            <li><a href="#about">عن المتجر</a></li>
-                            <li><a href="#contact">اتصل بنا</a></li>
-                        </ul>
-                    </nav>
-                    <div class="header-icons">
-                        <a href="#" class="cart-icon">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span class="cart-count">0</span>
-                        </a>
-                        <button class="menu-toggle">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </header>
+<div class="splash">
+<img src="https://adelabdulrahman026-byte.github.io/dashboard/ChatGPT%20Image%20Jun%202,%202026,%2005_32_20%20AM.png">
+<h1>👑 مرحباً بك في عالم القاضي في التاريخ</h1>
+</div>
 
-        <!-- السلايدر -->
-        <section class="slider-section">
-            <div class="slider-container">
-                <div class="slider-wrapper">
-                    <div class="slider-slide active">
-                        <img src="https://images.unsplash.com/photo-1567306301408-9b74779a11af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="جبن وألبان">
-                        <div class="slide-content">
-                            <h3>جبن وألبان طازجة</h3>
-                            <p>استمتع بأجود أنواع الجبن والألبان الطازجة يومياً</p>
-                            <a href="#" class="btn">اطلب الآن</a>
-                        </div>
-                    </div>
-                    <div class="slider-slide">
-                        <img src="https://images.unsplash.com/photo-1550583724-b2692b85b150?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="معلبات">
-                        <div class="slide-content">
-                            <h3>معلبات عالية الجودة</h3>
-                            <p>تشكيلة واسعة من المعلبات المحلية والمستوردة</p>
-                            <a href="#" class="btn">تسوق الآن</a>
-                        </div>
-                    </div>
-                    <div class="slider-slide">
-                        <img src="https://adelabdulrahman026-byte.github.io/dashboard/cover.jpg" alt="أجبان متنوعة">
-                        <div class="slide-content">
-                            <h3>أجود أنواع الأجبان</h3>
-                            <p>أصناف متنوعة من الأجبان المحلية والعالمية</p>
-                            <a href="#" class="btn">اكتشف المجموعة</a>
-                        </div>
-                    </div>
-                    <div class="slider-slide">
-                        <img src="https://images.unsplash.com/photo-1589923186741-b7d59d6b2c4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="عطارة">
-                        <div class="slide-content">
-                            <h3>عطارة وبهارات</h3>
-                            <p>أفضل أنواع التوابل والبهارات والعطارة الطبيعية</p>
-                            <a href="#" class="btn">تسوق الآن</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="slider-nav">
-                    <button class="slider-prev"><i class="fas fa-chevron-right"></i></button>
-                    <button class="slider-next"><i class="fas fa-chevron-left"></i></button>
-                </div>
-                <div class="slider-dots">
-                    <span class="dot active"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                </div>
-            </div>
-        </section>
+<div class="menu-btn" onclick="sidebar.classList.toggle('active')">☰</div>
 
-        <!-- الأقسام -->
-        <section class="departments-section" id="departments">
-            <div class="container">
-                <div class="section-header">
-                    <h2>أقسام المتجر</h2>
-                    <p>تصفح تشكيلتنا الواسعة من المنتجات حسب الأقسام</p>
-                </div>
-                <div class="departments-grid">
-                    <div class="department-card">
-                        <div class="department-icon">
-                            <i class="fas fa-seedling"></i>
-                        </div>
-                        <h3>عطارة</h3>
-                        <p>تشكيلة واسعة من الأعشاب والتوابل والبهارات الطبيعية</p>
-                        <a href="#" class="department-link">عرض المنتجات</a>
-                    </div>
-                    <div class="department-card">
-                        <div class="department-icon">
-                            <i class="fas fa-can-food"></i>
-                        </div>
-                        <h3>معلبات</h3>
-                        <p>معلبات عالية الجودة محلية ومستوردة بأسعار منافسة</p>
-                        <a href="#" class="department-link">عرض المنتجات</a>
-                    </div>
-                    <div class="department-card">
-                        <div class="department-icon">
-                            <i class="fas fa-pump-soap"></i>
-                        </div>
-                        <h3>منظفات</h3>
-                        <p>منظفات ومطهرات ومنتجات العناية بالمنزل والأسرة</p>
-                        <a href="#" class="department-link">عرض المنتجات</a>
-                    </div>
-                    <div class="department-card">
-                        <div class="department-icon">
-                            <i class="fas fa-cheese"></i>
-                        </div>
-                        <h3>أجبان وألبان</h3>
-                        <p>أجبان وألبان طازجة يومياً من أفضل المزارع المحلية</p>
-                        <a href="#" class="department-link">عرض المنتجات</a>
-                    </div>
-                </div>
-            </div>
-        </section>
+<div class="sidebar" id="sidebar">
+<a href="#" onclick="coming()">🏠 الرئيسية</a>
+<a href="#" onclick="coming()">🎥 المحاضرات</a>
+<a href="#" onclick="coming()">📝 الواجبات</a>
+<a href="#" onclick="coming()">📊 النتائج</a>
+<a href="#" onclick="coming()">📞 تواصل معنا</a>
+</div>
 
-        <!-- المنتجات -->
-        <section class="products-section" id="products">
-            <div class="container">
-                <div class="section-header">
-                    <h2>أحدث المنتجات</h2>
-                    <p>تشكيلة منتجاتنا المميزة والمتجددة باستمرار</p>
-                </div>
-                <div class="products-filter">
-                    <button class="filter-btn active" data-filter="all">الكل</button>
-                    <button class="filter-btn" data-filter="عطارة">عطارة</button>
-                    <button class="filter-btn" data-filter="معلبات">معلبات</button>
-                    <button class="filter-btn" data-filter="منظفات">منظفات</button>
-                    <button class="filter-btn" data-filter="أجبان وألبان">أجبان وألبان</button>
-                </div>
-                <div class="products-grid" id="productsContainer">
-                    <!-- سيتم تحميل المنتجات من Google Sheets هنا -->
-                </div>
-                <div class="loading-products" id="loadingProducts">
-                    <div class="spinner"></div>
-                    <p>جاري تحميل المنتجات...</p>
-                </div>
-            </div>
-        </section>
+<section class="hero">
+<div>
+<h1>⚔️ القاضي في التاريخ ⚔️</h1>
+<p>منصة تعليمية حديثة لمادة التاريخ</p>
+</div>
+</section>
 
-        <!-- فوتر -->
-        <footer class="main-footer">
-            <div class="container">
-                <div class="footer-content">
-                    <div class="footer-logo">
-                        <img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" alt="عثمان ماركت">
-                        <div>
-                            <h3>عثمان ماركت</h3>
-                            <p>سوبر ماركت متكامل يلبي جميع احتياجاتك اليومية</p>
-                        </div>
-                    </div>
-                    <div class="footer-links">
-                        <h4>روابط سريعة</h4>
-                        <ul>
-                            <li><a href="#">الرئيسية</a></li>
-                            <li><a href="#departments">الأقسام</a></li>
-                            <li><a href="#products">المنتجات</a></li>
-                            <li><a href="#about">عن المتجر</a></li>
-                            <li><a href="#contact">اتصل بنا</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-contact">
-                        <h4>تواصل معنا</h4>
-                        <p><i class="fas fa-map-marker-alt"></i> العنوان: القاهرة، مصر</p>
-                        <p><i class="fas fa-phone"></i> الهاتف: 0123456789</p>
-                        <p><i class="fas fa-envelope"></i> البريد: info@othmanmarket.com</p>
-                    </div>
-                </div>
-                <div class="footer-bottom">
-                    <p>&copy; 2026 <span>عثمان ماركت</span> - جميع الحقوق محفوظة</p>
-                    <p class="credits">تنفيذ موقع: <span>abdulrahman adel 2026</span></p>
-                </div>
-            </div>
-        </footer>
-    </div>
+<div class="slider">
+<div class="track">
+<img src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963">
+<img src="https://images.unsplash.com/photo-1564507592333-c60657eea523">
+<img src="https://images.unsplash.com/photo-1549897164-0a3b1d6d2db5">
+<img src="https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e">
+</div>
+</div>
 
-    <script src="script.js"></script>
-    <script src="google-script.js"></script>
+<div class="buttons">
+<button class="btn" onclick="student.style.display='flex'">🎓 دخول الطالب</button>
+<button class="btn" onclick="parentm.style.display='flex'">👨‍👩‍👦 ولي الأمر</button>
+</div>
+
+<div class="footer">🏛️ المنصة قيد التطوير</div>
+
+<div class="modal" id="student">
+<div class="box">
+<h2>تسجيل دخول الطالب</h2>
+<input placeholder="اسم الطالب">
+<input placeholder="كلمة المرور" type="password">
+<button onclick="coming()">دخول</button>
+</div>
+</div>
+
+<div class="modal" id="parentm">
+<div class="box">
+<h2>كود الطالب</h2>
+<input placeholder="ادخل كود الطالب">
+<button onclick="coming()">متابعة</button>
+</div>
+</div>
+
+<script>
+function coming(){
+alert("🚀 جاري الانتهاء من المنصة قريباً\\n❤️ انتظرونا");
+}
+window.onclick=function(e){
+if(e.target==student) student.style.display='none';
+if(e.target==parentm) parentm.style.display='none';
+}
+</script>
+
 </body>
 </html>
