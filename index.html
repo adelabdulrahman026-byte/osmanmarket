@@ -3,99 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>السوبر ماركت الجبار</title>
-    <!-- استدعاء Tailwind CSS للتصميم الاحترافي -->
+    <title>إمبراطورية التوفير - متجر العميل</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- خط عربي مميز -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Cairo', sans-serif; }
-        /* تخصيص السكرول بار ليناسب الشكل الحديث */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background-color: #fca5a5; border-radius: 10px; }
+        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; }
+        .payment-option:checked + label { border-color: #2563eb; background-color: #eff6ff; }
     </style>
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: { primary: '#ef4444', darkBg: '#111827', darkCard: '#1f2937' }
-                }
-            }
-        }
+        tailwind.config = { theme: { extend: { colors: { brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' } } } } }
     </script>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 transition-colors duration-300">
+<body class="text-slate-800 flex flex-col min-h-screen">
 
-    <!-- الحاوية الرئيسية (شريط جانبي + المحتوى) -->
-    <div class="flex h-screen overflow-hidden">
-
-        <!-- القائمة الجانبية (بتختفي في الموبايل وتظهر في الكمبيوتر) -->
-        <aside class="hidden md:flex flex-col w-64 bg-white dark:bg-darkCard shadow-2xl z-20">
-            <div class="p-6 flex justify-center border-b dark:border-gray-700">
-                <!-- اللوجو بتاعك متوظف صح المرادي -->
-                <img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" alt="Logo" class="h-20 rounded-xl shadow-md object-cover">
+    <header class="bg-white shadow-sm sticky top-0 z-50 border-b border-slate-200">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" alt="Logo" class="h-10 w-10 md:h-12 md:w-12 rounded-xl object-cover border border-brand-100">
+                <span class="font-black text-lg md:text-xl text-brand-700">إمبراطورية التوفير</span>
             </div>
-            <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-                <a href="#" class="block p-3 rounded-lg bg-red-50 text-primary dark:bg-red-900/30 dark:text-red-400 font-bold hover:bg-red-100 transition">🛒 الرئيسية والعروض</a>
-                <a href="#" class="block p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">🥩 اللحوم والدواجن</a>
-                <a href="#" class="block p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">🧀 الألبان والجبن</a>
-                <a href="#" class="block p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">📦 سجل طلباتي</a>
-            </nav>
-        </aside>
+            <div class="flex items-center gap-4">
+                <button onclick="openCheckoutModal()" class="relative p-2 text-slate-600 hover:text-brand-600 transition">
+                    <i class="fa-solid fa-cart-shopping text-2xl"></i>
+                    <span id="cartCount" class="absolute -top-1 -right-1 bg-brand-600 text-white text-[11px] font-bold h-5 w-5 rounded-full flex items-center justify-center shadow">0</span>
+                </button>
+                <button class="hidden md:flex items-center gap-2 bg-brand-50 text-brand-700 px-4 py-2 rounded-lg font-bold hover:bg-brand-100 transition">
+                    <i class="fa-regular fa-user"></i> حسابي
+                </button>
+            </div>
+        </div>
+    </header>
 
-        <!-- منطقة المحتوى الرئيسية -->
-        <div class="flex-1 flex flex-col relative overflow-y-auto w-full">
-            
-            <!-- الهيدر العلوي -->
-            <header class="flex items-center justify-between p-4 bg-white dark:bg-darkCard shadow-sm sticky top-0 z-10">
-                <!-- زرار القائمة للموبايل -->
-                <button class="md:hidden p-2 bg-gray-100 dark:bg-gray-800 rounded-lg">☰ الأقسام</button>
-                
-                <!-- أزرار التحكم (بحث، مود ليلي، سلة، دخول) -->
-                <div class="flex items-center gap-4 w-full md:w-auto justify-end">
-                    <input type="text" placeholder="ابحث عن منتج..." class="hidden md:block px-4 py-2 bg-gray-100 dark:bg-gray-800 border-none rounded-full focus:ring-2 focus:ring-primary outline-none">
-                    <button onclick="document.documentElement.classList.toggle('dark')" class="p-2 bg-gray-200 dark:bg-gray-700 rounded-full hover:scale-110 transition">🌗</button>
-                    <button class="relative p-2 bg-red-100 dark:bg-red-900/40 text-primary rounded-full">
-                        🛒 <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">3</span>
-                    </button>
-                    <button class="px-4 py-2 bg-primary text-white font-bold rounded-lg shadow-lg hover:bg-red-600 transition flex items-center gap-2">
-                        تسجيل دخول <span>G</span>
-                    </button>
+    <main class="flex-grow container mx-auto px-4 py-8 space-y-8">
+        
+        <div class="relative w-full h-48 md:h-80 rounded-3xl overflow-hidden shadow-xl border-4 border-white">
+            <div id="hero-slider" class="absolute inset-0 bg-gradient-to-r from-brand-600 to-blue-900 flex items-center p-6 md:p-16 text-white transition-all duration-500">
+                <div class="max-w-lg z-10">
+                    <span class="bg-white text-brand-700 px-3 py-1 rounded-full text-xs font-black shadow-md">عروض حصرية</span>
+                    <h3 class="text-2xl md:text-4xl font-black mt-2">تسوق أحدث المنتجات 🛒</h3>
                 </div>
-            </header>
+            </div>
+        </div>
 
-            <!-- محتوى الصفحة -->
-            <main class="p-6 space-y-8">
-                <!-- سلايد شو العروض (الهيرو) -->
-                <section class="relative w-full h-48 md:h-80 bg-gradient-to-r from-red-500 to-orange-400 rounded-3xl overflow-hidden shadow-xl flex items-center justify-center text-white">
-                    <div class="text-center z-10">
-                        <h1 class="text-3xl md:text-5xl font-black mb-4">أقوى عروض الأسبوع 🔥</h1>
-                        <p class="text-lg md:text-xl">خصومات تصل لـ 50% على المنتجات الغذائية</p>
-                    </div>
-                    <!-- طبقة شفافة للتصميم -->
-                    <div class="absolute inset-0 bg-black/20"></div>
-                </section>
+        <div>
+            <h2 class="text-xl font-bold mb-4 text-brand-700 border-r-4 border-brand-600 pr-3">منتجات السوبر ماركت</h2>
+            <div id="storefrontGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <p class="text-slate-500 col-span-full text-center py-10">جاري تحميل المنتجات من السيرفر...</p>
+            </div>
+        </div>
+    </main>
 
-                <!-- قسم سلايد شو الفيديوهات التلقائية -->
-                <section>
-                    <h2 class="text-2xl font-bold mb-4 border-r-4 border-primary pr-3">📺 فيديوهات المنتجات</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- مكان الفيديوهات -->
-                        <div class="h-48 bg-gray-200 dark:bg-gray-800 rounded-2xl flex items-center justify-center shadow-inner">
-                            <span class="text-gray-500 dark:text-gray-400">فيديو عرض 1 ▶️</span>
-                        </div>
-                        <div class="h-48 bg-gray-200 dark:bg-gray-800 rounded-2xl flex items-center justify-center shadow-inner">
-                            <span class="text-gray-500 dark:text-gray-400">فيديو عرض 2 ▶️</span>
-                        </div>
-                        <div class="hidden md:flex h-48 bg-gray-200 dark:bg-gray-800 rounded-2xl items-center justify-center shadow-inner">
-                            <span class="text-gray-500 dark:text-gray-400">فيديو عرض 3 ▶️</span>
-                        </div>
+    <div id="checkoutModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-[100] p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative">
+            <div class="p-4 border-b flex justify-between bg-slate-50">
+                <h3 class="font-black text-brand-700">إتمام الطلب</h3>
+                <button onclick="document.getElementById('checkoutModal').classList.add('hidden')" class="text-rose-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="relative">
+                    <input type="radio" name="payMethod" id="payCash" value="cash" class="payment-option peer sr-only" checked onchange="document.getElementById('visaForm').classList.add('hidden')">
+                    <label for="payCash" class="flex items-center gap-4 p-4 border-2 rounded-xl cursor-pointer hover:bg-slate-50"><i class="fa-solid fa-money-bill text-emerald-500 text-2xl"></i> الدفع نقداً عند الاستلام</label>
+                </div>
+                <div class="relative">
+                    <input type="radio" name="payMethod" id="payVisa" value="visa" class="payment-option peer sr-only" onchange="document.getElementById('visaForm').classList.remove('hidden')">
+                    <label for="payVisa" class="flex items-center gap-4 p-4 border-2 rounded-xl cursor-pointer hover:bg-slate-50"><i class="fa-brands fa-cc-visa text-blue-600 text-2xl"></i> الدفع بالفيزا</label>
+                </div>
+                
+                <div id="visaForm" class="hidden space-y-2 pt-2">
+                    <input type="text" placeholder="رقم البطاقة" class="w-full border rounded-lg p-2 font-mono">
+                    <div class="flex gap-2">
+                        <input type="text" placeholder="MM/YY" class="w-1/2 border rounded-lg p-2 font-mono text-center">
+                        <input type="text" placeholder="CVV" class="w-1/2 border rounded-lg p-2 font-mono text-center">
                     </div>
-                </section>
-            </main>
+                </div>
+                <button onclick="confirmClientOrder()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-black py-3 rounded-xl shadow-lg">تأكيد الأوردر</button>
+            </div>
         </div>
     </div>
 
+    <script src="app.js"></script>
+    
+    <script>
+        // دالة لعرض المنتجات بعد ما app.js يجيبها من جوجل شيت
+        async function loadClientProducts() {
+            if(typeof fetchProducts === 'function') {
+                let products = await fetchProducts();
+                let grid = document.getElementById('storefrontGrid');
+                grid.innerHTML = '';
+                if(products.length === 0) grid.innerHTML = '<p class="col-span-full text-center">لا توجد منتجات حالياً.</p>';
+                
+                products.forEach(p => {
+                    grid.innerHTML += `
+                        <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-100 flex flex-col">
+                            <div class="rounded-xl overflow-hidden bg-slate-50 aspect-square mb-2">
+                                <img src="${p.image || 'https://via.placeholder.com/150'}" alt="${p.name}" class="w-full h-full object-cover">
+                            </div>
+                            <h4 class="text-sm font-bold text-slate-800 mb-1 line-clamp-2">${p.name}</h4>
+                            <div class="flex items-center justify-between mt-auto pt-2 border-t border-slate-100">
+                                <span class="text-base font-black text-brand-600">${p.price} ج.م</span>
+                                <button onclick="addToCart()" class="h-8 w-8 bg-brand-50 hover:bg-brand-600 hover:text-white text-brand-600 rounded-lg flex items-center justify-center transition"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        }
+
+        let cartTotal = 0;
+        function addToCart() {
+            cartTotal++;
+            document.getElementById('cartCount').innerText = cartTotal;
+        }
+
+        function openCheckoutModal() {
+            document.getElementById('checkoutModal').classList.remove('hidden');
+            document.getElementById('checkoutModal').classList.add('flex');
+        }
+
+        function confirmClientOrder() {
+            alert('تم استلام الأوردر بنجاح! سيتم إرساله لسيستم الكاشير والمخزن.');
+            document.getElementById('checkoutModal').classList.add('hidden');
+            cartTotal = 0;
+            document.getElementById('cartCount').innerText = cartTotal;
+        }
+
+        // تشغيل دوال الصفحة بعد التحميل
+        window.addEventListener('DOMContentLoaded', loadClientProducts);
+    </script>
 </body>
 </html>
