@@ -354,6 +354,218 @@
             barcodeInput.focus();
             updateConnectionStatus();
         };
-    </script>
-</body>
+<script>
+        // رابط الـ API الخاص بـ عثمان ماركت
+        const API_URL = "https://script.google.com/macros/s/AKfycbwTPtmtM-duUi1k4fP3A4bIl2750BhJsYXDoWt90-3DFdM1zOZIHYfHaIAGdaoAbx3FEw/exec";
+        
+        let productsDB = []; // ذاكرة المنتجات المحلية
+        let cart = []; // سلة الفاتورة الحالية
+
+        // 1. مراقبة حالة الإنترنت
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+
+        function updateConnectionStatus() {
+            const statusBadge = document.getElementById('connection-status');
+            if (navigator.onLine) {
+                statusBadge.className = 'status-badge status-online';
+                statusBadge.innerHTML = '<i class="fas fa-wifi"></i> متصل (Online)';
+            } else {
+                statusBadge.className = 'status-badge status-offline';
+                statusBadge.innerHTML = '<i class="fas fa-plane-slash"></i> أوفلاين (حفظ محلي)';
+            }
+        }
+
+        // 2. تحميل المنتجات من جوجل شيت وتخزينها في المتصفح (ميزة الأوفلاين)
+        async function loadProducts() {
+            try {
+                const response = await fetch(`${API_URL}?action=getProducts`);
+                productsDB = await response.json();
+                localStorage.setItem('ossman_products', JSON.stringify(productsDB)); // حفظ أوفلاين
+                document.getElementById('cart-items').innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                            <i class="fas fa-barcode" style="font-size: 3rem; margin-bottom: 10px; opacity: 0.3;"></i>
+                            <p>النظام جاهز! اضرب الباركود الآن...</p>
+                        </td>
+                    </tr>`;
+            } catch (error) {
+                // لو النت قاطع وقت فتح الصفحة، استدعي الداتا المتخزنة
+                const savedData = localStorage.getItem('ossman_products');
+                if (savedData) {
+                    productsDB = JSON.parse(savedData);
+                    document.getElementById('cart-items').innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                            <i class="fas fa-barcode" style="font-size: 3rem; margin-bottom: 10px; opacity: 0.3;"></i>
+                            <p>تعمل في وضع الأوفلاين. النظام جاهز للباركود...</p>
+                        </td>
+                    </tr>`;
+                } else {
+                    document.getElementById('cart-items').innerHTML = `<p style="color: red; text-align: center; padding: 20px;">خطأ في الاتصال، يرجى توفير إنترنت للتحميل الأول.</p>`;
+                }
+            }
+        }
+
+        // 3. نظام الباركود وإضافة المنتجات للفاتورة
+        const barcodeInput = document.getElementById('barcode-scanner');
+        
+        barcodeInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const code = barcodeInput.value.trim();
+                if(code) processBarcode(code);
+            }
+        });
+
+        // تشغيل صوت "بيب" عند الاسكانر (اختياري)
+        function playBeep() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            osc.connect(ctx.destination);
+            osc.frequency.value = 800; // تردد الصوت
+            osc.start();
+            osc.stop(ctx.currentTime + 0.1);
+        }
+
+        function processBarcode(code) {
+            // البحث عن المنتج في الذاكرة المحلية
+            const product = productsDB.find(p => p.Barcode == code || p.Barcode === code.toString());
+            
+            if (product) {
+                playBeep();
+                // هل المنتج موجود في السلة أصلاً؟
+                const existingItem = cart.find(item => item.Barcode === product.Barcode);
+                if (existingItem) {
+                    existingItem.qty += 1;
+                } else {
+                    cart.unshift({ ...product, qty: 1 }); // إضافته في أول القائمة
+                }
+                updateCartUI();
+            } else {
+                alert(`المنتج غير مسجل في المخزن! (الباركود: ${code})`);
+            }
+            
+            barcodeInput.value = '';
+            barcodeInput.focus(); // إبقاء الماوس جاهز للاسكانر
+        }
+
+        // 4. تحديث واجهة الفاتورة والحسابات
+        function updateCartUI() {
+            const tbody = document.getElementById('cart-items');
+            tbody.innerHTML = '';
+            let grandTotal = 0;
+            let totalItems = 0;
+
+            cart.forEach((item, index) => {
+                const itemTotal = parseFloat(item.Price) * item.qty;
+                grandTotal += itemTotal;
+                totalItems += item.qty;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 700;">${item.Name}</td>
+                    <td>${item.Price} ج.م</td>
+                    <td>
+                        <div class="qty-control">
+                            <button class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
+                            <span style="font-weight: bold; width: 20px; text-align: center;">${item.qty}</span>
+                            <button class="qty-btn" onclick="changeQty(${index}, -1)">-</button>
+                        </div>
+                    </td>
+                    <td style="font-weight: 800; color: var(--primary);">${itemTotal.toFixed(2)} ج.م</td>
+                    <td>
+                        <button class="qty-btn" style="color: var(--danger);" onclick="removeItem(${index})"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('items-count').innerText = totalItems;
+            document.getElementById('grand-total').innerText = grandTotal.toFixed(2) + ' ج.م';
+            
+            // تحديث حساب "الباقي للعميل" فوراً
+            calculateChange();
+        }
+
+        // تغيير الكمية يدوياً (+ أو -)
+        function changeQty(index, amount) {
+            cart[index].qty += amount;
+            if (cart[index].qty <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+            barcodeInput.focus();
+        }
+
+        // حذف منتج من الفاتورة
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+            barcodeInput.focus();
+        }
+
+        // 5. حساب الباقي للعميل
+        function calculateChange() {
+            let grandTotal = cart.reduce((sum, item) => sum + (parseFloat(item.Price) * item.qty), 0);
+            const paidInput = document.getElementById('amount-paid').value;
+            const paid = paidInput === "" ? 0 : parseFloat(paidInput);
+            
+            const changeDisplay = document.getElementById('amount-change');
+            
+            if (cart.length === 0) {
+                changeDisplay.innerText = '0.00 ج.م';
+                changeDisplay.style.color = 'var(--text-muted)';
+                return;
+            }
+
+            if (paid >= grandTotal) {
+                const change = paid - grandTotal;
+                changeDisplay.innerText = change.toFixed(2) + ' ج.م';
+                changeDisplay.style.color = 'var(--success)';
+            } else {
+                changeDisplay.innerText = 'المبلغ غير كافٍ';
+                changeDisplay.style.color = 'var(--danger)';
+            }
+        }
+
+        // 6. إصدار الفاتورة (طباعة أو حفظ)
+        function processPayment() {
+            if (cart.length === 0) {
+                alert("الفاتورة فارغة!");
+                barcodeInput.focus();
+                return;
+            }
+            
+            // مستقبلاً: كود الإرسال إلى الجوجل شيت لحفظ المبيعات سيتم وضعه هنا
+            
+            alert("تم إغلاق الفاتورة بنجاح وتصفير الكاشير للعميل التالي.");
+            cart = [];
+            document.getElementById('amount-paid').value = '';
+            updateCartUI();
+            
+            // العودة لحالة الانتظار
+            document.getElementById('cart-items').innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                        <i class="fas fa-barcode" style="font-size: 3rem; margin-bottom: 10px; opacity: 0.3;"></i>
+                        <p>النظام جاهز! اضرب الباركود الآن...</p>
+                    </td>
+                </tr>`;
+            barcodeInput.focus();
+        }
+
+        // تهيئة النظام عند الفتح
+        window.onload = () => {
+            updateConnectionStatus();
+            loadProducts();
+            barcodeInput.focus();
+        };
+        
+        // إبقاء التركيز على الباركود عند الضغط في أي مكان فارغ بالشاشة
+        document.body.addEventListener('click', function(e) {
+            if(e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
+                barcodeInput.focus();
+            }
+        });
+    </script></body>
 </html>
