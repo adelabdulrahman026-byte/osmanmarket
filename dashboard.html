@@ -2,99 +2,413 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>OSSMAN MARKET - إدارة النظام</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSSMAN MARKET - لوحة النظام</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --bg-dark: #1E1E2D; --primary: #3699FF; --success: #1BC5BD; --danger: #F64E60; --bg-light: #F3F6F9; }
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Tajawal', sans-serif; }
-        body { display:flex; height:100vh; background:var(--bg-light); }
-        .sidebar { width:250px; background:var(--bg-dark); color:white; }
-        .nav-menu { list-style:none; padding:20px; }
-        .nav-menu li { padding:15px; cursor:pointer; border-radius:10px; margin-bottom:10px; }
-        .nav-menu li:hover { background:rgba(255,255,255,0.1); color:var(--primary); }
-        .workspace { flex:1; padding:20px; overflow-y:auto; }
-        .card { background:white; padding:20px; border-radius:15px; margin-bottom:20px; box-shadow:0 2px 5px rgba(0,0,0,0.05); }
-        table { width:100%; border-collapse:collapse; }
-        th, td { padding:15px; border-bottom:1px solid #eee; text-align:right; }
-        .btn { padding:10px 20px; border-radius:8px; border:none; cursor:pointer; color:white; font-weight:bold; }
+        :root {
+            --bg-dark: #1E1E2D; --bg-light: #F3F6F9; --card-bg: #FFFFFF;
+            --primary: #3699FF; --success: #1BC5BD; --danger: #F64E60; --warning: #FFA800;
+            --text-main: #3F4254; --text-muted: #B5B5C3; --border: #EBEDF3;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
+        body { background-color: var(--bg-light); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; position: relative; }
+
+        /* شاشة تسجيل الدخول (Login Overlay) */
+        #login-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, var(--bg-dark), #112240); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .login-box { background: var(--card-bg); padding: 40px; border-radius: 20px; width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .login-box img { width: 100px; height: 100px; border-radius: 20px; border: 3px solid var(--primary); margin-bottom: 20px; }
+        .login-box h2 { margin-bottom: 25px; color: var(--text-main); font-weight: 900; }
+        .login-input { width: 100%; padding: 15px; margin-bottom: 15px; border: 2px solid var(--border); border-radius: 10px; font-size: 1.1rem; outline: none; transition: 0.3s; }
+        .login-input:focus { border-color: var(--primary); }
+        .btn-login { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-login:hover { background: #1B84FF; }
+
+        /* القائمة الجانبية */
+        .sidebar { width: 260px; background-color: var(--bg-dark); display: flex; flex-direction: column; color: white; z-index: 10; }
+        .brand { padding: 25px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .brand img { width: 70px; height: 70px; border-radius: 15px; border: 2px solid var(--primary); margin-bottom: 10px; }
+        .brand-name { font-size: 1.3rem; font-weight: 900; }
+        
+        .nav-menu { list-style: none; padding: 20px 0; flex: 1; }
+        .nav-menu li { display: none; } /* مخفية افتراضياً حتى نتأكد من الصلاحية */
+        .nav-menu li a { display: flex; align-items: center; padding: 15px 25px; color: var(--text-muted); text-decoration: none; font-weight: 600; gap: 15px; cursor: pointer; transition: 0.3s; }
+        .nav-menu li.active a, .nav-menu li a:hover { background-color: rgba(54,153,255,0.1); color: var(--primary); border-right: 4px solid var(--primary); }
+
+        .workspace { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .top-header { background: var(--card-bg); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); z-index: 5; }
+        .status-badge { padding: 6px 15px; border-radius: 20px; font-weight: 700; font-size: 0.9rem; }
+        .status-online { background-color: #D1F3E0; color: #0A7C43; }
+        .btn-logout { background: none; border: none; color: var(--danger); font-weight: bold; cursor: pointer; display: flex; gap: 5px; align-items: center; font-size: 1rem; }
+
+        /* الصفحات */
+        .page-view { display: none; height: calc(100vh - 70px); overflow-y: auto; padding: 20px; }
+        .page-view.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ستايل الكاشير والمرتجع (Grid) */
+        .pos-container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; height: 100%; }
+        .pos-left { display: flex; flex-direction: column; gap: 20px; height: 100%; }
+        .barcode-section, .cart-section, .pos-right { background: var(--card-bg); border-radius: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); padding: 20px; }
+        .barcode-input { flex: 1; padding: 15px 20px; font-size: 1.2rem; border: 2px solid var(--border); border-radius: 10px; outline: none; font-weight: 600; width: 100%; }
+        .barcode-input:focus { border-color: var(--primary); }
+        .cart-table { width: 100%; border-collapse: collapse; }
+        .cart-table th { background: var(--bg-light); padding: 15px; text-align: right; color: var(--text-muted); }
+        .cart-table td { padding: 15px; border-bottom: 1px solid var(--border); font-weight: 600; }
+        .qty-btn { width: 32px; height: 32px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; background: var(--bg-light); }
+        
+        .pos-right { display: flex; flex-direction: column; }
+        .btn-pay { width: 100%; padding: 20px; background: var(--success); color: white; border: none; border-radius: 12px; font-size: 1.5rem; font-weight: 900; cursor: pointer; margin-top: auto; }
+        .btn-pay:disabled { background: #B5B5C3; }
+        .input-group input { width: 100%; padding: 15px; font-size: 1.8rem; border: 2px solid var(--border); border-radius: 10px; margin-top: 8px; font-weight: bold; }
+
+        /* ستايل المرتجعات (ألوان مختلفة للتنبيه) */
+        #return-view .barcode-input:focus { border-color: var(--warning); }
+        #return-view .btn-pay { background: var(--warning); }
+        #return-view .btn-pay:hover { background: #E59600; }
+
+        /* المخازن */
+        .inventory-card { background: var(--card-bg); border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); max-width: 800px; margin: 0 auto; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+        .form-group label { display: block; font-weight: 700; margin-bottom: 8px; }
+        .form-group input { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 10px; outline: none; }
+        .btn-submit { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 10px; font-size: 1.2rem; font-weight: bold; width: 100%; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<aside class="sidebar">
-    <div style="padding:20px; text-align:center; font-size:1.5rem; font-weight:900;">OSSMAN</div>
-    <ul class="nav-menu">
-        <li onclick="showPage('pos')"><i class="fas fa-desktop"></i> الكاشير</li>
-        <li onclick="showPage('return')"><i class="fas fa-undo"></i> المرتجعات</li>
-        <li onclick="showPage('inventory')"><i class="fas fa-boxes"></i> المخزن</li>
-        <li onclick="showPage('reports')"><i class="fas fa-chart-line"></i> التقارير</li>
-    </ul>
-</aside>
-
-<div class="workspace">
-    <!-- صفحة الكاشير -->
-    <div id="pos" class="page">
-        <div class="card">
-            <input type="text" id="barcode" placeholder="الباركود..." style="padding:15px; width:100%; font-size:1.2rem;">
-        </div>
-        <div class="card">
-            <table id="cart-table">
-                <thead><tr><th>المنتج</th><th>السعر</th><th>الكمية</th><th>حذف</th></tr></thead>
-                <tbody id="cart-body"></tbody>
-            </table>
-            <button class="btn" style="background:var(--success); width:100%; margin-top:20px;" onclick="process('sale')">إصدار الفاتورة</button>
+    <div id="login-overlay">
+        <div class="login-box">
+            <img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" alt="Logo">
+            <h2>تسجيل الدخول للنظام</h2>
+            <form onsubmit="handleLogin(event)">
+                <input type="text" id="login-username" class="login-input" placeholder="اسم المستخدم" required>
+                <input type="password" id="login-password" class="login-input" placeholder="كلمة المرور" required>
+                <button type="submit" class="btn-login" id="btn-login-submit">دخول</button>
+            </form>
         </div>
     </div>
 
-    <!-- صفحة المخزن -->
-    <div id="inventory" class="page" style="display:none;">
-        <div class="card">
-            <button class="btn" style="background:var(--primary);" onclick="exportExcel()">تصدير إكسيل</button>
-            <table id="inv-table">
-                <thead><tr><th>الباركود</th><th>الاسم</th><th>السعر</th><th>الكمية</th><th>تعديل</th></tr></thead>
-                <tbody id="inv-body"></tbody>
-            </table>
+    <aside class="sidebar">
+        <div class="brand">
+            <img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" alt="Logo">
+            <div class="brand-name">OSSMAN MARKET</div>
         </div>
+        <ul class="nav-menu" id="main-menu">
+            <li class="nav-pos" onclick="switchTab('pos-view', this)"><a href="#"><i class="fas fa-desktop"></i> شاشة المبيعات</a></li>
+            <li class="nav-return" onclick="switchTab('return-view', this)"><a href="#"><i class="fas fa-undo"></i> شاشة المرتجعات</a></li>
+            <li class="nav-inv" onclick="switchTab('inventory-view', this)"><a href="#"><i class="fas fa-box-open"></i> إضافة للمخزن</a></li>
+            <li class="nav-admin"><a href="#"><i class="fas fa-file-invoice-dollar"></i> الحسابات وتقارير المدير</a></li>
+        </ul>
+    </aside>
+
+    <main class="workspace">
+        <header class="top-header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <h2 id="page-title" style="font-size: 1.4rem;">النظام</h2>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="status-badge status-online" id="connection-status"><i class="fas fa-wifi"></i> متصل</div>
+                <div style="text-align: left; line-height: 1.2;">
+                    <strong style="display: block; color: var(--primary);" id="current-user-name">--</strong>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);" id="current-user-role">--</span>
+                </div>
+                <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> خروج</button>
+            </div>
+        </header>
+
+        <div id="pos-view" class="page-view active">
+            <div class="pos-container">
+                <div class="pos-left">
+                    <div class="barcode-section">
+                        <input type="text" class="barcode-input" id="barcode-scanner" placeholder="اضرب الباركود للبيع...">
+                        <button class="btn-pay" style="width: auto; padding: 0 30px; border-radius: 10px;" onclick="scanBarcode('sale')">إضافة</button>
+                    </div>
+                    <div class="cart-section">
+                        <table class="cart-table">
+                            <thead><tr><th>المنتج</th><th>السعر</th><th>الكمية</th><th>الإجمالي</th><th></th></tr></thead>
+                            <tbody id="cart-items"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="pos-right">
+                    <div style="font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-bottom: 20px;">الإجمالي: <span id="grand-total">0.00</span></div>
+                    <div class="input-group"><label>المدفوع:</label><input type="number" id="amount-paid" oninput="calcChange()"></div>
+                    <div style="margin-top: 15px; text-align: center; background: var(--bg-light); padding: 15px; border-radius: 10px;">
+                        <span>الباقي</span><h3 id="amount-change" style="color: var(--danger); font-size: 2rem;">0.00</h3>
+                    </div>
+                    <button class="btn-pay" onclick="processPayment('sale')"><i class="fas fa-print"></i> إصدار فاتورة</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="return-view" class="page-view">
+            <div class="pos-container">
+                <div class="pos-left">
+                    <div class="barcode-section" style="border-left: 5px solid var(--warning);">
+                        <input type="text" class="barcode-input" id="return-barcode-scanner" placeholder="اضرب باركود المنتج المرتجع...">
+                        <button class="btn-pay" style="width: auto; padding: 0 30px; border-radius: 10px;" onclick="scanBarcode('return')">إرجاع</button>
+                    </div>
+                    <div class="cart-section">
+                        <table class="cart-table">
+                            <thead><tr><th>المنتج المرتجع</th><th>السعر</th><th>الكمية المستردة</th><th>إجمالي الخصم</th><th></th></tr></thead>
+                            <tbody id="return-items"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="pos-right">
+                    <div style="font-size: 1.8rem; font-weight: 800; color: var(--danger); margin-bottom: 20px;">إجمالي المرتجع: <span id="return-grand-total">0.00</span></div>
+                    <div style="margin-top: auto; text-align: center; background: #FFF4F4; padding: 15px; border-radius: 10px; border: 1px dashed var(--danger); margin-bottom: 20px;">
+                        <p style="color: var(--danger); font-weight: bold;"><i class="fas fa-info-circle"></i> هذا المبلغ سيتم رده للعميل وخصمه من درج الكاشير.</p>
+                    </div>
+                    <button class="btn-pay" onclick="processPayment('return')"><i class="fas fa-undo"></i> تأكيد المرتجع</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="inventory-view" class="page-view">
+            <div class="inventory-card">
+                <h3 style="margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px;">إضافة منتج جديد</h3>
+                <form onsubmit="submitProduct(event)">
+                    <div class="form-grid">
+                        <div class="form-group"><label>الباركود</label><input type="text" id="inv-barcode" required></div>
+                        <div class="form-group"><label>الاسم</label><input type="text" id="inv-name" required></div>
+                        <div class="form-group"><label>القسم</label><input type="text" id="inv-category" required></div>
+                        <div class="form-group"><label>الكمية</label><input type="number" id="inv-stock" required></div>
+                        <div class="form-group"><label>سعر التكلفة</label><input type="number" id="inv-cost" required></div>
+                        <div class="form-group"><label>سعر البيع</label><input type="number" id="inv-price" required></div>
+                        <div class="form-group"><label>رابط الصورة</label><input type="text" id="inv-image"></div>
+                    </div>
+                    <button type="submit" class="btn-submit" id="btn-add-product"><i class="fas fa-save"></i> حفظ في المخزن</button>
+                </form>
+            </div>
+        </div>
+    </main>
+<div id="reports-view" class="page-view">
+    <div class="inventory-card">
+        <h3>تقرير المبيعات</h3>
+        <div class="form-grid">
+            <div style="background:var(--primary); color:white; padding:20px; border-radius:10px;">
+                <h4>دخل اليوم</h4>
+                <h2 id="rep-daily">0.00</h2>
+            </div>
+            <!-- كرر للأسابيع والشهور -->
+        </div>
+        
+        <h3>إدارة المنتجات</h3>
+        <table class="cart-table">
+            <thead><tr><th>المنتج</th><th>السعر</th><th>الكمية</th><th>تعديل</th></tr></thead>
+            <tbody id="inventory-list"></tbody>
+        </table>
     </div>
 </div>
+    <script>
+        // ⚠️ حط الرابط بتاعك
+        const API_URL = "https://script.google.com/macros/s/AKfycbwj1ryy6kcPkQSleuKmET6tLefgSkzRz1NqSX4B4jsgaZfn2yei0gwD6oAfcZT5s_Dp7w/exec";
+        
+        let productsDB = []; 
+        let saleCart = []; 
+        let returnCart = [];
+        let currentUser = null;
 
-<script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwj1ryy6kcPkQSleuKmET6tLefgSkzRz1NqSX4B4jsgaZfn2yei0gwD6oAfcZT5s_Dp7w/exec";
-    let productsDB = [], cart = [];
+        // 1. نظام تسجيل الدخول والصلاحيات
+        window.onload = () => {
+            const savedUser = localStorage.getItem('ossman_user');
+            if(savedUser) {
+                currentUser = JSON.parse(savedUser);
+                applyPermissions();
+                loadProducts();
+            } else {
+                document.getElementById('login-overlay').style.display = 'flex';
+            }
+        };
 
-    async function loadData() {
-        const res = await fetch(API_URL);
-        productsDB = await res.json();
-        renderInventory();
-    }
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-login-submit');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحقق...';
+            
+            const payload = {
+                action: 'login',
+                username: document.getElementById('login-username').value,
+                password: document.getElementById('login-password').value
+            };
 
-    function renderInventory() {
-        const body = document.getElementById('inv-body');
-        body.innerHTML = productsDB.map((p, i) => `
-            <tr>
-                <td>${p.Barcode}</td><td>${p.Name}</td><td>${p.Price}</td>
-                <td><input type="number" value="${p.Stock}" onchange="updateStock(${i}, this.value)"></td>
-                <td><button class="btn" style="background:var(--primary);" onclick="editProd(${i})">تعديل</button></td>
-            </tr>
-        `).join('');
-    }
+            try {
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const data = await res.json();
+                
+                if(data.status === 'success') {
+                    currentUser = data.user;
+                    localStorage.setItem('ossman_user', JSON.stringify(currentUser));
+                    applyPermissions();
+                    loadProducts();
+                } else {
+                    alert(data.message);
+                }
+            } catch(err) { alert("خطأ في الاتصال!"); }
+            btn.innerHTML = 'دخول';
+        }
 
-    function showPage(id) {
-        document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-        document.getElementById(id).style.display = 'block';
-    }
+        function logout() {
+            localStorage.removeItem('ossman_user');
+            location.reload();
+        }
 
-    function exportExcel() {
-        const wb = XLSX.utils.table_to_book(document.getElementById('inv-table'));
-        XLSX.writeFile(wb, "Inventory.xlsx");
-    }
+        function applyPermissions() {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('current-user-name').innerText = currentUser.name;
+            document.getElementById('current-user-role').innerText = currentUser.role;
 
-    function updateStock(index, val) { productsDB[index].Stock = val; }
+            const role = currentUser.role;
+            // إظهار القوائم بناءً على الصلاحية
+            if(role === 'مدير') {
+                document.querySelectorAll('.nav-menu li').forEach(li => li.style.display = 'block');
+                switchTab('pos-view', document.querySelector('.nav-pos'));
+            } 
+            else if(role === 'كاشير') {
+                document.querySelector('.nav-pos').style.display = 'block';
+                document.querySelector('.nav-return').style.display = 'block';
+                switchTab('pos-view', document.querySelector('.nav-pos'));
+            } 
+            else if(role === 'مخازن') {
+                document.querySelector('.nav-inv').style.display = 'block';
+                switchTab('inventory-view', document.querySelector('.nav-inv'));
+            }
+        }
 
-    // تشغيل التحميل
-    window.onload = loadData;
-</script>
+        // 2. إدارة الـ Tabs
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-menu li').forEach(li => li.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            el.classList.add('active');
+            
+            if(tabId === 'pos-view') { document.getElementById('page-title').innerText = 'المبيعات'; document.getElementById('barcode-scanner').focus(); }
+            else if(tabId === 'return-view') { document.getElementById('page-title').innerText = 'المرتجعات'; document.getElementById('return-barcode-scanner').focus(); }
+            else if(tabId === 'inventory-view') { document.getElementById('page-title').innerText = 'المخازن'; }
+        }
+
+        // 3. تحميل المنتجات
+        async function loadProducts() {
+            try {
+                const res = await fetch(API_URL);
+                productsDB = await res.json();
+                document.getElementById('cart-items').innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--success); padding:20px;">النظام جاهز للعمل.</td></tr>`;
+                document.getElementById('return-items').innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;">جاهز لسحب المرتجعات.</td></tr>`;
+            } catch(e) { console.log(e); }
+        }
+
+        // 4. الباركود (مبيعات والمرتجعات)
+        document.getElementById('barcode-scanner').addEventListener('keypress', e => { if(e.key === 'Enter') scanBarcode('sale'); });
+        document.getElementById('return-barcode-scanner').addEventListener('keypress', e => { if(e.key === 'Enter') scanBarcode('return'); });
+
+        function scanBarcode(type) {
+            const input = type === 'sale' ? document.getElementById('barcode-scanner') : document.getElementById('return-barcode-scanner');
+            const code = input.value.trim();
+            if(!code) return;
+            
+            const product = productsDB.find(p => p.Barcode == code);
+            if(product) {
+                const cart = type === 'sale' ? saleCart : returnCart;
+                const existing = cart.find(i => i.Barcode === product.Barcode);
+                if(existing) existing.qty += 1;
+                else cart.unshift({...product, qty: 1});
+                
+                updateUI(type);
+            } else { alert("المنتج غير موجود!"); }
+            
+            input.value = ''; input.focus();
+        }
+
+        function updateUI(type) {
+            const cart = type === 'sale' ? saleCart : returnCart;
+            const tbody = document.getElementById(type === 'sale' ? 'cart-items' : 'return-items');
+            let total = 0; tbody.innerHTML = '';
+            
+            cart.forEach((item, index) => {
+                const itemTotal = parseFloat(item.Price) * item.qty;
+                total += itemTotal;
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.Name}</td><td>${item.Price}</td>
+                        <td>
+                            <button class="qty-btn" onclick="modifyQty('${type}', ${index}, 1)">+</button>
+                            <span style="margin: 0 10px; font-weight:bold;">${item.qty}</span>
+                            <button class="qty-btn" onclick="modifyQty('${type}', ${index}, -1)">-</button>
+                        </td>
+                        <td style="color: ${type === 'sale' ? 'var(--primary)' : 'var(--danger)'}; font-weight: bold;">${itemTotal.toFixed(2)}</td>
+                        <td><button class="qty-btn" onclick="modifyQty('${type}', ${index}, -999)"><i class="fas fa-trash" style="color:var(--danger)"></i></button></td>
+                    </tr>`;
+            });
+            
+            if(type === 'sale') {
+                document.getElementById('grand-total').innerText = total.toFixed(2);
+                calcChange();
+            } else {
+                document.getElementById('return-grand-total').innerText = total.toFixed(2);
+            }
+        }
+
+        function modifyQty(type, index, amount) {
+            const cart = type === 'sale' ? saleCart : returnCart;
+            cart[index].qty += amount;
+            if(cart[index].qty <= 0) cart.splice(index, 1);
+            updateUI(type);
+        }
+
+        function calcChange() {
+            let total = saleCart.reduce((s, i) => s + (parseFloat(i.Price) * i.qty), 0);
+            let paid = parseFloat(document.getElementById('amount-paid').value) || 0;
+            let display = document.getElementById('amount-change');
+            if(paid >= total && saleCart.length > 0) { display.innerText = (paid - total).toFixed(2); display.style.color = 'var(--success)'; }
+            else { display.innerText = '0.00'; display.style.color = 'var(--danger)'; }
+        }
+
+        // 5. حفظ (المبيعات / المرتجعات)
+        async function processPayment(type) {
+            const cart = type === 'sale' ? saleCart : returnCart;
+            if(cart.length === 0) return alert("القائمة فارغة!");
+            
+            let total = cart.reduce((s, i) => s + (parseFloat(i.Price) * i.qty), 0);
+            let payload = {};
+
+            if(type === 'sale') {
+                let paid = parseFloat(document.getElementById('amount-paid').value) || 0;
+                if(paid < total) return alert("المبلغ غير كافٍ!");
+                payload = { action: 'saveSale', invoice_id: 'INV-'+Date.now(), cashier_id: currentUser.name, items: cart, total: total, paid: paid, change: paid-total };
+            } else {
+                payload = { action: 'processReturn', return_id: 'RET-'+Date.now(), cashier_id: currentUser.name, items: cart, total: total };
+            }
+
+            try {
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                alert(type === 'sale' ? "تمت البيعة بنجاح" : "تم تسجيل المرتجع بنجاح");
+                
+                if(type === 'sale') { saleCart = []; document.getElementById('amount-paid').value=''; } 
+                else { returnCart = []; }
+                updateUI(type);
+                
+            } catch(e) { alert("حدث خطأ في الاتصال"); }
+        }
+
+        // 6. المخازن
+        async function submitProduct(e) {
+            e.preventDefault();
+            const payload = {
+                action: 'addProduct',
+                barcode: document.getElementById('inv-barcode').value, name: document.getElementById('inv-name').value,
+                category: document.getElementById('inv-category').value, stock: document.getElementById('inv-stock').value,
+                cost: document.getElementById('inv-cost').value, price: document.getElementById('inv-price').value,
+                image_url: document.getElementById('inv-image').value
+            };
+            try {
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                alert("تم الإضافة للمخزن!"); loadProducts(); e.target.reset();
+            } catch(e) {}
+        }
+    </script>
 </body>
 </html>
