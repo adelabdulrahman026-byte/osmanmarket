@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSSMAN MARKET - فحص الأسعار</title>
+    <!-- خطوط جوجل (Tajawal) لتصميم عصري -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --teal-dark: #07192F;
+            --teal-light: #112240;
+            --orange-vibrant: #FF6B00;
+            --text-main: #E6F1FF;
+            --text-muted: #8892B0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
+
+        body {
+            background: linear-gradient(135deg, var(--teal-dark), var(--teal-light));
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* خلفية سينمائية */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 107, 0, 0.08), transparent 60%);
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+            padding: 40px;
+        }
+
+        /* ---------------- حالة الانتظار ---------------- */
+        .idle-view {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .logo-container { position: relative; margin-bottom: 30px; }
+
+        .logo {
+            width: 180px; height: 180px;
+            border-radius: 40px; object-fit: cover;
+            border: 4px solid var(--orange-vibrant);
+            box-shadow: 0 0 50px rgba(255, 107, 0, 0.4);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .title {
+            font-size: 4rem; font-weight: 900; margin-bottom: 15px;
+            text-shadow: 0 10px 20px rgba(0,0,0,0.5); letter-spacing: 2px;
+        }
+
+        .subtitle { font-size: 2rem; color: var(--text-muted); font-weight: 700; margin-bottom: 40px; }
+
+        .barcode-icon {
+            font-size: 8rem; color: rgba(255, 255, 255, 0.15);
+            animation: pulse 2.5s infinite;
+        }
+
+        /* ---------------- حالة النتيجة (Pop-up) ---------------- */
+        .result-view {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(17, 34, 64, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            padding: 50px 60px;
+            border-radius: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6), inset 0 0 30px rgba(255, 107, 0, 0.15);
+            /* أنيميشن Bouncy واقعي 3D */
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        /* رسالة العميل الترحيبية الشيك */
+        .customer-msg {
+            background: linear-gradient(90deg, transparent, rgba(255, 107, 0, 0.15), transparent);
+            padding: 10px 40px;
+            border-radius: 50px;
+            color: #FFD700; /* لون ذهبي فخم */
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+            animation: slideDown 0.5s ease-out 0.2s both;
+        }
+
+        .customer-submsg {
+            color: var(--text-muted);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: -15px;
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease-out 0.4s both;
+        }
+
+        .product-image {
+            width: 320px; height: 320px;
+            object-fit: contain; margin-bottom: 25px;
+            filter: drop-shadow(0 25px 35px rgba(0,0,0,0.7));
+            animation: popImg 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s both;
+        }
+
+        .product-name {
+            font-size: 3.2rem; font-weight: 900;
+            margin-bottom: 10px; color: #FFF; line-height: 1.3;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        }
+
+        .price-container {
+            background: rgba(0,0,0,0.3);
+            padding: 15px 50px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin-top: 15px;
+        }
+
+        .product-price {
+            font-size: 6.5rem; font-weight: 900;
+            color: var(--orange-vibrant);
+            text-shadow: 0 10px 40px rgba(255, 107, 0, 0.5);
+            line-height: 1;
+        }
+
+        .price-currency { font-size: 2.5rem; color: var(--text-muted); font-weight: 700; margin-right: 10px; }
+
+        /* رسائل النظام المخفية */
+        .system-message { font-size: 2.5rem; font-weight: 700; color: var(--orange-vibrant); display: none; animation: fadeIn 0.5s; }
+        #hidden-scanner { position: absolute; opacity: 0; top: -1000px; }
+
+        /* ---------------- Keyframes ---------------- */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.15; }
+            50% { transform: scale(1.15); opacity: 0.4; color: var(--orange-vibrant); }
+            100% { transform: scale(1); opacity: 0.15; }
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes slideDown {
+            0% { transform: translateY(-30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes popImg {
+            0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; } to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- رسالة التحميل -->
+        <div id="loading-msg" class="system-message" style="display: block;">
+            <i class="fas fa-circle-notch fa-spin" style="font-size: 5rem; margin-bottom: 25px;"></i>
+            <p>جاري تهيئة النظام وربط الأسعار...</p>
+        </div>
+
+        <!-- وضع الانتظار -->
+        <div id="idle-view" class="idle-view" style="display: none;">
+            <div class="logo-container">
+                <img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" alt="OSSMAN MARKET" class="logo">
+            </div>
+            <h1 class="title">اعرف سعر أي منتج</h1>
+            <p class="subtitle">قم بتمرير باركود المنتج أمام الماسح الضوئي بالأسفل</p>
+            <i class="fas fa-barcode barcode-icon"></i>
+        </div>
+
+        <!-- وضع عرض النتيجة -->
+        <div id="result-view" class="result-view">
+            <!-- الرسالة الترحيبية للعميل -->
+            <div class="customer-msg">
+                <i class="fas fa-sparkles"></i>
+                <span>منورنا يا فندم! دايماً بنختارلك الأفضل</span>
+                <i class="fas fa-sparkles"></i>
+            </div>
+            <div class="customer-submsg"> Enjoy Shopping at Osman Market ✨ تسوق ممتع في عثمان ماركت  </div>
+            
+            <img id="res-img" src="" alt="Product" class="product-image">
+            <h2 id="res-name" class="product-name">اسم المنتج</h2>
+            
+            <div class="price-container">
+                <span id="res-price" class="product-price">0.00</span>
+                <span class="price-currency">ج.م</span>
+            </div>
+        </div>
+
+        <!-- رسالة الخطأ -->
+        <div id="error-msg" class="system-message" style="color: #F64E60;">
+            <i class="fas fa-exclamation-triangle" style="font-size: 6rem; margin-bottom: 25px;"></i>
+            <p>عذراً، هذا المنتج غير متوفر حالياً!</p>
+        </div>
+    </div>
+
+    <!-- حقل الإدخال المخفي -->
+    <input type="text" id="hidden-scanner" autofocus>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbztQHtm76lNcbmhz-n4idoifwkhFDuhEJDd_1412ZthorwH0TIWKWhuFyC8wMMqffy8Vw/exec";
+        let productsDB = [];
+        let resetTimer;
+
+        const idleView = document.getElementById('idle-view');
+        const resultView = document.getElementById('result-view');
+        const loadingMsg = document.getElementById('loading-msg');
+        const errorMsg = document.getElementById('error-msg');
+        const scannerInput = document.getElementById('hidden-scanner');
+
+        // تحميل قاعدة البيانات
+        async function loadDatabase() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                if (!data.error) {
+                    productsDB = data;
+                    loadingMsg.style.display = 'none';
+                    idleView.style.display = 'flex';
+                    scannerInput.focus();
+                } else {
+                    loadingMsg.innerHTML = `<i class="fas fa-times-circle" style="color: red; font-size: 5rem;"></i><p>خطأ في قاعدة البيانات!</p>`;
+                }
+            } catch (error) {
+                loadingMsg.innerHTML = `<i class="fas fa-wifi" style="color: red; font-size: 5rem;"></i><p>تعذر الاتصال بالإنترنت!</p>`;
+            }
+        }
+
+        // تشغيل صوت الاسكانر
+        function playBeep(type = 'success') {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                if (type === 'success') {
+                    osc.frequency.value = 1500; // صوت رنة شيك
+                    osc.type = 'sine';
+                } else {
+                    osc.frequency.value = 250;
+                    osc.type = 'sawtooth';
+                }
+                
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.12);
+            } catch(e) {}
+        }
+
+        // التقاط الباركود
+        scannerInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const code = scannerInput.value.trim();
+                if (code) checkPrice(code);
+                scannerInput.value = '';
+            }
+        });
+
+        // عرض النتيجة
+        function checkPrice(code) {
+            clearTimeout(resetTimer);
+
+            // إخفاء النتيجة الحالية فوراً لإعادة تشغيل الأنيميشن لو ضرب باركود تاني بسرعة
+            resultView.style.display = 'none'; 
+            
+            // force reflow لإعادة تشغيل الـ CSS Animation
+            void resultView.offsetWidth; 
+
+            const product = productsDB.find(p => p.Barcode == code || p.Barcode === code.toString());
+
+            idleView.style.display = 'none';
+            errorMsg.style.display = 'none';
+
+            if (product) {
+                playBeep('success');
+                
+                document.getElementById('res-img').src = product.Image_URL || 'https://via.placeholder.com/400?text=عثمان+ماركت';
+                document.getElementById('res-name').innerText = product.Name;
+                document.getElementById('res-price').innerText = product.Price;
+                
+                resultView.style.display = 'flex';
+
+                // إرجاع الشاشة بعد 6 ثواني (زودنا ثانية عشان يلحق يقرأ الرسالة)
+                resetTimer = setTimeout(() => {
+                    resultView.style.display = 'none';
+                    idleView.style.display = 'flex';
+                }, 6000);
+
+            } else {
+                playBeep('error');
+                errorMsg.style.display = 'block';
+
+                resetTimer = setTimeout(() => {
+                    errorMsg.style.display = 'none';
+                    idleView.style.display = 'flex';
+                }, 3000);
+            }
+        }
+
+        // الحفاظ على تركيز الماوس في الحقل المخفي
+        document.body.addEventListener('click', () => {
+            scannerInput.focus();
+        });
+
+        window.onload = loadDatabase;
+    </script>
+</body>
+</html>
