@@ -290,7 +290,7 @@
 
     <script>
         // رابط الـ API الخاص بـ عثمان ماركت
-        const API_URL = "https://script.google.com/macros/s/AKfycbxn1gu6tR9qVx_lLsQ4O9Iq6_967rLBt4tNb3MtKvbEfA1mDSM8dx4VnmRk7o94jh6tIw/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbwTWS2JcbL3ZXf_HmklDC-RilV27rIuMFlZU8ioVCKHoILM3OEKtuPFgqjjJ_v_Gwrw_Q/exec";
         
         let productsDB = []; // ذاكرة المنتجات المحلية
         let cart = []; // سلة الفاتورة الحالية
@@ -474,14 +474,63 @@
         }
 
         // 6. إصدار الفاتورة
-        function processPayment() {
+      // 6. إصدار الفاتورة (حفظ في جوجل شيت أو محلياً عند انقطاع النت)
+        async function processPayment() {
             if (cart.length === 0) {
                 alert("الفاتورة فارغة!");
                 barcodeInput.focus();
                 return;
             }
-            
-            alert("تم إغلاق الفاتورة بنجاح وتصفير الكاشير للعميل التالي.");
+
+            let grandTotal = cart.reduce((sum, item) => sum + (parseFloat(item.Price) * item.qty), 0);
+            const paidInput = document.getElementById('amount-paid').value;
+            const paid = paidInput === "" ? 0 : parseFloat(paidInput);
+
+            if (paid < grandTotal) {
+                alert("المبلغ المدفوع أقل من الإجمالي! برجاء التحصيل الصحيح.");
+                return;
+            }
+
+            // تحضير بيانات الفاتورة
+            const invoiceData = {
+                action: 'saveSale',
+                invoice_id: 'INV-' + Date.now(), // رقم فاتورة فريد
+                cashier_id: 'أحمد سعيد',
+                items: cart,
+                total: grandTotal,
+                paid: paid,
+                change: paid - grandTotal
+            };
+
+            // تغيير شكل الزرار أثناء التحميل
+            const btn = document.querySelector('.btn-pay[onclick="processPayment()"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+            btn.disabled = true;
+
+            try {
+                // إرسال البيانات للـ API
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(invoiceData)
+                });
+                
+                const result = await response.json();
+
+                if(result.status === 'success') {
+                    alert("تم حفظ الفاتورة بنجاح في الدفاتر وخصم المنتجات من المخزن!");
+                } else {
+                    alert("حدث خطأ أثناء الحفظ: " + result.message);
+                }
+            } catch (error) {
+                // ميزة الأوفلاين: لو النت قاطع، احفظ الفاتورة على الجهاز
+                let offlineSales = JSON.parse(localStorage.getItem('offline_sales') || '[]');
+                offlineSales.push(invoiceData);
+                localStorage.setItem('offline_sales', JSON.stringify(offlineSales));
+                alert("أنت أوفلاين الآن. تم حفظ الفاتورة على الجهاز وسيتم ترحيلها فور عودة الإنترنت!");
+            }
+
+            // تصفير الكاشير للعميل الجديد
             cart = [];
             document.getElementById('amount-paid').value = '';
             updateCartUI();
@@ -490,24 +539,14 @@
                 <tr>
                     <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 40px;">
                         <i class="fas fa-barcode" style="font-size: 3rem; margin-bottom: 10px; opacity: 0.3;"></i>
-                        <p>النظام جاهز! اضرب الباركود الآن...</p>
+                        <p>تم الإغلاق بنجاح. النظام جاهز للباركود الجديد...</p>
                     </td>
                 </tr>`;
+                
+            btn.innerHTML = originalText;
+            btn.disabled = false;
             barcodeInput.focus();
         }
-
-        // تهيئة النظام عند الفتح
-        window.onload = () => {
-            updateConnectionStatus();
-            loadProducts();
-            barcodeInput.focus();
-        };
-        
-        // إبقاء التركيز على الباركود
-        document.body.addEventListener('click', function(e) {
-            if(e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
-                barcodeInput.focus();
-            }
         });
     </script>
 </body>
