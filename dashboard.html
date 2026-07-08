@@ -1,398 +1,359 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" class="light">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إمبراطورية التوفير - الكاشير الاحترافي</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
+    <title>OSSMAN MARKET - لوحة النظام</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #f1f5f9; overflow: hidden; }
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        :root {
+            --bg-dark: #1E1E2D; /* لون السايدبار الداكن */
+            --bg-light: #F3F6F9; /* لون الخلفية */
+            --card-bg: #FFFFFF;
+            --primary: #3699FF; /* أزرق مريح للعين */
+            --success: #1BC5BD; /* أخضر للنجاح والدفع */
+            --danger: #F64E60; /* أحمر للحذف */
+            --text-main: #3F4254;
+            --text-muted: #B5B5C3;
+            --border: #EBEDF3;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
         
-        /* إخفاء الأسهم في حقل الأرقام */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        body { background-color: var(--bg-light); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+
+        /* القائمة الجانبية للموظفين */
+        .sidebar {
+            width: 250px;
+            background-color: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .brand {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: 1px;
+        }
+
+        .nav-menu { list-style: none; padding: 20px 0; flex: 1; }
+        
+        .nav-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            gap: 15px;
+            transition: 0.2s;
+        }
+
+        .nav-menu li.active a, .nav-menu li a:hover {
+            background-color: rgba(255,255,255,0.05);
+            color: var(--primary);
+            border-right: 4px solid var(--primary);
+        }
+
+        /* منطقة العمل (شاشة الكاشير) */
+        .workspace { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* الهيدر العلوي */
+        .top-header {
+            background: var(--card-bg);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .status-badge {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-online { background-color: #D1F3E0; color: #0A7C43; }
+        .status-offline { background-color: #FFE2E5; color: #F64E60; }
+
+        /* تخطيط الكاشير (Grid) */
+        .pos-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            height: calc(100vh - 70px);
+        }
+
+        /* الجانب الأيمن (المنتجات والباركود) */
+        .pos-left { display: flex; flex-direction: column; gap: 20px; }
+
+        .barcode-section {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.03);
+            display: flex;
+            gap: 15px;
+        }
+
+        .barcode-input {
+            flex: 1;
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .barcode-input:focus { border-color: var(--primary); }
+
+        .cart-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.03);
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .cart-table { width: 100%; border-collapse: collapse; }
+        .cart-table th { background: var(--bg-light); padding: 15px; text-align: right; color: var(--text-muted); font-weight: 600; position: sticky; top: 0; }
+        .cart-table td { padding: 15px; border-bottom: 1px solid var(--border); font-weight: 500; }
+        
+        .qty-control { display: flex; align-items: center; gap: 10px; }
+        .qty-btn { width: 30px; height: 30px; border-radius: 5px; border: none; background: var(--bg-light); cursor: pointer; font-weight: bold; }
+        .qty-btn:hover { background: var(--border); }
+
+        /* الجانب الأيسر (الحسابات والدفع) */
+        .pos-right {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.03);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .totals-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 1.1rem; }
+        .totals-row.grand-total { font-size: 1.8rem; font-weight: 800; color: var(--primary); border-top: 2px dashed var(--border); padding-top: 15px; margin-top: 10px; }
+
+        .calc-section { margin-top: auto; }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-muted); }
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            outline: none;
+            color: var(--text-main);
+        }
+        .input-group input:focus { border-color: var(--success); }
+
+        .change-box {
+            background: #F3F6F9;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .change-box span { display: block; font-size: 1rem; color: var(--text-muted); }
+        .change-box h3 { font-size: 2rem; color: var(--danger); margin-top: 5px; }
+
+        .btn-pay {
+            width: 100%;
+            padding: 20px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-pay:hover { background: #18a9a2; }
+
     </style>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: { colors: { brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' } } }
-            }
-        }
-    </script>
 </head>
-<body class="text-slate-800 h-screen w-screen flex flex-col">
+<body>
 
-    <!-- شاشة تسجيل الدخول -->
-    <div id="loginScreen" class="absolute inset-0 z-[100] bg-[#1e3a8a] flex items-center justify-center p-4 transition-opacity duration-500">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center">
-            <img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" alt="Logo" class="w-20 h-20 mx-auto rounded-xl shadow-sm border border-slate-100 mb-4">
-            <h2 class="text-xl font-black text-brand-700 mb-6">تسجيل الدخول للنظام</h2>
-            <div class="space-y-4 text-right">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">المستخدم</label>
-                    <input type="text" id="usernameInput" placeholder="admin" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:border-brand-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">الرقم السري</label>
-                    <input type="password" id="passwordInput" placeholder="123" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:border-brand-500 outline-none">
-                </div>
-                <button onclick="handleLogin()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 rounded-lg transition mt-2">دخول</button>
-            </div>
-        </div>
-    </div>
+    <aside class="sidebar">
+        <div class="brand">OSSMAN<br><span style="font-size: 1rem; color: var(--primary);">SYSTEMS</span></div>
+        <ul class="nav-menu">
+            <li class="active"><a href="#"><i class="fas fa-desktop"></i> شاشة الكاشير (POS)</a></li>
+            <li><a href="#"><i class="fas fa-box-open"></i> إدارة المخازن</a></li>
+            <li><a href="#"><i class="fas fa-truck"></i> طلبات الدليفري</a></li>
+            <li><a href="#"><i class="fas fa-file-invoice-dollar"></i> الحسابات والمبيعات</a></li>
+            <li><a href="#"><i class="fas fa-users-cog"></i> صلاحيات الموظفين</a></li>
+        </ul>
+    </aside>
 
-    <!-- الهيدر العلوي (شريط رفيع) -->
-    <header class="bg-white border-b border-slate-200 h-14 flex items-center justify-between px-4 shrink-0 shadow-sm z-20">
-        <div class="flex items-center gap-3">
-            <img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" class="h-8 w-8 rounded object-cover border border-slate-200">
-            <h1 class="font-black text-brand-700">إمبراطورية التوفير</h1>
-        </div>
-        <div class="flex items-center gap-4">
-            <div class="flex items-center gap-2 bg-emerald-50 text-emerald-600 px-3 py-1 rounded text-xs font-bold border border-emerald-100">
-                <span class="h-2 w-2 rounded-full bg-emerald-500"></span> متصل
-            </div>
-            <div class="flex items-center gap-2 border-r border-slate-200 pr-4">
-                <div class="text-right">
-                    <p id="loggedUserName" class="text-xs font-bold text-slate-700">أدمن</p>
-                    <p id="loggedUserRole" class="text-[9px] text-brand-600 bg-brand-50 inline-block px-1 rounded">مدير</p>
-                </div>
-                <button onclick="logout()" class="text-slate-400 hover:text-rose-500 ml-1"><i class="fa-solid fa-right-from-bracket"></i></button>
-            </div>
-        </div>
-    </header>
-
-    <div class="flex flex-1 overflow-hidden">
+    <main class="workspace">
         
-        <!-- القائمة الجانبية المدمجة (أيقونات فقط أو نص صغير) -->
-        <aside class="w-20 bg-brand-900 flex flex-col items-center py-4 shadow-inner z-10 shrink-0">
-            <nav class="w-full space-y-2 px-2" id="sideNav">
-                <button onclick="switchTab('pos')" id="nav-pos" class="nav-btn w-full flex flex-col items-center gap-1 p-3 rounded-xl bg-brand-600 text-white transition">
-                    <i class="fa-solid fa-calculator text-xl"></i><span class="text-[10px] font-bold">الكاشير</span>
-                </button>
-                <button onclick="switchTab('inventory')" id="nav-inventory" class="nav-btn w-full flex flex-col items-center gap-1 p-3 rounded-xl text-brand-200 hover:bg-brand-800 transition">
-                    <i class="fa-solid fa-box-open text-xl"></i><span class="text-[10px] font-bold">المخزن</span>
-                </button>
-                <button onclick="switchTab('sales')" id="nav-sales" class="nav-btn w-full flex flex-col items-center gap-1 p-3 rounded-xl text-brand-200 hover:bg-brand-800 transition">
-                    <i class="fa-solid fa-chart-pie text-xl"></i><span class="text-[10px] font-bold">التقارير</span>
-                </button>
-                <button onclick="switchTab('permissions')" id="nav-permissions" class="nav-btn w-full flex flex-col items-center gap-1 p-3 rounded-xl text-brand-200 hover:bg-brand-800 transition">
-                    <i class="fa-solid fa-users-gear text-xl"></i><span class="text-[10px] font-bold">الموظفين</span>
-                </button>
-            </nav>
-        </aside>
+        <header class="top-header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <h2 style="font-size: 1.4rem;">شاشة المبيعات (نقطة البيع)</h2>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="status-badge status-online" id="connection-status">
+                    <i class="fas fa-wifi"></i> متصل (Online)
+                </div>
+                <div style="text-align: left; line-height: 1.2;">
+                    <strong style="display: block;">الكاشير: أحمد سعيد</strong>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">رقم الوردية: #4092</span>
+                </div>
+            </div>
+        </header>
 
-        <!-- منطقة العمل الرئيسية -->
-        <main class="flex-1 bg-slate-100 p-2 md:p-4 overflow-hidden relative">
+        <div class="pos-container">
             
-            <!-- ================== شاشة الكاشير (POS Layout الحقيقي) ================== -->
-            <div id="tab-pos" class="tab-content h-full flex flex-col md:flex-row gap-4">
-                
-                <!-- الجزء الأيمن: الفاتورة (35% من الشاشة) -->
-                <div class="w-full md:w-[35%] bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden shrink-0">
-                    <!-- هيدر الفاتورة و الاسكانر -->
-                    <div class="p-3 bg-slate-50 border-b border-slate-200">
-                        <div class="relative">
-                            <i class="fa-solid fa-barcode absolute right-3 top-2.5 text-brand-500"></i>
-                            <input type="text" id="barcodeScanner" placeholder="باركود..." class="w-full pl-3 pr-10 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:border-brand-500 outline-none font-mono" onkeypress="if(event.key === 'Enter') handleBarcodeScan()">
-                        </div>
-                    </div>
-                    
-                    <!-- رأس الجدول -->
-                    <div class="flex justify-between items-center px-3 py-2 bg-slate-100 text-[11px] font-bold text-slate-500 border-b">
-                        <span class="w-1/2">الصنف</span>
-                        <span class="w-1/6 text-center">الكمية</span>
-                        <span class="w-1/3 text-left">القيمة</span>
-                    </div>
-
-                    <!-- قائمة المشتريات -->
-                    <div id="posCart" class="flex-1 overflow-y-auto p-2 bg-white space-y-1">
-                        <div class="h-full flex flex-col items-center justify-center text-slate-300">
-                            <i class="fa-solid fa-basket-shopping text-5xl mb-2"></i>
-                            <p class="text-xs">الفاتورة فارغة</p>
-                        </div>
-                    </div>
-
-                    <!-- منطقة الدفع (مضغوطة واحترافية) -->
-                    <div class="bg-slate-50 border-t border-slate-200 p-3 space-y-3">
-                        <!-- الإجمالي -->
-                        <div class="flex justify-between items-center bg-brand-50 border border-brand-100 p-2 rounded-lg">
-                            <span class="text-brand-700 font-bold text-sm">الإجمالي المطلوب:</span>
-                            <span class="text-2xl font-black text-brand-600 font-mono" id="posTotal">0.00</span>
-                        </div>
-                        
-                        <!-- المدفوع والباقي -->
-                        <div class="flex gap-2">
-                            <div class="flex-1 relative">
-                                <span class="absolute right-2 top-2 text-[10px] text-slate-400 font-bold">المدفوع</span>
-                                <input type="number" id="posPaid" oninput="calculateChange()" class="w-full bg-white border border-slate-300 rounded-lg pt-6 pb-2 px-2 text-lg font-black text-center focus:border-brand-500 outline-none font-mono">
-                            </div>
-                            <div class="flex-1 relative bg-slate-200 rounded-lg border border-slate-300">
-                                <span class="absolute right-2 top-2 text-[10px] text-slate-500 font-bold">الباقي</span>
-                                <div class="pt-6 pb-2 px-2 text-lg font-black text-center text-slate-700 font-mono" id="posChange">0.00</div>
-                            </div>
-                        </div>
-
-                        <!-- الدليفري والترحيل -->
-                        <div class="flex items-center gap-2 border-t border-slate-200 pt-3">
-                            <label class="flex items-center gap-1.5 bg-white border border-slate-200 px-2 py-2.5 rounded-lg cursor-pointer hover:bg-slate-50 text-xs font-bold text-slate-600">
-                                <input type="checkbox" id="isDelivery" class="accent-brand-600 w-4 h-4"> دليفري
-                            </label>
-                            <input type="text" id="deliveryName" placeholder="الكابتن (اختياري)" class="w-24 bg-white border border-slate-200 rounded-lg px-2 text-xs outline-none focus:border-brand-500 hidden md:block">
-                            <button onclick="checkoutOrder()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-black py-2.5 rounded-lg shadow transition flex items-center justify-center gap-2 text-sm">
-                                <i class="fa-solid fa-print"></i> دفع وترحيل
-                            </button>
-                        </div>
-                    </div>
+            <div class="pos-left">
+                <div class="barcode-section">
+                    <input type="text" class="barcode-input" id="barcode-scanner" placeholder="اضرب الباركود هنا أو اكتب رقم المنتج..." autofocus>
+                    <button class="btn-pay" style="width: auto; padding: 0 30px; font-size: 1.2rem; background: var(--primary);" onclick="scanBarcode()">إضافة</button>
                 </div>
-                
-                <!-- الجزء الأيسر: المنتجات السريعة (65% من الشاشة) -->
-                <div class="w-full md:w-[65%] bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden">
-                    <div class="p-3 bg-brand-600 text-white flex justify-between items-center shrink-0">
-                        <span class="font-bold text-sm"><i class="fa-solid fa-border-all mr-1"></i> المنتجات والأقسام</span>
-                        <div class="flex gap-1">
-                            <button class="bg-brand-700 px-2 py-1 rounded text-xs font-bold hover:bg-brand-800">الكل</button>
-                            <button class="bg-brand-500 px-2 py-1 rounded text-xs font-bold hover:bg-brand-800">مشروبات</button>
-                            <button class="bg-brand-500 px-2 py-1 rounded text-xs font-bold hover:bg-brand-800">أجبان</button>
-                        </div>
-                    </div>
-                    
-                    <!-- شبكة المنتجات -->
-                    <div class="flex-1 p-3 overflow-y-auto bg-slate-50">
-                        <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3" id="quickProductsGrid">
-                            <!-- سيتم التعبئة بـ JS -->
-                        </div>
-                    </div>
+
+                <div class="cart-section">
+                    <table class="cart-table">
+                        <thead>
+                            <tr>
+                                <th>المنتج</th>
+                                <th>السعر</th>
+                                <th>الكمية</th>
+                                <th>الإجمالي</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="cart-items">
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                                    <i class="fas fa-barcode" style="font-size: 3rem; margin-bottom: 10px; opacity: 0.3;"></i>
+                                    <p>في انتظار سحب المنتجات بالاسكانر...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- ================== باقي الشاشات (مبسطة لعدم تكرار الكود الطويل جداً مع الاحتفاظ بوظيفتها) ================== -->
-            
-            <div id="tab-inventory" class="tab-content hidden h-full overflow-y-auto">
-                <div class="bg-white rounded-xl shadow-sm border p-6">
-                    <h2 class="text-lg font-bold text-brand-700 mb-4">المخزن</h2>
-                    <div class="grid grid-cols-4 gap-4 mb-4">
-                        <input type="text" id="invName" placeholder="الاسم" class="border p-2 rounded-lg text-sm">
-                        <input type="text" id="invBarcode" placeholder="الباركود" class="border p-2 rounded-lg text-sm">
-                        <input type="number" id="invPrice" placeholder="السعر" class="border p-2 rounded-lg text-sm">
-                        <button onclick="addNewProduct()" class="bg-brand-600 text-white rounded-lg font-bold text-sm">إضافة</button>
+            <div class="pos-right">
+                <div class="totals-row">
+                    <span>عدد العناصر:</span>
+                    <strong id="items-count">0</strong>
+                </div>
+                <div class="totals-row">
+                    <span>الضريبة (0%):</span>
+                    <strong>0.00 ج.م</strong>
+                </div>
+                <div class="totals-row grand-total">
+                    <span>الإجمالي:</span>
+                    <strong id="grand-total">0.00 ج.م</strong>
+                </div>
+
+                <div class="calc-section">
+                    <div class="input-group">
+                        <label>المبلغ المدفوع من العميل (ج.م):</label>
+                        <input type="number" id="amount-paid" placeholder="0.00" oninput="calculateChange()">
                     </div>
-                    <table class="w-full text-right text-sm border"><thead class="bg-slate-50"><tr class="border-b"><th class="p-2">المنتج</th><th class="p-2">الباركود</th><th class="p-2">السعر</th><th class="p-2">الرصيد</th></tr></thead><tbody id="inventoryTableBody" class="divide-y"></tbody></table>
+
+                    <div class="change-box">
+                        <span>الباقي للعميل</span>
+                        <h3 id="amount-change">0.00 ج.م</h3>
+                    </div>
+
+                    <button class="btn-pay" onclick="processPayment()">
+                        <i class="fas fa-print"></i> إصدار الفاتورة
+                    </button>
                 </div>
             </div>
 
-            <div id="tab-sales" class="tab-content hidden h-full overflow-y-auto space-y-4">
-                <div class="grid grid-cols-3 gap-4">
-                    <div class="bg-brand-600 text-white p-4 rounded-xl shadow"><p class="text-xs opacity-80">إيرادات اليوم</p><p class="text-2xl font-black font-mono" id="totalSalesRevenue">0.00</p></div>
-                    <div class="bg-white border p-4 rounded-xl shadow-sm"><p class="text-xs text-slate-500">الفواتير</p><p class="text-2xl font-black text-brand-600 font-mono" id="totalOrdersCount">0</p></div>
-                    <div class="bg-white border p-4 rounded-xl shadow-sm"><p class="text-xs text-slate-500">الدليفري</p><p class="text-2xl font-black text-emerald-500 font-mono" id="totalDeliveryCount">0</p></div>
-                </div>
-                <div class="bg-white border rounded-xl p-4">
-                    <h3 class="font-bold text-sm mb-3">سجل الفواتير</h3>
-                    <table class="w-full text-right text-sm border-t"><thead class="bg-slate-50"><tr class="border-b"><th class="p-2">رقم</th><th class="p-2">كاشير</th><th class="p-2">النوع</th><th class="p-2">القيمة</th></tr></thead><tbody id="salesTableBody" class="divide-y"></tbody></table>
-                </div>
-            </div>
+        </div>
+    </main>
 
-            <div id="tab-permissions" class="tab-content hidden h-full overflow-y-auto">
-                <div class="bg-white rounded-xl shadow-sm border p-6">
-                    <h2 class="text-lg font-bold text-brand-700 mb-4">الموظفين والصلاحيات</h2>
-                    <table class="w-full text-right text-sm border-t"><thead class="bg-slate-50"><tr class="border-b"><th class="p-2">اليوزر</th><th class="p-2">الاسم</th><th class="p-2">الرتبة</th></tr></thead><tbody id="staffTableBody" class="divide-y"></tbody></table>
-                </div>
-            </div>
-
-        </main>
-    </div>
-
-    <!-- كود الجافاسكريبت المطور -->
     <script>
-        let usersDB = [
-            { username: 'admin', pass: '123', name: 'أدمن', roleText: 'مدير عام', perms: ['pos', 'inventory', 'sales', 'permissions'] },
-            { username: 'cashier', pass: '123', name: 'حازم', roleText: 'كاشير', perms: ['pos'] }
-        ];
+        // دالة لاكتشاف حالة الإنترنت (أونلاين / أوفلاين)
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
 
-        let currentUser = null;
-        
-        function handleLogin() {
-            let user = document.getElementById('usernameInput').value.trim();
-            let pass = document.getElementById('passwordInput').value.trim();
-            let match = usersDB.find(u => u.username === user && u.pass === pass);
-            
-            if(match) {
-                currentUser = match;
-                document.getElementById('loginScreen').style.opacity = '0';
-                setTimeout(() => { document.getElementById('loginScreen').style.display = 'none'; }, 500);
-                
-                document.getElementById('loggedUserName').innerText = currentUser.name;
-                document.getElementById('loggedUserRole').innerText = currentUser.roleText;
-                
-                // تظبيط القائمة الجانبية بطريقة آمنة
-                document.querySelectorAll('.nav-btn').forEach(btn => btn.style.display = 'none');
-                let firstTab = null;
-                currentUser.perms.forEach(p => {
-                    let btn = document.getElementById('nav-' + p);
-                    if(btn) { btn.style.display = 'flex'; if(!firstTab) firstTab = p; }
-                });
-                
-                if(firstTab) switchTab(firstTab);
-                loadProducts();
-                renderStaffTable();
+        function updateConnectionStatus() {
+            const statusBadge = document.getElementById('connection-status');
+            if (navigator.onLine) {
+                statusBadge.className = 'status-badge status-online';
+                statusBadge.innerHTML = '<i class="fas fa-wifi"></i> متصل (Online)';
+                // هنا مستقبلاً هنحط كود يعمل Sync للفواتير اللي اتخزنت أوفلاين
             } else {
-                alert("بيانات غير صحيحة!");
+                statusBadge.className = 'status-badge status-offline';
+                statusBadge.innerHTML = '<i class="fas fa-plane-slash"></i> أوفلاين (سيتم الحفظ محلياً)';
             }
         }
 
-        function logout() {
-            document.getElementById('loginScreen').style.display = 'flex';
-            setTimeout(() => { document.getElementById('loginScreen').style.opacity = '1'; }, 50);
-            currentUser = null;
-        }
+        // الكود المبدئي للباركود (محاكاة عشان نجرب الشكل)
+        const barcodeInput = document.getElementById('barcode-scanner');
+        
+        // الاسكانر بيكتب الرقم وبعدين يضغط Enter أوتوماتيك
+        barcodeInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                scanBarcode();
+            }
+        });
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-            document.getElementById('tab-' + tabId).style.display = 'flex';
+        function scanBarcode() {
+            const code = barcodeInput.value;
+            if(!code) return;
             
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-brand-600', 'text-white');
-                btn.classList.add('text-brand-200');
-            });
-            let btn = document.getElementById('nav-' + tabId);
-            if(btn) {
-                btn.classList.add('bg-brand-600', 'text-white');
-                btn.classList.remove('text-brand-200');
-            }
-            if(tabId === 'sales') updateSalesDashboard();
-        }
-
-        let databaseProducts = [
-            { barcode: '101', name: 'شيبسي عائلي', price: 15.00, stock: 50 },
-            { barcode: '102', name: 'مياه نستله 1.5L', price: 8.00, stock: 120 },
-            { barcode: '103', name: 'جبنة فيتا 500g', price: 45.00, stock: 30 },
-            { barcode: '104', name: 'نسكافيه بلاك', price: 85.00, stock: 15 },
-            { barcode: '105', name: 'عصير جهينة', price: 12.00, stock: 60 },
-            { barcode: '106', name: 'شوكولاتة جلاكسي', price: 25.00, stock: 40 }
-        ];
-
-        function loadProducts() { renderInventory(); renderQuickPOS(); }
-
-        function renderInventory() {
-            const tbody = document.getElementById('inventoryTableBody');
-            tbody.innerHTML = '';
-            databaseProducts.forEach(p => {
-                tbody.innerHTML += `<tr><td class="p-2 font-bold">${p.name}</td><td class="p-2 font-mono">${p.barcode}</td><td class="p-2 text-brand-600">${p.price}</td><td class="p-2">${p.stock}</td></tr>`;
-            });
-        }
-
-        function addNewProduct() {
-            let name = document.getElementById('invName').value; let barcode = document.getElementById('invBarcode').value;
-            let price = parseFloat(document.getElementById('invPrice').value); let stock = parseInt(document.getElementById('invStock').value) || 0;
-            if(!name || !barcode) return;
-            databaseProducts.unshift({ name, barcode, price, stock }); renderInventory(); renderQuickPOS();
-            document.getElementById('invName').value = ''; document.getElementById('invBarcode').value = ''; document.getElementById('invPrice').value = '';
-        }
-
-        let posCart = [];
-        let salesHistory = [];
-
-        function renderQuickPOS() {
-            const grid = document.getElementById('quickProductsGrid');
-            grid.innerHTML = '';
-            databaseProducts.forEach(p => {
-                grid.innerHTML += `
-                    <button onclick="addToPOS('${p.barcode}')" class="bg-white border border-slate-200 hover:border-brand-500 rounded-lg p-2 flex flex-col justify-between aspect-square transition shadow-sm hover:shadow">
-                        <span class="text-xs font-bold text-slate-700 leading-tight text-right line-clamp-2">${p.name}</span>
-                        <span class="text-sm font-black text-brand-600 text-left w-full">${p.price} ج</span>
-                    </button>`;
-            });
-        }
-
-        function handleBarcodeScan() {
-            const input = document.getElementById('barcodeScanner');
-            if(input.value) { addToPOS(input.value.trim()); input.value = ''; }
-        }
-
-        function addToPOS(barcode) {
-            let p = databaseProducts.find(p => p.barcode === barcode);
-            if(!p) return alert("غير مسجل!");
-            let exist = posCart.find(i => i.barcode === barcode);
-            if(exist) exist.qty++; else posCart.push({ ...p, qty: 1 });
-            updatePOSUI();
-        }
-
-        function changePosQty(barcode, change) {
-            let item = posCart.find(i => i.barcode === barcode);
-            if(item) { item.qty += change; if(item.qty <= 0) posCart = posCart.filter(i => i.barcode !== barcode); }
-            updatePOSUI();
-        }
-
-        function updatePOSUI() {
-            const cartDiv = document.getElementById('posCart');
-            if(posCart.length === 0) {
-                cartDiv.innerHTML = '<div class="h-full flex flex-col items-center justify-center text-slate-300"><i class="fa-solid fa-basket-shopping text-5xl mb-2"></i><p class="text-xs">الفاتورة فارغة</p></div>';
-                document.getElementById('posTotal').innerText = "0.00"; calculateChange(); return;
-            }
-            cartDiv.innerHTML = ''; let total = 0;
-            posCart.forEach(item => {
-                let sub = item.price * item.qty; total += sub;
-                cartDiv.innerHTML += `
-                    <div class="flex justify-between items-center bg-white border border-slate-100 p-2 rounded shadow-sm text-sm">
-                        <div class="w-1/2 min-w-0 pr-1"><p class="font-bold truncate text-slate-700 text-xs">${item.name}</p><p class="text-[9px] text-slate-400 font-mono">${item.price}</p></div>
-                        <div class="w-1/4 flex justify-center">
-                            <div class="flex items-center bg-slate-100 rounded border border-slate-200">
-                                <button onclick="changePosQty('${item.barcode}', 1)" class="w-5 h-5 text-brand-600 font-bold">+</button>
-                                <span class="w-5 text-center text-[10px] font-bold bg-white">${item.qty}</span>
-                                <button onclick="changePosQty('${item.barcode}', -1)" class="w-5 h-5 text-rose-500 font-bold">-</button>
-                            </div>
-                        </div>
-                        <div class="w-1/4 text-left font-black text-brand-600 font-mono text-xs">${sub.toFixed(2)}</div>
-                    </div>`;
-            });
-            document.getElementById('posTotal').innerText = total.toFixed(2); calculateChange();
+            // مستقبلاً: هنا الكود هيروح يدور في قاعدة البيانات المحلية أو الـ API على المنتج ده
+            alert(`تم ضرب الباركود رقم: ${code} \n(جاري العمل على ربطه بقاعدة البيانات في الخطوة القادمة)`);
+            
+            barcodeInput.value = '';
+            barcodeInput.focus(); // يرجع الماوس تاني جاهز للاسكانر اللي بعده
         }
 
         function calculateChange() {
-            let total = parseFloat(document.getElementById('posTotal').innerText) || 0;
-            let paid = parseFloat(document.getElementById('posPaid').value) || 0;
-            let changeDiv = document.getElementById('posChange');
-            if(paid >= total && total > 0) { changeDiv.innerText = (paid - total).toFixed(2); changeDiv.classList.add('text-emerald-600'); }
-            else { changeDiv.innerText = "0.00"; changeDiv.classList.remove('text-emerald-600'); }
-        }
-
-        function checkoutOrder() {
-            if(posCart.length === 0) return;
-            let total = parseFloat(document.getElementById('posTotal').innerText);
-            let paid = parseFloat(document.getElementById('posPaid').value) || 0;
-            if(paid < total) return alert("المبلغ المدفوع غير كافٍ!");
-
-            let isDel = document.getElementById('isDelivery').checked;
-            salesHistory.unshift({ num: Math.floor(1000 + Math.random()*9000), cashier: currentUser.name, type: isDel ? 'دليفري' : 'كاشير', total: total });
+            const total = 0; // هيتم سحبها من الكارت
+            const paid = parseFloat(document.getElementById('amount-paid').value) || 0;
+            const change = paid - total;
             
-            posCart = []; document.getElementById('posPaid').value = ''; document.getElementById('isDelivery').checked = false; document.getElementById('deliveryName').value = '';
-            updatePOSUI(); updateSalesDashboard();
+            const changeDisplay = document.getElementById('amount-change');
+            if(change >= 0) {
+                changeDisplay.innerText = change.toFixed(2) + ' ج.م';
+                changeDisplay.style.color = 'var(--success)';
+            } else {
+                changeDisplay.innerText = 'المبلغ غير كافٍ';
+                changeDisplay.style.color = 'var(--danger)';
+            }
         }
 
-        function updateSalesDashboard() {
-            let tot = salesHistory.reduce((s, o) => s + o.total, 0);
-            let delCount = salesHistory.filter(o => o.type === 'دليفري').length;
-            document.getElementById('totalSalesRevenue').innerText = tot.toFixed(2);
-            document.getElementById('totalOrdersCount').innerText = salesHistory.length;
-            document.getElementById('totalDeliveryCount').innerText = delCount;
-            
-            let tbody = document.getElementById('salesTableBody'); tbody.innerHTML = '';
-            salesHistory.forEach(o => { tbody.innerHTML += `<tr><td class="p-2 font-mono">#${o.num}</td><td class="p-2">${o.cashier}</td><td class="p-2">${o.type}</td><td class="p-2 font-bold text-brand-600">${o.total.toFixed(2)} ج</td></tr>`; });
+        function processPayment() {
+            alert("تم طباعة الفاتورة وحفظها في الحسابات بنجاح!");
         }
 
-        function renderStaffTable() {
-            let tbody = document.getElementById('staffTableBody'); tbody.innerHTML = '';
-            usersDB.forEach(u => { tbody.innerHTML += `<tr><td class="p-2 font-mono">@${u.username}</td><td class="p-2 font-bold">${u.name}</td><td class="p-2"><span class="bg-slate-100 px-2 py-1 rounded text-xs">${u.roleText}</span></td></tr>`; });
-        }
+        // التركيز التلقائي على خانة الباركود أول ما الصفحة تفتح
+        window.onload = () => {
+            barcodeInput.focus();
+            updateConnectionStatus();
+        };
     </script>
 </body>
 </html>
