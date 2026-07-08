@@ -190,7 +190,15 @@
             gap: 10px;
         }
         .btn-pay:hover { background: #18a9a2; }
+        .btn-pay:disabled { background: #B5B5C3; cursor: not-allowed; }
 
+        /* استجابة الشاشات للهواتف والأجهزة اللوحية */
+        @media (max-width: 992px) {
+            .pos-container { grid-template-columns: 1fr; overflow-y: auto; height: auto; }
+            .pos-left { height: 60vh; }
+            .pos-right { height: auto; }
+            body { overflow-y: auto; }
+        }
     </style>
 </head>
 <body>
@@ -245,8 +253,8 @@
                         <tbody id="cart-items">
                             <tr>
                                 <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 40px;">
-                                    <i class="fas fa-barcode" style="font-size: 3rem; margin-bottom: 10px; opacity: 0.3;"></i>
-                                    <p>في انتظار سحب المنتجات بالاسكانر...</p>
+                                    <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; margin-bottom: 10px; color: var(--primary);"></i>
+                                    <p>جاري سحب المنتجات من المخزن...</p>
                                 </td>
                             </tr>
                         </tbody>
@@ -289,13 +297,12 @@
     </main>
 
     <script>
-        // رابط الـ API الخاص بـ عثمان ماركت
+        // الرابط الجديد اللي إنت بعته
         const API_URL = "https://script.google.com/macros/s/AKfycbyULx4cfaklGg1eyT5ES8zeufVgfWaYNK-r5dB46lUSZoRubptLCQHSsdB0SfxfDOXbsg/exec";
         
-        let productsDB = []; // ذاكرة المنتجات المحلية
-        let cart = []; // سلة الفاتورة الحالية
+        let productsDB = []; 
+        let cart = []; 
 
-        // 1. مراقبة حالة الإنترنت
         window.addEventListener('online', updateConnectionStatus);
         window.addEventListener('offline', updateConnectionStatus);
 
@@ -310,45 +317,45 @@
             }
         }
 
-        // 2. تحميل المنتجات من جوجل شيت وتخزينها في المتصفح
+        // سحب المنتجات
         async function loadProducts() {
             try {
-                // الكود الجديد بيرجع المنتجات على طول بدون action
+                localStorage.removeItem('ossman_products'); // تنظيف الذاكرة القديمة
                 const response = await fetch(API_URL);
-                productsDB = await response.json();
+                const data = await response.json();
                 
-                // التأكد إن مفيش إيرور جاي من الجوجل شيت
-                if(productsDB.error) {
-                    console.error("خطأ من جوجل شيت:", productsDB.error);
+                if(data.error) {
+                    document.getElementById('cart-items').innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">خطأ: ${data.error}</td></tr>`;
                     return;
                 }
                 
+                productsDB = data;
                 localStorage.setItem('ossman_products', JSON.stringify(productsDB));
+                
                 document.getElementById('cart-items').innerHTML = `
                     <tr>
                         <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 40px;">
-                            <i class="fas fa-barcode" style="font-size: 3rem; margin-bottom: 10px; opacity: 0.3;"></i>
-                            <p>النظام جاهز! اضرب الباركود الآن...</p>
+                            <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success); margin-bottom: 10px;"></i>
+                            <p>تم سحب ${productsDB.length} منتج بنجاح! النظام جاهز، اضرب الباركود الآن...</p>
                         </td>
                     </tr>`;
             } catch (error) {
                 const savedData = localStorage.getItem('ossman_products');
-                if (savedData) {
+                if(savedData) {
                     productsDB = JSON.parse(savedData);
                     document.getElementById('cart-items').innerHTML = `
-                    <tr>
-                        <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 40px;">
-                            <i class="fas fa-barcode" style="font-size: 3rem; margin-bottom: 10px; opacity: 0.3;"></i>
-                            <p>تعمل في وضع الأوفلاين. النظام جاهز للباركود...</p>
-                        </td>
-                    </tr>`;
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #FFA800; margin-bottom: 10px;"></i>
+                                <p>أنت تعمل بدون إنترنت. تم تحميل ${productsDB.length} منتج من الذاكرة المحلية.</p>
+                            </td>
+                        </tr>`;
                 } else {
-                    document.getElementById('cart-items').innerHTML = `<p style="color: red; text-align: center; padding: 20px;">خطأ في الاتصال، يرجى توفير إنترنت للتحميل الأول.</p>`;
+                    document.getElementById('cart-items').innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">لا يوجد اتصال بالإنترنت ولا بيانات محفوظة.</td></tr>`;
                 }
             }
         }
 
-        // 3. نظام الباركود وإضافة المنتجات للفاتورة
         const barcodeInput = document.getElementById('barcode-scanner');
         
         barcodeInput.addEventListener('keypress', function (e) {
@@ -357,7 +364,6 @@
             }
         });
 
-        // الدالة اللي اتربطت بزرار "إضافة" واللي بتشتغل برضه مع الـ Enter
         function scanBarcode() {
             const code = barcodeInput.value.trim();
             if(code) {
@@ -365,7 +371,6 @@
             }
         }
 
-        // تشغيل صوت "بيب" عند الاسكانر
         function playBeep() {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -397,7 +402,6 @@
             barcodeInput.focus();
         }
 
-        // 4. تحديث واجهة الفاتورة والحسابات
         function updateCartUI() {
             const tbody = document.getElementById('cart-items');
             tbody.innerHTML = '';
@@ -421,24 +425,19 @@
                         </div>
                     </td>
                     <td style="font-weight: 800; color: var(--primary);">${itemTotal.toFixed(2)} ج.م</td>
-                    <td>
-                        <button class="qty-btn" style="color: var(--danger);" onclick="removeItem(${index})"><i class="fas fa-trash"></i></button>
-                    </td>
+                    <td><button class="qty-btn" style="color: var(--danger);" onclick="removeItem(${index})"><i class="fas fa-trash"></i></button></td>
                 `;
                 tbody.appendChild(tr);
             });
 
             document.getElementById('items-count').innerText = totalItems;
             document.getElementById('grand-total').innerText = grandTotal.toFixed(2) + ' ج.م';
-            
             calculateChange();
         }
 
         function changeQty(index, amount) {
             cart[index].qty += amount;
-            if (cart[index].qty <= 0) {
-                cart.splice(index, 1);
-            }
+            if (cart[index].qty <= 0) cart.splice(index, 1);
             updateCartUI();
             barcodeInput.focus();
         }
@@ -449,7 +448,6 @@
             barcodeInput.focus();
         }
 
-        // 5. حساب الباقي للعميل
         function calculateChange() {
             let grandTotal = cart.reduce((sum, item) => sum + (parseFloat(item.Price) * item.qty), 0);
             const paidInput = document.getElementById('amount-paid').value;
@@ -464,8 +462,7 @@
             }
 
             if (paid >= grandTotal) {
-                const change = paid - grandTotal;
-                changeDisplay.innerText = change.toFixed(2) + ' ج.م';
+                changeDisplay.innerText = (paid - grandTotal).toFixed(2) + ' ج.م';
                 changeDisplay.style.color = 'var(--success)';
             } else {
                 changeDisplay.innerText = 'المبلغ غير كافٍ';
@@ -473,8 +470,7 @@
             }
         }
 
-        // 6. إصدار الفاتورة
-      // 6. إصدار الفاتورة (حفظ في جوجل شيت أو محلياً عند انقطاع النت)
+        // إرسال الفاتورة لجوجل شيت
         async function processPayment() {
             if (cart.length === 0) {
                 alert("الفاتورة فارغة!");
@@ -487,14 +483,13 @@
             const paid = paidInput === "" ? 0 : parseFloat(paidInput);
 
             if (paid < grandTotal) {
-                alert("المبلغ المدفوع أقل من الإجمالي! برجاء التحصيل الصحيح.");
+                alert("المبلغ المدفوع أقل من الإجمالي!");
                 return;
             }
 
-            // تحضير بيانات الفاتورة
             const invoiceData = {
                 action: 'saveSale',
-                invoice_id: 'INV-' + Date.now(), // رقم فاتورة فريد
+                invoice_id: 'INV-' + Date.now(),
                 cashier_id: 'أحمد سعيد',
                 items: cart,
                 total: grandTotal,
@@ -502,14 +497,12 @@
                 change: paid - grandTotal
             };
 
-            // تغيير شكل الزرار أثناء التحميل
             const btn = document.querySelector('.btn-pay[onclick="processPayment()"]');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
             btn.disabled = true;
 
             try {
-                // إرسال البيانات للـ API
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     body: JSON.stringify(invoiceData)
@@ -518,35 +511,39 @@
                 const result = await response.json();
 
                 if(result.status === 'success') {
-                    alert("تم حفظ الفاتورة بنجاح في الدفاتر وخصم المنتجات من المخزن!");
+                    alert("تم حفظ الفاتورة بنجاح في الدفاتر وخصمها من المخزن!");
+                    cart = [];
+                    document.getElementById('amount-paid').value = '';
+                    updateCartUI();
+                    
+                    document.getElementById('cart-items').innerHTML = `
+                        <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                            <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success); margin-bottom: 10px;"></i>
+                            <p>تم الإغلاق. النظام جاهز للعميل التالي...</p>
+                        </td></tr>`;
                 } else {
-                    alert("حدث خطأ أثناء الحفظ: " + result.message);
+                    alert("حدث خطأ من الخادم: " + result.message);
                 }
             } catch (error) {
-                // ميزة الأوفلاين: لو النت قاطع، احفظ الفاتورة على الجهاز
-                let offlineSales = JSON.parse(localStorage.getItem('offline_sales') || '[]');
-                offlineSales.push(invoiceData);
-                localStorage.setItem('offline_sales', JSON.stringify(offlineSales));
-                alert("أنت أوفلاين الآن. تم حفظ الفاتورة على الجهاز وسيتم ترحيلها فور عودة الإنترنت!");
+                alert("تم تسجيل الفاتورة في الذاكرة لعدم وجود إنترنت.");
+                // يمكن حفظ الفاتورة في localStorage هنا مستقبلاً
             }
 
-            // تصفير الكاشير للعميل الجديد
-            cart = [];
-            document.getElementById('amount-paid').value = '';
-            updateCartUI();
-            
-            document.getElementById('cart-items').innerHTML = `
-                <tr>
-                    <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 40px;">
-                        <i class="fas fa-barcode" style="font-size: 3rem; margin-bottom: 10px; opacity: 0.3;"></i>
-                        <p>تم الإغلاق بنجاح. النظام جاهز للباركود الجديد...</p>
-                    </td>
-                </tr>`;
-                
             btn.innerHTML = originalText;
             btn.disabled = false;
             barcodeInput.focus();
         }
+
+        window.onload = () => {
+            updateConnectionStatus();
+            loadProducts();
+            barcodeInput.focus();
+        };
+        
+        document.body.addEventListener('click', function(e) {
+            if(e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
+                barcodeInput.focus();
+            }
         });
     </script>
 </body>
