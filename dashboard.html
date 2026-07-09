@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSSMAN MARKET -  لوحه النظام</title>
+    <title>OSSMAN MARKET - لوحة النظام</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -17,7 +17,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
         body { background-color: var(--bg-light); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; position: relative; }
 
-        /* شاشة تسجيل الدخول (Login Overlay) */
+        /* شاشة تسجيل الدخول */
         #login-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, var(--bg-dark), #112240); z-index: 9999; display: flex; justify-content: center; align-items: center; }
         .login-box { background: var(--card-bg); padding: 40px; border-radius: 20px; width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .login-box img { width: 100px; height: 100px; border-radius: 20px; border: 3px solid var(--primary); margin-bottom: 20px; }
@@ -34,7 +34,7 @@
         .brand-name { font-size: 1.3rem; font-weight: 900; }
         
         .nav-menu { list-style: none; padding: 20px 0; flex: 1; }
-        .nav-menu li { display: none; } /* مخفية افتراضياً حتى نتأكد من الصلاحية */
+        .nav-menu li { display: none; } 
         .nav-menu li a { display: flex; align-items: center; padding: 15px 25px; color: var(--text-muted); text-decoration: none; font-weight: 600; gap: 15px; cursor: pointer; transition: 0.3s; }
         .nav-menu li.active a, .nav-menu li a:hover { background-color: rgba(54,153,255,0.1); color: var(--primary); border-right: 4px solid var(--primary); }
 
@@ -44,12 +44,11 @@
         .status-online { background-color: #D1F3E0; color: #0A7C43; }
         .btn-logout { background: none; border: none; color: var(--danger); font-weight: bold; cursor: pointer; display: flex; gap: 5px; align-items: center; font-size: 1rem; }
 
-        /* الصفحات */
         .page-view { display: none; height: calc(100vh - 70px); overflow-y: auto; padding: 20px; }
         .page-view.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ستايل الكاشير والمرتجع (Grid) */
+        /* الكاشير والمرتجع */
         .pos-container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; height: 100%; }
         .pos-left { display: flex; flex-direction: column; gap: 20px; height: 100%; }
         .barcode-section, .cart-section, .pos-right { background: var(--card-bg); border-radius: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); padding: 20px; }
@@ -59,13 +58,12 @@
         .cart-table th { background: var(--bg-light); padding: 15px; text-align: right; color: var(--text-muted); }
         .cart-table td { padding: 15px; border-bottom: 1px solid var(--border); font-weight: 600; }
         .qty-btn { width: 32px; height: 32px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; background: var(--bg-light); }
-        
         .pos-right { display: flex; flex-direction: column; }
         .btn-pay { width: 100%; padding: 20px; background: var(--success); color: white; border: none; border-radius: 12px; font-size: 1.5rem; font-weight: 900; cursor: pointer; margin-top: auto; }
         .btn-pay:disabled { background: #B5B5C3; }
         .input-group input { width: 100%; padding: 15px; font-size: 1.8rem; border: 2px solid var(--border); border-radius: 10px; margin-top: 8px; font-weight: bold; }
 
-        /* ستايل المرتجعات */
+        /* المرتجعات */
         #return-view .barcode-input:focus { border-color: var(--warning); }
         #return-view .btn-pay { background: var(--warning); }
         #return-view .btn-pay:hover { background: #E59600; }
@@ -77,7 +75,7 @@
         .form-group input, .form-group select { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 10px; outline: none; font-size: 1rem; }
         .btn-submit { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 10px; font-size: 1.2rem; font-weight: bold; width: 100%; cursor: pointer; }
 
-        /* التقارير والموردين */
+        /* التقارير */
         .report-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
         .report-box { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid var(--primary); }
         .report-box h4 { color: var(--text-muted); margin-bottom: 10px; font-size: 1.1rem; }
@@ -86,7 +84,6 @@
         .edit-input { padding: 8px; width: 90px; border: 1px solid var(--border); border-radius: 5px; font-weight: bold; text-align: center; }
         .btn-small { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
         
-        /* ستايل الموردين الديناميكي */
         .supplier-item-row { display: flex; gap: 15px; background: var(--bg-light); padding: 15px; border-radius: 10px; margin-bottom: 10px; align-items: flex-end; }
         .search-container { display: flex; gap: 15px; margin-bottom: 20px; width: 100%; }
     </style>
@@ -114,7 +111,7 @@
             <li class="nav-pos" onclick="switchTab('pos-view', this)"><a href="#"><i class="fas fa-desktop"></i> شاشة المبيعات</a></li>
             <li class="nav-return" onclick="switchTab('return-view', this)"><a href="#"><i class="fas fa-undo"></i> شاشة المرتجعات</a></li>
             <li class="nav-inv" onclick="switchTab('inventory-view', this)"><a href="#"><i class="fas fa-box-open"></i> إدارة وتعديل المخزن</a></li>
-            <li class="nav-suppliers" onclick="switchTab('suppliers-view', this)"><a href="#"><i class="fas fa-truck-loading"></i> حسابات الموردين (المشتريات)</a></li>
+            <li class="nav-suppliers" onclick="switchTab('suppliers-view', this)"><a href="#"><i class="fas fa-truck-loading"></i> حسابات الموردين</a></li>
             <li class="nav-admin" onclick="switchTab('reports-view', this)"><a href="#"><i class="fas fa-file-invoice-dollar"></i> الحسابات وتقارير المدير</a></li>
         </ul>
     </aside>
@@ -134,6 +131,7 @@
             </div>
         </header>
 
+        <!-- 1. شاشة المبيعات الكاشير -->
         <div id="pos-view" class="page-view active">
             <div class="pos-container">
                 <div class="pos-left">
@@ -159,6 +157,7 @@
             </div>
         </div>
 
+        <!-- 2. شاشة المرتجعات -->
         <div id="return-view" class="page-view">
             <div class="pos-container">
                 <div class="pos-left">
@@ -184,6 +183,7 @@
             </div>
         </div>
 
+        <!-- 3. شاشة إدارة وتتعديل المخزن -->
         <div id="inventory-view" class="page-view">
             <div class="inventory-card">
                 <h3 style="margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px;">إضافة منتج جديد للمخزن</h3>
@@ -224,6 +224,7 @@
             </div>
         </div>
 
+        <!-- 4. شاشة حسابات الموردين -->
         <div id="suppliers-view" class="page-view">
             <div class="inventory-card">
                 <h3 style="margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; color: var(--primary);"><i class="fas fa-file-invoice"></i> تسجيل فاتورة مشتريات من مورد</h3>
@@ -270,6 +271,7 @@
             </div>
         </div>
 
+        <!-- 5. شاشة الحسابات وتقارير المدير -->
         <div id="reports-view" class="page-view">
             <h3 style="margin-bottom: 15px;">إجمالي المبيعات العامة والأرباح</h3>
             <div class="report-grid">
@@ -290,12 +292,12 @@
     </main>
 
     <script>
+        // ⚠️⚠️ حط رابط جوجل سكريبت الجديد بتاعك هنا ⚠️⚠️
         const API_URL = "https://script.google.com/macros/s/AKfycbx3GQtzZQiHPAkpkagkdvldebLoNvhl83YKNiLI9pA5_wuO2hPgdR8X6NjM_051cQD9Pg/exec";
         
         let productsDB = []; let saleCart = []; let returnCart = []; let currentUser = null;
         let supplierInvoices = JSON.parse(localStorage.getItem('ossman_supplier_invoices') || '[]');
 
-        // 1. نظام تسجيل الدخول والصلاحيات
         window.onload = () => {
             const savedUser = localStorage.getItem('ossman_user');
             if(savedUser) {
@@ -320,7 +322,11 @@
             };
 
             try {
-                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                // ضفت ليك redirect: "follow" عشان يحل أي مشكلة مع CORS في الدخول
+                const res = await fetch(API_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify(payload)
+                });
                 const data = await res.json();
                 if(data.status === 'success') {
                     currentUser = data.user;
@@ -329,7 +335,7 @@
                     loadProducts();
                     renderSupplierTable();
                 } else { alert(data.message); }
-            } catch(err) { alert("خطأ في الاتصال!"); }
+            } catch(err) { alert("تأكد من تحديث رابط API_URL بعد التعديل الأخير في Apps Script"); }
             btn.innerHTML = 'دخول';
         }
 
@@ -355,7 +361,6 @@
             }
         }
 
-        // 2. التنقل بين الـ Tabs
         function switchTab(tabId, el) {
             document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-menu li').forEach(li => li.classList.remove('active'));
@@ -369,7 +374,6 @@
             else if(tabId === 'reports-view') { document.getElementById('page-title').innerText = 'الحسابات وتقارير المدير'; loadReportsData(); }
         }
 
-        // 3. جلب الداتا الأساسية للماركت
         async function loadProducts() {
             try {
                 const res = await fetch(API_URL);
@@ -378,7 +382,6 @@
             } catch(e) { console.log(e); }
         }
 
-        // 4. الباركود
         document.getElementById('barcode-scanner').addEventListener('keypress', e => { if(e.key === 'Enter') scanBarcode('sale'); });
         document.getElementById('return-barcode-scanner').addEventListener('keypress', e => { if(e.key === 'Enter') scanBarcode('return'); });
 
@@ -438,6 +441,67 @@
             else { display.innerText = '0.00 ج.م'; display.style.color = 'var(--danger)'; }
         }
 
+        // ==========================================
+        // إرجاع كود طباعة الريسيت باللوجو والـ 80mm
+        // ==========================================
+        function printReceipt(invoiceData) {
+            const printWin = window.open('', '_blank', 'width=400,height=600');
+            const LOGO_URL = "https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png";
+            let itemsHtml = '';
+            
+            invoiceData.items.forEach(item => {
+                itemsHtml += `
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:14px;">
+                    <span style="flex:2; text-align:right;">${item.Name} (x${item.qty})</span>
+                    <span style="flex:1; text-align:left; font-weight:bold;">${(item.Price * item.qty).toFixed(2)}</span>
+                </div>`;
+            });
+            
+            const html = `
+                <html dir="rtl" lang="ar">
+                <head>
+                    <title>طباعة الفاتورة</title>
+                    <style>
+                        body { font-family: 'Tajawal', sans-serif; margin: 0; padding: 15px; width: 80mm; color: #000; }
+                        .header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 15px; margin-bottom: 15px; }
+                        .header img { width: 70px; height: 70px; border-radius: 10px; margin-bottom: 5px; }
+                        .header h2 { margin: 5px 0; font-size: 18px; }
+                        .header p { margin: 3px 0; font-size: 12px; }
+                        .totals { border-top: 2px dashed #000; padding-top: 15px; margin-top: 15px; }
+                        .row { display: flex; justify-content: space-between; font-weight: bold; font-size: 15px; margin-bottom: 8px;}
+                        .footer { text-align: center; margin-top: 25px; font-size: 13px; font-weight: bold;}
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <img src="${LOGO_URL}" alt="Logo">
+                        <h2>OSSMAN MARKET</h2>
+                        <p>رقم الفاتورة: ${invoiceData.invoice_id}</p>
+                        <p>الكاشير: ${invoiceData.cashier_id}</p>
+                        <p>تاريخ: ${new Date().toLocaleString('ar-EG')}</p>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        ${itemsHtml}
+                    </div>
+                    <div class="totals">
+                        <div class="row"><span>الإجمالي:</span><span>${invoiceData.total.toFixed(2)} ج.م</span></div>
+                        <div class="row"><span>المدفوع:</span><span>${invoiceData.paid.toFixed(2)} ج.م</span></div>
+                        <div class="row"><span>الباقي:</span><span>${invoiceData.change.toFixed(2)} ج.م</span></div>
+                    </div>
+                    <div class="footer">
+                        <p>شكراً لزيارتكم! نتمنى لكم يوماً سعيداً.</p>
+                    </div>
+                    <script>
+                        window.onload = function() { setTimeout(function(){ window.print(); window.close(); }, 500); }
+                    <\/script>
+                </body>
+                </html>
+            `;
+            printWin.document.open();
+            printWin.document.write(html);
+            printWin.document.close();
+        }
+
         async function processPayment(type) {
             const cart = type === 'sale' ? saleCart : returnCart;
             if(cart.length === 0) return alert("القائمة فارغة!");
@@ -454,15 +518,19 @@
             }
 
             try {
+                // فتح شاشة الطباعة فوراً لو دي مبيعات
+                if (type === 'sale') {
+                    printReceipt(payload);
+                }
+
                 await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-                alert(type === 'sale' ? "تمت عملية البيع وحفظ الفاتورة!" : "تم قبول المرتجع وإعادة البضاعة للمخزن!");
+                
                 if(type === 'sale') { saleCart = []; document.getElementById('amount-paid').value=''; } else { returnCart = []; }
                 updateUI(type);
                 loadProducts();
             } catch(e) { alert("حدث خطأ في الاتصال بالشبكة!"); }
         }
 
-        // 5. إضافة منتج جديد
         async function submitProduct(e) {
             e.preventDefault();
             const payload = {
@@ -478,9 +546,6 @@
             } catch(e) { alert("فشل الاتصال بالسيرفر"); }
         }
 
-        // ==========================================
-        // 6. جلب التقارير والمخزن وتحديثه
-        // ==========================================
         async function loadReportsData() {
             try {
                 const res = await fetch(API_URL + "?action=getAllData");
@@ -498,7 +563,6 @@
                     if(d.getFullYear() === t.getFullYear()) { gYear += amt; cashiers[cashier].year += amt; }
                 }
 
-                // تحديث واجهة التقارير لو كانت هي المفتوحة
                 if(document.getElementById('rep-global-day')) {
                     document.getElementById('rep-global-day').innerText = gDay.toFixed(2) + " ج.م";
                     document.getElementById('rep-global-week').innerText = gWeek.toFixed(2) + " ج.م";
@@ -512,7 +576,6 @@
                 }
                 if(document.getElementById('rep-cashiers')) document.getElementById('rep-cashiers').innerHTML = cashHtml || `<tr><td colspan="5">لا توجد عمليات بيع اليوم</td></tr>`;
 
-                // تعبئة جدول المخزن (اللي اتنقل لصفحة المخازن)
                 let invHtml = "";
                 for(let i = 1; i < data.products.length; i++) {
                     let p = data.products[i]; let barcode = p[0]; let name = p[1]; let price = p[4]; let stock = p[5];
@@ -551,7 +614,6 @@
             } catch(e) { alert("خطأ في تحديث البيانات"); }
         }
 
-        // فلتر وبحث المخزن
         function filterInventoryTable() {
             let val = document.getElementById('search-inventory-input').value.toLowerCase();
             let rows = document.querySelectorAll('.inv-row-item');
@@ -567,9 +629,6 @@
             XLSX.writeFile(wb, "Osman_Market_Inventory.xlsx");
         }
 
-        // ==========================================
-        // 7. حسابات وفواتير الموردين (المشتريات)
-        // ==========================================
         function addSupplierItemField() {
             const container = document.getElementById('supplier-items-container');
             const newRow = document.createElement('div');
@@ -607,26 +666,23 @@
             });
 
             const invoice = {
-                action: 'saveSupplierInvoice', // الأمر الموجه للسيرفر
+                action: 'saveSupplierInvoice',
                 id: document.getElementById('sup-inv-id').value,
                 supplier: document.getElementById('sup-name').value,
                 items: items,
                 total: parseFloat(document.getElementById('sup-invoice-total').innerText),
-                date: new Date().toISOString()
+                date: new Date().toLocaleString('ar-EG')
             };
 
             try {
-                // إرسال الفاتورة أوتوماتيك لجوجل شيت وتحديث المخزون
                 await fetch(API_URL, { method: 'POST', body: JSON.stringify(invoice) });
                 
-                // حفظ نسخة احتياطية محلياً برضه للطباعة التاريخية
                 supplierInvoices.unshift(invoice);
                 localStorage.setItem('ossman_supplier_invoices', JSON.stringify(supplierInvoices));
                 
-                alert("تم حفظ فاتورة المورد في جوجل شيت وزيادة كميات المخزن بنجاح!");
+                alert("تم حفظ الفاتورة بنجاح!");
                 printSupplierReceipt(invoice);
                 
-                // تصفير الفورم للعملية التالية
                 e.target.reset();
                 document.getElementById('supplier-items-container').innerHTML = `
                     <div class="supplier-item-row">
@@ -636,9 +692,9 @@
                     </div>`;
                 document.getElementById('sup-invoice-total').innerText = "0.00";
                 renderSupplierTable();
-                loadProducts(); // تحديث الكاشير بالكميات الجديدة فوراً
+                loadProducts();
             } catch(err) {
-                alert("حدث خطأ أثناء إرسال الفاتورة للسيرفر، تأكد من الإنترنت.");
+                alert("خطأ في حفظ الفاتورة على السيرفر");
             }
         }
 
@@ -646,7 +702,7 @@
             const tbody = document.getElementById('supplier-logs-body');
             if(!tbody) return;
             if(supplierInvoices.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">لا توجد فواتير مشتريات مسجلة حالياً.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">لا توجد فواتير مسجلة.</td></tr>`;
                 return;
             }
             tbody.innerHTML = supplierInvoices.map((inv, index) => `
@@ -690,7 +746,7 @@
                 <head>
                     <title>فاتورة مشتريات - توريد بضاعة</title>
                     <style>
-                        body { font-family: 'Arial', sans-serif; padding: 20px; color: #333; }
+                        body { font-family: 'Tajawal', sans-serif; padding: 20px; color: #333; }
                         .bill-header { text-align: center; border-bottom: 3px double #333; padding-bottom: 20px; margin-bottom: 20px; }
                         .bill-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
                         .total-zone { margin-top: 30px; text-align: left; font-size: 1.4rem; font-weight: bold; color: green; }
@@ -722,7 +778,6 @@
             printWin.document.open(); printWin.document.write(html); printWin.document.close();
         }
 
-        // الحفاظ على فوكس الاسكانر في الصفحات النشطة
         document.body.addEventListener('click', function(e) {
             if(e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
                 const activePage = document.querySelector('.page-view.active').id;
