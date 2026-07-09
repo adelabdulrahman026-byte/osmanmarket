@@ -90,7 +90,23 @@
             </form>
         </div>
     </div>
-
+<div id="reports-view" class="page-view">
+    <div class="card">
+        <h3>تقرير الأداء</h3>
+        <div class="form-grid">
+            <div style="background:var(--primary); color:white; padding:20px; border-radius:10px;">
+                <h4>دخل اليوم</h4><h2 id="rep-daily">0.00</h2>
+            </div>
+            </div>
+    </div>
+    <div class="card">
+        <h3>إدارة المخازن وتعديل الأسعار</h3>
+        <table class="cart-table">
+            <thead><tr><th>المنتج</th><th>السعر</th><th>الكمية</th><th>حفظ</th></tr></thead>
+            <tbody id="inv-list"></tbody>
+        </table>
+    </div>
+</div>
     <aside class="sidebar">
         <div class="brand">
             <img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" alt="Logo">
@@ -206,7 +222,7 @@
 </div>
     <script>
         // ⚠️ حط الرابط بتاعك
-        const API_URL = "https://script.google.com/macros/s/AKfycbwj1ryy6kcPkQSleuKmET6tLefgSkzRz1NqSX4B4jsgaZfn2yei0gwD6oAfcZT5s_Dp7w/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbx6Cs88XWlUJQzq9X0ohO0J2XG2WLmM0zjnLrVpvmvQheW9JfnqHvJUmFd-0nAaAVbL0Q/exec";
         
         let productsDB = []; 
         let saleCart = []; 
