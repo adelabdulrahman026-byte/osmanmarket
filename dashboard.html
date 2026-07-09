@@ -6,6 +6,7 @@
     <title>OSSMAN MARKET - لوحة النظام</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
             --bg-dark: #1E1E2D; --bg-light: #F3F6F9; --card-bg: #FFFFFF;
@@ -16,7 +17,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
         body { background-color: var(--bg-light); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; position: relative; }
 
-        /* شاشة تسجيل الدخول (Login Overlay) */
+        /* شاشة تسجيل الدخول */
         #login-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, var(--bg-dark), #112240); z-index: 9999; display: flex; justify-content: center; align-items: center; }
         .login-box { background: var(--card-bg); padding: 40px; border-radius: 20px; width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .login-box img { width: 100px; height: 100px; border-radius: 20px; border: 3px solid var(--primary); margin-bottom: 20px; }
@@ -33,7 +34,7 @@
         .brand-name { font-size: 1.3rem; font-weight: 900; }
         
         .nav-menu { list-style: none; padding: 20px 0; flex: 1; }
-        .nav-menu li { display: none; } /* مخفية افتراضياً حتى نتأكد من الصلاحية */
+        .nav-menu li { display: none; }
         .nav-menu li a { display: flex; align-items: center; padding: 15px 25px; color: var(--text-muted); text-decoration: none; font-weight: 600; gap: 15px; cursor: pointer; transition: 0.3s; }
         .nav-menu li.active a, .nav-menu li a:hover { background-color: rgba(54,153,255,0.1); color: var(--primary); border-right: 4px solid var(--primary); }
 
@@ -48,7 +49,7 @@
         .page-view.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ستايل الكاشير والمرتجع (Grid) */
+        /* ستايل الكاشير والمرتجع */
         .pos-container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; height: 100%; }
         .pos-left { display: flex; flex-direction: column; gap: 20px; height: 100%; }
         .barcode-section, .cart-section, .pos-right { background: var(--card-bg); border-radius: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); padding: 20px; }
@@ -64,17 +65,26 @@
         .btn-pay:disabled { background: #B5B5C3; }
         .input-group input { width: 100%; padding: 15px; font-size: 1.8rem; border: 2px solid var(--border); border-radius: 10px; margin-top: 8px; font-weight: bold; }
 
-        /* ستايل المرتجعات (ألوان مختلفة للتنبيه) */
+        /* المرتجعات */
         #return-view .barcode-input:focus { border-color: var(--warning); }
         #return-view .btn-pay { background: var(--warning); }
         #return-view .btn-pay:hover { background: #E59600; }
 
         /* المخازن */
-        .inventory-card { background: var(--card-bg); border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); max-width: 800px; margin: 0 auto; }
+        .inventory-card { background: var(--card-bg); border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); max-width: 800px; margin: 0 auto; margin-bottom: 20px;}
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
         .form-group label { display: block; font-weight: 700; margin-bottom: 8px; }
         .form-group input { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 10px; outline: none; }
         .btn-submit { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 10px; font-size: 1.2rem; font-weight: bold; width: 100%; cursor: pointer; }
+
+        /* التقارير */
+        .report-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+        .report-box { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid var(--primary); }
+        .report-box h4 { color: var(--text-muted); margin-bottom: 10px; font-size: 1.1rem; }
+        .report-box h2 { color: var(--text-main); font-size: 2rem; font-weight: 900; }
+        .table-responsive { overflow-x: auto; background: var(--card-bg); border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        .edit-input { padding: 8px; width: 80px; border: 1px solid var(--border); border-radius: 5px; font-weight: bold; text-align: center; }
+        .btn-small { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -90,23 +100,7 @@
             </form>
         </div>
     </div>
-<div id="reports-view" class="page-view">
-    <div class="card">
-        <h3>تقرير الأداء</h3>
-        <div class="form-grid">
-            <div style="background:var(--primary); color:white; padding:20px; border-radius:10px;">
-                <h4>دخل اليوم</h4><h2 id="rep-daily">0.00</h2>
-            </div>
-            </div>
-    </div>
-    <div class="card">
-        <h3>إدارة المخازن وتعديل الأسعار</h3>
-        <table class="cart-table">
-            <thead><tr><th>المنتج</th><th>السعر</th><th>الكمية</th><th>حفظ</th></tr></thead>
-            <tbody id="inv-list"></tbody>
-        </table>
-    </div>
-</div>
+
     <aside class="sidebar">
         <div class="brand">
             <img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" alt="Logo">
@@ -116,7 +110,8 @@
             <li class="nav-pos" onclick="switchTab('pos-view', this)"><a href="#"><i class="fas fa-desktop"></i> شاشة المبيعات</a></li>
             <li class="nav-return" onclick="switchTab('return-view', this)"><a href="#"><i class="fas fa-undo"></i> شاشة المرتجعات</a></li>
             <li class="nav-inv" onclick="switchTab('inventory-view', this)"><a href="#"><i class="fas fa-box-open"></i> إضافة للمخزن</a></li>
-             <li class="nav-admin" onclick="switchTab('reports-view', this)"><a href="#"><i class="fas fa-file-invoice-dollar"></i> الحسابات وتقارير المدير</a></li>        </ul>
+            <li class="nav-admin" onclick="switchTab('reports-view', this)"><a href="#"><i class="fas fa-file-invoice-dollar"></i> الحسابات وتقارير المدير</a></li>
+        </ul>
     </aside>
 
     <main class="workspace">
@@ -200,28 +195,51 @@
                 </form>
             </div>
         </div>
-    </main>
-<div id="reports-view" class="page-view">
-    <div class="inventory-card">
-        <h3>تقرير المبيعات</h3>
-        <div class="form-grid">
-            <div style="background:var(--primary); color:white; padding:20px; border-radius:10px;">
-                <h4>دخل اليوم</h4>
-                <h2 id="rep-daily">0.00</h2>
+
+        <div id="reports-view" class="page-view">
+            <h3 style="margin-bottom: 15px;">إجمالي المبيعات (الدخل)</h3>
+            <div class="report-grid">
+                <div class="report-box"><h4>دخل اليوم</h4><h2 id="rep-global-day">0.00</h2></div>
+                <div class="report-box"><h4>دخل الأسبوع</h4><h2 id="rep-global-week">0.00</h2></div>
+                <div class="report-box"><h4>دخل الشهر</h4><h2 id="rep-global-month">0.00</h2></div>
+                <div class="report-box"><h4>دخل السنة</h4><h2 id="rep-global-year">0.00</h2></div>
             </div>
-            <!-- كرر للأسابيع والشهور -->
+
+            <h3 style="margin-bottom: 15px;">مبيعات الكاشيرية</h3>
+            <div class="table-responsive" style="margin-bottom: 30px;">
+                <table class="cart-table">
+                    <thead><tr><th>اسم الكاشير</th><th>اليوم</th><th>الأسبوع</th><th>الشهر</th><th>السنة</th></tr></thead>
+                    <tbody id="rep-cashiers"></tbody>
+                </table>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3>حركة المنتجات وتعديل المخزن</h3>
+                <button class="btn-submit" style="width: auto; padding: 10px 20px;" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> تنزيل المخزن إكسيل</button>
+            </div>
+            <div class="table-responsive">
+                <table class="cart-table" id="inventory-report-table">
+                    <thead>
+                        <tr>
+                            <th>المنتج</th>
+                            <th style="color:var(--success);">إجمالي المباع</th>
+                            <th style="color:var(--danger);">إجمالي المرتجع</th>
+                            <th>السعر الحالي</th>
+                            <th>الكمية الحالية</th>
+                            <th>تحديث المخزن</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rep-inventory">
+                        <tr><td colspan="6" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل التقارير...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        
-        <h3>إدارة المنتجات</h3>
-        <table class="cart-table">
-            <thead><tr><th>المنتج</th><th>السعر</th><th>الكمية</th><th>تعديل</th></tr></thead>
-            <tbody id="inventory-list"></tbody>
-        </table>
-    </div>
-</div>
+    </main>
+
     <script>
         // ⚠️ حط الرابط بتاعك
-        const API_URL = "https://script.google.com/macros/s/AKfycbx6Cs88XWlUJQzq9X0ohO0J2XG2WLmM0zjnLrVpvmvQheW9JfnqHvJUmFd-0nAaAVbL0Q/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxXeJpqKMmso-ItmxzWUj5m87z1wUNDmwzSjTr1JGjG0VVMPYV_UC69Wc9zYx7D1Y-wow/exec";
         
         let productsDB = []; 
         let saleCart = []; 
@@ -278,7 +296,6 @@
             document.getElementById('current-user-role').innerText = currentUser.role;
 
             const role = currentUser.role;
-            // إظهار القوائم بناءً على الصلاحية
             if(role === 'مدير') {
                 document.querySelectorAll('.nav-menu li').forEach(li => li.style.display = 'block');
                 switchTab('pos-view', document.querySelector('.nav-pos'));
@@ -304,9 +321,13 @@
             if(tabId === 'pos-view') { document.getElementById('page-title').innerText = 'المبيعات'; document.getElementById('barcode-scanner').focus(); }
             else if(tabId === 'return-view') { document.getElementById('page-title').innerText = 'المرتجعات'; document.getElementById('return-barcode-scanner').focus(); }
             else if(tabId === 'inventory-view') { document.getElementById('page-title').innerText = 'المخازن'; }
+            else if(tabId === 'reports-view') { 
+                document.getElementById('page-title').innerText = 'الحسابات وتقارير المدير'; 
+                loadReportsData(); // تشغيل التقارير لما نفتح الصفحة
+            }
         }
 
-        // 3. تحميل المنتجات
+        // 3. تحميل المنتجات الأساسية
         async function loadProducts() {
             try {
                 const res = await fetch(API_URL);
@@ -316,7 +337,7 @@
             } catch(e) { console.log(e); }
         }
 
-        // 4. الباركود (مبيعات والمرتجعات)
+        // 4. الباركود
         document.getElementById('barcode-scanner').addEventListener('keypress', e => { if(e.key === 'Enter') scanBarcode('sale'); });
         document.getElementById('return-barcode-scanner').addEventListener('keypress', e => { if(e.key === 'Enter') scanBarcode('return'); });
 
@@ -382,7 +403,7 @@
             else { display.innerText = '0.00'; display.style.color = 'var(--danger)'; }
         }
 
-        // 5. حفظ (المبيعات / المرتجعات)
+        // 5. حفظ الفواتير
         async function processPayment(type) {
             const cart = type === 'sale' ? saleCart : returnCart;
             if(cart.length === 0) return alert("القائمة فارغة!");
@@ -409,7 +430,7 @@
             } catch(e) { alert("حدث خطأ في الاتصال"); }
         }
 
-        // 6. المخازن
+        // 6. إضافة منتج
         async function submitProduct(e) {
             e.preventDefault();
             const payload = {
@@ -423,6 +444,138 @@
                 await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
                 alert("تم الإضافة للمخزن!"); loadProducts(); e.target.reset();
             } catch(e) {}
+        }
+
+        // ==========================================
+        // 7. أكواد التقارير والحسابات (الشاشة الجديدة)
+        // ==========================================
+        async function loadReportsData() {
+            try {
+                document.getElementById('rep-inventory').innerHTML = `<tr><td colspan="6" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> جاري تحميل التقارير...</td></tr>`;
+                
+                const res = await fetch(API_URL + "?action=getAllData");
+                const data = await res.json();
+                
+                const t = new Date();
+                let gDay=0, gWeek=0, gMonth=0, gYear=0;
+                let cashiers = {};
+
+                // تحديد بداية الأسبوع (بافتراض السبت أو الأحد)
+                let startOfWeek = new Date(t);
+                startOfWeek.setDate(t.getDate() - t.getDay());
+                startOfWeek.setHours(0,0,0,0);
+
+                // حساب المبيعات
+                for(let i = 1; i < data.sales.length; i++) {
+                    let s = data.sales[i];
+                    let d = new Date(s[6]);
+                    let amt = parseFloat(s[3]) || 0;
+                    let cashier = s[1];
+
+                    if(!cashiers[cashier]) cashiers[cashier] = {day:0, week:0, month:0, year:0};
+
+                    let isDay = d.toDateString() === t.toDateString();
+                    let isWeek = d >= startOfWeek;
+                    let isMonth = d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear();
+                    let isYear = d.getFullYear() === t.getFullYear();
+
+                    if(isDay) { gDay += amt; cashiers[cashier].day += amt; }
+                    if(isWeek) { gWeek += amt; cashiers[cashier].week += amt; }
+                    if(isMonth) { gMonth += amt; cashiers[cashier].month += amt; }
+                    if(isYear) { gYear += amt; cashiers[cashier].year += amt; }
+                }
+
+                // عرض الإجمالي العام
+                document.getElementById('rep-global-day').innerText = gDay.toFixed(2);
+                document.getElementById('rep-global-week').innerText = gWeek.toFixed(2);
+                document.getElementById('rep-global-month').innerText = gMonth.toFixed(2);
+                document.getElementById('rep-global-year').innerText = gYear.toFixed(2);
+
+                // عرض إجمالي الكاشيرية
+                let cashHtml = "";
+                for(let c in cashiers) {
+                    cashHtml += `<tr>
+                        <td style="font-weight:bold; color:var(--primary);">${c}</td>
+                        <td>${cashiers[c].day.toFixed(2)}</td>
+                        <td>${cashiers[c].week.toFixed(2)}</td>
+                        <td>${cashiers[c].month.toFixed(2)}</td>
+                        <td>${cashiers[c].year.toFixed(2)}</td>
+                    </tr>`;
+                }
+                document.getElementById('rep-cashiers').innerHTML = cashHtml || `<tr><td colspan="5">لا توجد مبيعات</td></tr>`;
+
+                // حساب حركة المنتجات
+                let invHtml = "";
+                for(let i = 1; i < data.products.length; i++) {
+                    let p = data.products[i];
+                    let barcode = p[0];
+                    let name = p[1];
+                    let price = p[4];
+                    let stock = p[5];
+
+                    // المباع
+                    let soldQty = 0;
+                    for(let s = 1; s < data.sales.length; s++) {
+                        let items = [];
+                        try { items = JSON.parse(data.sales[s][2]); } catch(e){}
+                        let found = items.find(it => it.Barcode == barcode);
+                        if(found) soldQty += found.qty;
+                    }
+
+                    // المرتجع
+                    let retQty = 0;
+                    if(data.returns) {
+                        for(let r = 1; r < data.returns.length; r++) {
+                            let items = [];
+                            try { items = JSON.parse(data.returns[r][2]); } catch(e){}
+                            let found = items.find(it => it.Barcode == barcode);
+                            if(found) retQty += found.qty;
+                        }
+                    }
+
+                    invHtml += `<tr>
+                        <td style="font-weight:bold;">${name}</td>
+                        <td style="color:var(--success); font-weight:bold;">${soldQty}</td>
+                        <td style="color:var(--danger); font-weight:bold;">${retQty}</td>
+                        <td><input type="number" class="edit-input" id="edit-price-${barcode}" value="${price}"></td>
+                        <td><input type="number" class="edit-input" id="edit-stock-${barcode}" value="${stock}"></td>
+                        <td><button class="btn-small" onclick="saveProductUpdate('${barcode}')">حفظ</button></td>
+                    </tr>`;
+                }
+                document.getElementById('rep-inventory').innerHTML = invHtml || `<tr><td colspan="6">لا توجد منتجات</td></tr>`;
+
+            } catch(e) {
+                console.error(e);
+                document.getElementById('rep-inventory').innerHTML = `<tr><td colspan="6" style="color:red; text-align:center;">حدث خطأ في جلب البيانات!</td></tr>`;
+            }
+        }
+
+        // حفظ التعديلات على المخزن (السعر / الكمية)
+        async function saveProductUpdate(barcode) {
+            const newPrice = document.getElementById(`edit-price-${barcode}`).value;
+            const newStock = document.getElementById(`edit-stock-${barcode}`).value;
+
+            const payload = {
+                action: 'updateProductDetails',
+                barcode: barcode,
+                price: newPrice,
+                stock: newStock
+            };
+
+            try {
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                alert("تم تحديث السعر والكمية بنجاح!");
+                loadProducts(); // تحديث الداتا عشان الكاشير يشوفها علطول
+            } catch(e) {
+                alert("فشل في التحديث، تأكد من الاتصال.");
+            }
+        }
+
+        // تصدير المخزن لإكسيل
+        function exportToExcel() {
+            const table = document.getElementById("inventory-report-table");
+            const wb = XLSX.utils.table_to_book(table, {sheet: "حركة_المخزن"});
+            XLSX.writeFile(wb, "Osman_Market_Inventory.xlsx");
         }
     </script>
 </body>
