@@ -29,7 +29,7 @@
         .brand img { width: 70px; height: 70px; border-radius: 15px; border: 2px solid var(--primary); margin-bottom: 10px; }
         .nav-menu { list-style: none; padding: 10px 0; flex: 1; }
         .nav-menu li { display: none; } 
-        .nav-menu li a { display: flex; align-items: center; padding: 15px 25px; color: var(--text-muted); text-decoration: none; font-weight: 600; gap: 15px; cursor: pointer; transition: 0.3s; }
+        .nav-menu li a { display: flex; align-items: center; justify-content: space-between; padding: 15px 25px; color: var(--text-muted); text-decoration: none; font-weight: 600; cursor: pointer; transition: 0.3s; }
         .nav-menu li.active a, .nav-menu li a:hover { background-color: rgba(54,153,255,0.1); color: var(--primary); border-right: 4px solid var(--primary); }
 
         .workspace { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -59,17 +59,24 @@
         .qty-btn { width: 32px; height: 32px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; background: var(--bg-light); }
         .pos-right { display: flex; flex-direction: column; }
         .btn-pay { width: 100%; padding: 20px; background: var(--success); color: white; border: none; border-radius: 12px; font-size: 1.5rem; font-weight: 900; cursor: pointer; margin-top: auto; }
+        
+        /* Reports */
         .report-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
         .report-box { background: var(--card-bg); padding: 20px; border-radius: 12px; text-align: center; border-bottom: 4px solid var(--primary); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .edit-input { width: 80px; padding: 8px; border: 1px solid var(--border); border-radius: 5px; font-weight: bold; text-align: center; }
+        .btn-small { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
-        /* Delivery Alert */
-        .blinking { animation: blinker 1s linear infinite; background-color: var(--danger) !important; color: white !important;}
-        @keyframes blinker { 50% { opacity: 0.5; } }
+        /* Delivery Alert Animations */
+        .alert-bg { background-color: rgba(246, 78, 96, 0.2) !important; border-right: 4px solid var(--danger) !important; }
+        .alert-bg a { color: var(--danger) !important; }
+        .notification-bell { animation: ring 1s infinite; color: var(--danger); font-size: 1.2rem; }
+        @keyframes ring { 0% { transform: rotate(0); } 10% { transform: rotate(15deg); } 20% { transform: rotate(-15deg); } 30% { transform: rotate(10deg); } 40% { transform: rotate(-10deg); } 50% { transform: rotate(0); } 100% { transform: rotate(0); } }
     </style>
 </head>
 <body>
 
-    <audio id="alertSound" src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" loop></audio>
+    <!-- صوت دليفري احترافي وهادي -->
+    <audio id="alertSound" src="https://actions.google.com/sounds/v1/communications/chime_1.ogg" loop></audio>
 
     <div id="login-overlay">
         <div class="login-box">
@@ -86,13 +93,18 @@
     <aside class="sidebar">
         <div class="brand"><img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" alt="Logo"><div class="brand-name">OSSMAN MARKET</div></div>
         <ul class="nav-menu" id="main-menu">
-            <li class="nav-pos" onclick="switchTab('pos-view', this)"><a href="#"><i class="fas fa-desktop"></i> الكاشير</a></li>
-            <li class="nav-return" onclick="switchTab('return-view', this)"><a href="#"><i class="fas fa-undo"></i> المرتجعات</a></li>
-            <li class="nav-inv" onclick="switchTab('inventory-view', this)"><a href="#"><i class="fas fa-box-open"></i> إدارة المخزن</a></li>
-            <li class="nav-admin" onclick="switchTab('suppliers-view', this)"><a href="#"><i class="fas fa-truck-loading"></i> الموردين والمشتريات</a></li>
-            <li class="nav-admin" onclick="switchTab('invoices-view', this)"><a href="#"><i class="fas fa-file-invoice"></i> الفواتير اليدوية</a></li>
-            <li class="nav-delivery" onclick="switchTab('delivery-view', this)"><a href="#"><i class="fas fa-motorcycle"></i> شاشة الدليفري</a></li>
-            <li class="nav-admin" onclick="switchTab('reports-view', this)"><a href="#"><i class="fas fa-chart-pie"></i> تقارير المدير</a></li>
+            <li class="nav-pos" onclick="switchTab('pos-view', this)"><a href="#"><div><i class="fas fa-desktop"></i> الكاشير</div></a></li>
+            <li class="nav-return" onclick="switchTab('return-view', this)"><a href="#"><div><i class="fas fa-undo"></i> المرتجعات</div></a></li>
+            <li class="nav-inv" onclick="switchTab('inventory-view', this)"><a href="#"><div><i class="fas fa-box-open"></i> إدارة المخزن</div></a></li>
+            <li class="nav-admin" onclick="switchTab('suppliers-view', this)"><a href="#"><div><i class="fas fa-truck-loading"></i> الموردين والمشتريات</div></a></li>
+            <li class="nav-admin" onclick="switchTab('invoices-view', this)"><a href="#"><div><i class="fas fa-file-invoice"></i> الفواتير اليدوية</div></a></li>
+            <li class="nav-delivery" id="nav-delivery-item" onclick="switchTab('delivery-view', this)">
+                <a href="#">
+                    <div><i class="fas fa-motorcycle"></i> شاشة الدليفري</div>
+                    <i class="fas fa-bell notification-bell" id="delivery-bell" style="display:none;"></i>
+                </a>
+            </li>
+            <li class="nav-admin" onclick="switchTab('reports-view', this)"><a href="#"><div><i class="fas fa-chart-pie"></i> الحسابات وتقارير المدير</div></a></li>
         </ul>
     </aside>
 
@@ -106,6 +118,7 @@
             </div>
         </header>
 
+        <!-- 1. الكاشير -->
         <div id="pos-view" class="page-view active">
             <div class="pos-container">
                 <div class="pos-left">
@@ -125,6 +138,7 @@
             </div>
         </div>
 
+        <!-- 2. المرتجعات -->
         <div id="return-view" class="page-view">
             <div class="pos-container">
                 <div class="pos-left">
@@ -140,6 +154,7 @@
             </div>
         </div>
 
+        <!-- 3. المخزن (إضافة وتعديل وبحث) -->
         <div id="inventory-view" class="page-view">
             <div class="card">
                 <h3 style="margin-bottom: 15px;">إضافة منتج جديد</h3>
@@ -157,19 +172,21 @@
             </div>
             <div class="card">
                 <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                    <h3 style="margin-top:10px;">إدارة المخزون الحالي (تعديل وبحث)</h3>
-                    <button class="btn-submit" style="background:var(--success);" onclick="exportTableToExcel('inventory-table', 'المخزن')">تصدير إكسيل</button>
+                    <h3 style="margin-top:10px;">إدارة المخزون الحالي والتصدير</h3>
+                    <button class="btn-submit" style="background:var(--success);" onclick="exportTableToExcel('inventory-table', 'المخزن')"><i class="fas fa-file-excel"></i> تنزيل شيت المخزن</button>
                 </div>
                 <input type="text" id="search-inv" placeholder="🔍 ابحث عن منتج هنا للتعديل عليه..." class="barcode-input" style="margin-bottom:15px;" oninput="filterTable('search-inv', 'inv-body')">
                 <div style="overflow-x:auto;">
+                    <!-- الجدول ده هيطلع في الإكسيل بكل تفاصيله -->
                     <table id="inventory-table">
-                        <thead><tr><th>المنتج والباركود</th><th>السعر (ج.م)</th><th>الكمية</th><th>حفظ التعديل</th></tr></thead>
+                        <thead><tr><th>الباركود</th><th>اسم المنتج</th><th>القسم</th><th>التكلفة</th><th>سعر البيع</th><th>الكمية المتاحة</th><th>تحديث</th></tr></thead>
                         <tbody id="inv-body"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
+        <!-- 4. الموردين والمشتريات -->
         <div id="suppliers-view" class="page-view">
             <div class="card">
                 <h3>تسجيل حساب مورد (مشتريات)</h3>
@@ -186,6 +203,7 @@
             </div>
         </div>
 
+        <!-- 5. الفواتير اليدوية -->
         <div id="invoices-view" class="page-view">
             <div class="card">
                 <h3>إصدار فاتورة حرة (يدوية)</h3>
@@ -201,17 +219,18 @@
             </div>
         </div>
 
+        <!-- 6. شاشة الدليفري المحدثة -->
         <div id="delivery-view" class="page-view">
             <div class="card" id="delivery-alert-box" style="text-align:center; padding:40px; background:var(--bg-light);">
                 <i class="fas fa-bell" style="font-size:4rem; color:var(--primary); margin-bottom:15px;"></i>
                 <h2>شاشة انتظار الأوردرات</h2>
-                <p>صوت التنبيه سيعمل عند وجود أوردر جديد.</p>
+                <p>السيستم هيرن وهيظهر إشعار أحمر في القائمة لما يجي أوردر.</p>
                 <button class="btn-submit" onclick="simulateNewOrder()" style="margin-top:20px;">(تجربة: محاكاة أوردر جديد)</button>
             </div>
             
             <div class="card" id="delivery-action-box" style="display:none; border:2px solid var(--danger);">
-                <h2 style="color:var(--danger); margin-bottom:15px;">يوجد أوردر جديد جاهز للتوصيل!</h2>
-                <button class="btn-submit" style="background:var(--success); width:100%; font-size:1.5rem; margin-bottom:20px;" onclick="stopDeliveryAlert()">تم استلام الأوردر (إيقاف الصوت)</button>
+                <h2 style="color:var(--danger); margin-bottom:15px;"><i class="fas fa-exclamation-circle"></i> يوجد أوردر جديد جاهز للتوصيل!</h2>
+                <button class="btn-submit" style="background:var(--success); width:100%; font-size:1.5rem; margin-bottom:20px;" onclick="stopDeliveryAlert()">تم استلام الأوردر (إيقاف الإنذار)</button>
                 
                 <form id="deliveryForm" onsubmit="assignDelivery(event)" style="display:none;">
                     <div class="form-grid">
@@ -223,33 +242,41 @@
             </div>
         </div>
 
+        <!-- 7. الحسابات وتقارير المدير (الوحش) -->
         <div id="reports-view" class="page-view">
+            <h3 style="margin-bottom:15px;"><i class="fas fa-money-bill-wave"></i> إجمالي دخل الماركت</h3>
             <div class="report-grid">
-                <div class="report-box"><h4>دخل اليوم</h4><h2 id="rep-day">0.00</h2></div>
-                <div class="report-box" style="border-bottom-color:var(--success)"><h4>دخل الأسبوع</h4><h2 id="rep-week">0.00</h2></div>
-                <div class="report-box" style="border-bottom-color:var(--warning)"><h4>دخل الشهر</h4><h2 id="rep-month">0.00</h2></div>
-                <div class="report-box" style="border-bottom-color:var(--danger)"><h4>دخل السنة</h4><h2 id="rep-year">0.00</h2></div>
+                <div class="report-box"><h4>دخل اليوم</h4><h2 id="rep-day" style="color:var(--primary);">0.00</h2></div>
+                <div class="report-box" style="border-bottom-color:var(--success)"><h4>دخل الأسبوع</h4><h2 id="rep-week" style="color:var(--success);">0.00</h2></div>
+                <div class="report-box" style="border-bottom-color:var(--warning)"><h4>دخل الشهر</h4><h2 id="rep-month" style="color:var(--warning);">0.00</h2></div>
+                <div class="report-box" style="border-bottom-color:var(--danger)"><h4>دخل السنة</h4><h2 id="rep-year" style="color:var(--danger);">0.00</h2></div>
             </div>
             
+            <div class="form-grid">
+                <div class="card">
+                    <h3 style="margin-bottom:15px;"><i class="fas fa-user-tie"></i> مبيعات الكاشيرية</h3>
+                    <table><thead><tr><th>الكاشير</th><th>يوم</th><th>أسبوع</th><th>شهر</th><th>سنة</th></tr></thead><tbody id="rep-cashiers"></tbody></table>
+                </div>
+                <div class="card">
+                    <h3 style="margin-bottom:15px;"><i class="fas fa-motorcycle"></i> حسابات الطيارين (الدليفري)</h3>
+                    <table><thead><tr><th>اسم الطيار</th><th>عدد الأوردرات</th></tr></thead><tbody id="rep-delivery"></tbody></table>
+                </div>
+            </div>
+
             <div class="card">
-                <h3 style="margin-bottom:15px;">مبيعات الكاشيرية</h3>
-                <table><thead><tr><th>الكاشير</th><th>بيع اليوم</th><th>الشهر</th></tr></thead><tbody id="rep-cashiers"></tbody></table>
+                <h3 style="margin-bottom:15px;"><i class="fas fa-truck"></i> حسابات الموردين (المشتريات)</h3>
+                <table><thead><tr><th>اسم المورد</th><th>إجمالي المبالغ المسددة</th></tr></thead><tbody id="rep-suppliers"></tbody></table>
             </div>
 
             <div class="card">
                 <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                    <h3>حركة المنتجات (مباع ومرتجع)</h3>
+                    <h3><i class="fas fa-exchange-alt"></i> حركة المنتجات (مباع ومرتجع)</h3>
                     <button class="btn-submit" style="background:var(--success);" onclick="exportTableToExcel('movement-table', 'حركة_المنتجات')">تصدير إكسيل</button>
                 </div>
-                <input type="text" id="search-mov" placeholder="🔍 بحث في حركة المنتجات..." class="barcode-input" style="margin-bottom:15px;" oninput="filterTable('search-mov', 'mov-body')">
+                <input type="text" id="search-mov" placeholder="🔍 بحث في حركة المنتجات بالاسم..." class="barcode-input" style="margin-bottom:15px;" oninput="filterTable('search-mov', 'mov-body')">
                 <div style="max-height: 400px; overflow-y:auto;">
                     <table id="movement-table"><thead><tr><th>المنتج</th><th>إجمالي مباع</th><th>إجمالي مرتجع</th></tr></thead><tbody id="mov-body"></tbody></table>
                 </div>
-            </div>
-
-            <div class="card">
-                <h3 style="margin-bottom:15px;">طلبات الدليفري (حساب الطيارين)</h3>
-                <table><thead><tr><th>الطيار (الدليفري)</th><th>عدد الأوردرات</th><th>التفاصيل</th></tr></thead><tbody id="rep-delivery"></tbody></table>
             </div>
         </div>
     </main>
@@ -336,7 +363,7 @@
             try {
                 const res = await fetch(API_URL + "?action=getAllData");
                 const data = await res.json();
-                productsDB = data.products.slice(1).map(r => ({Barcode:r[0], Name:r[1], Price:r[4], Stock:r[5]}));
+                productsDB = data.products.slice(1).map(r => ({Barcode:r[0], Name:r[1], Category:r[2], Cost:r[3], Price:r[4], Stock:r[5]}));
             } catch(e) {}
         }
 
@@ -364,7 +391,7 @@
             cart.forEach((item, index) => {
                 const itemTotal = parseFloat(item.Price) * item.qty; total += itemTotal;
                 tbody.innerHTML += `<tr><td>${item.Name}</td><td>${item.Price}</td>
-                    <td><button class="qty-btn" onclick="modifyQty('${type}', ${index}, 1)">+</button> <span style="font-weight:bold;">${item.qty}</span> <button class="qty-btn" onclick="modifyQty('${type}', ${index}, -1)">-</button></td>
+                    <td><button class="qty-btn" onclick="modifyQty('${type}', ${index}, 1)">+</button> <span style="font-weight:bold; margin:0 10px;">${item.qty}</span> <button class="qty-btn" onclick="modifyQty('${type}', ${index}, -1)">-</button></td>
                     <td>${itemTotal.toFixed(2)}</td><td><button class="qty-btn" onclick="modifyQty('${type}', ${index}, -999)"><i class="fas fa-trash" style="color:red"></i></button></td></tr>`;
             });
             if(type === 'sale') { document.getElementById('grand-total').innerText = total.toFixed(2); calcChange(); } 
@@ -411,22 +438,25 @@
             btn.innerHTML = type === 'sale' ? '<i class="fas fa-print"></i> فاتورة' : '<i class="fas fa-undo"></i> تأكيد';
         }
 
-        // ================= المخازن (تعديل وبحث) =================
+        // ================= المخازن (تعديل وبحث قوي) =================
         async function submitProduct(e) {
             e.preventDefault();
-            const payload = { action: 'addProduct', barcode: document.getElementById('inv-barcode').value, name: document.getElementById('inv-name').value, category: document.getElementById('inv-category').value, stock: document.getElementById('inv-stock').value, cost: document.getElementById('inv-cost').value, price: document.getElementById('inv-price').value, image_url: document.getElementById('inv-image').value };
+            const payload = { action: 'addProduct', barcode: document.getElementById('inv-barcode').value, name: document.getElementById('inv-name').value, category: document.getElementById('inv-category').value, stock: document.getElementById('inv-stock').value, cost: document.getElementById('inv-cost').value, price: document.getElementById('inv-price').value, image_url: "" };
             const data = await fetchAPI(payload);
             if(data && data.status === 'success') { alert("تم الإضافة!"); loadProducts(); renderInventoryEdit(); e.target.reset(); }
         }
 
         async function renderInventoryEdit() {
-            document.getElementById('inv-body').innerHTML = `<tr><td colspan="4" style="text-align:center;">جاري التحميل...</td></tr>`;
+            document.getElementById('inv-body').innerHTML = `<tr><td colspan="7" style="text-align:center;">جاري التحميل...</td></tr>`;
             try {
                 const res = await fetch(API_URL + "?action=getAllData");
                 const data = await res.json();
                 document.getElementById('inv-body').innerHTML = data.products.slice(1).map(p => `
                     <tr class="searchable-row" data-text="${p[1]} ${p[0]}">
-                        <td>${p[1]}<br><small>${p[0]}</small></td>
+                        <td>${p[0]}</td>
+                        <td style="font-weight:bold;">${p[1]}</td>
+                        <td>${p[2]}</td>
+                        <td>${p[3]}</td>
                         <td><input type="number" id="ep-${p[0]}" class="edit-input" value="${p[4]}"></td>
                         <td><input type="number" id="es-${p[0]}" class="edit-input" value="${p[5]}"></td>
                         <td><button class="btn-small" onclick="updateInvItem('${p[0]}')">حفظ</button></td>
@@ -442,7 +472,7 @@
             if(data && data.status === 'success') { alert("تم التحديث!"); loadProducts(); }
         }
 
-        // ================= الموردين والمشتريات =================
+        // ================= الموردين =================
         async function saveSupplier(e) {
             e.preventDefault();
             const payload = {
@@ -456,7 +486,7 @@
             const data = await fetchAPI(payload);
             if(data && data.status === 'success') {
                 printManualReceipt(`إيصال مورد: ${payload.supplier}`, `الشركة: ${payload.company}<br>المنتج: ${payload.product}<br>الكمية: ${payload.qty}`, payload.amount);
-                alert("تم الحفظ والطباعة!"); e.target.reset();
+                alert("تم حفظ المورد!"); e.target.reset();
             }
         }
 
@@ -467,7 +497,7 @@
             const date = document.getElementById('man-date').value;
             const details = document.getElementById('man-details').value.replace(/\n/g, "<br>");
             const total = document.getElementById('man-total').value;
-            printManualReceipt(`فاتورة لـ: ${client}<br>التاريخ: ${date}`, details, total);
+            printManualReceipt(`فاتورة حساب لـ: ${client}<br>التاريخ: ${date}`, details, total);
         }
 
         function printManualReceipt(title, details, total) {
@@ -478,7 +508,7 @@
                 </head><body>
                 <img src="${LOGO_URL}"><h2>OSSMAN MARKET</h2>
                 <div class="line"></div><h3>${title}</h3><div class="line"></div>
-                <p style="text-align:right;">${details}</p>
+                <p style="text-align:right; font-size:16px; font-weight:bold;">${details}</p>
                 <div class="line"></div><h2>الإجمالي: ${total} ج.م</h2>
                 <script>window.onload=function(){window.print(); window.close();}<\/script>
                 </body></html>
@@ -486,29 +516,30 @@
             win.document.close();
         }
 
-        // ================= شاشة الدليفري =================
+        // ================= شاشة الدليفري (مع الإنذار) =================
         let alertAudio = document.getElementById('alertSound');
+        
         function simulateNewOrder() {
             document.getElementById('delivery-alert-box').style.display = 'none';
             document.getElementById('delivery-action-box').style.display = 'block';
-            document.body.classList.add('blinking');
+            // تغيير لون التاب وتشغيل الجرس
+            const navItem = document.getElementById('nav-delivery-item');
+            navItem.classList.add('alert-bg');
+            document.getElementById('delivery-bell').style.display = 'block';
             alertAudio.play();
         }
 
         function stopDeliveryAlert() {
             alertAudio.pause(); alertAudio.currentTime = 0;
-            document.body.classList.remove('blinking');
+            const navItem = document.getElementById('nav-delivery-item');
+            navItem.classList.remove('alert-bg');
+            document.getElementById('delivery-bell').style.display = 'none';
             document.getElementById('deliveryForm').style.display = 'block';
         }
 
         async function assignDelivery(e) {
             e.preventDefault();
-            const payload = {
-                action: 'saveDelivery',
-                order_id: document.getElementById('del-order').value,
-                delivery_man: document.getElementById('del-man').value,
-                status: 'تم التسليم للطيار'
-            };
+            const payload = { action: 'saveDelivery', order_id: document.getElementById('del-order').value, delivery_man: document.getElementById('del-man').value, status: 'تم التسليم' };
             const data = await fetchAPI(payload);
             if(data && data.status === 'success') {
                 alert("تم تسجيل خروج الطيار!");
@@ -519,24 +550,26 @@
             }
         }
 
-        // ================= تقارير المدير الشاملة =================
+        // ================= الحسابات وتقارير المدير الشاملة =================
         async function loadAdminReports() {
             document.getElementById('mov-body').innerHTML = `<tr><td colspan="3" style="text-align:center;">جاري التحميل...</td></tr>`;
             try {
                 const res = await fetch(API_URL + "?action=getAllData");
                 const data = await res.json();
                 
-                const t = new Date(); let gDay=0, gWeek=0, gMonth=0, gYear=0; let cashiers = {}; let deliveries = {};
+                const t = new Date(); let gDay=0, gWeek=0, gMonth=0, gYear=0; 
+                let cashiers = {}; let deliveries = {}; let suppliers = {};
                 let startOfWeek = new Date(t); startOfWeek.setDate(t.getDate() - t.getDay()); startOfWeek.setHours(0,0,0,0);
 
-                // حساب المبيعات والدخل
+                // حسابات المبيعات والكاشيرية
                 data.sales.slice(1).forEach(s => {
                     let d = new Date(s[6]); let amt = parseFloat(s[3]) || 0; let cashier = s[1];
-                    if(!cashiers[cashier]) cashiers[cashier] = {day:0, month:0};
+                    if(!cashiers[cashier]) cashiers[cashier] = {day:0, week:0, month:0, year:0};
+                    
                     if(d.toDateString() === t.toDateString()) { gDay += amt; cashiers[cashier].day += amt; }
-                    if(d >= startOfWeek) gWeek += amt;
+                    if(d >= startOfWeek) { gWeek += amt; cashiers[cashier].week += amt; }
                     if(d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear()) { gMonth += amt; cashiers[cashier].month += amt; }
-                    if(d.getFullYear() === t.getFullYear()) gYear += amt;
+                    if(d.getFullYear() === t.getFullYear()) { gYear += amt; cashiers[cashier].year += amt; }
                 });
 
                 document.getElementById('rep-day').innerText = gDay.toFixed(2);
@@ -545,30 +578,37 @@
                 document.getElementById('rep-year').innerText = gYear.toFixed(2);
 
                 document.getElementById('rep-cashiers').innerHTML = Object.keys(cashiers).map(c => 
-                    `<tr><td>${c}</td><td>${cashiers[c].day}</td><td>${cashiers[c].month}</td></tr>`
-                ).join('') || `<tr><td colspan="3">لا يوجد</td></tr>`;
+                    `<tr><td>${c}</td><td>${cashiers[c].day}</td><td>${cashiers[c].week}</td><td>${cashiers[c].month}</td><td>${cashiers[c].year}</td></tr>`
+                ).join('') || `<tr><td colspan="5">لا يوجد مبيعات</td></tr>`;
 
-                // حساب الدليفري
+                // حسابات الدليفري
                 data.delivery.slice(1).forEach(d => {
-                    let man = d[1];
-                    if(!deliveries[man]) deliveries[man] = 0;
-                    deliveries[man]++;
+                    let man = d[1]; if(!deliveries[man]) deliveries[man] = 0; deliveries[man]++;
                 });
                 document.getElementById('rep-delivery').innerHTML = Object.keys(deliveries).map(d => 
-                    `<tr><td>${d}</td><td>${deliveries[d]}</td><td>أوردرات موصلة</td></tr>`
-                ).join('') || `<tr><td colspan="3">لا يوجد</td></tr>`;
+                    `<tr><td>${d}</td><td style="font-weight:bold; color:var(--primary);">${deliveries[d]} أوردر</td></tr>`
+                ).join('') || `<tr><td colspan="2">لا يوجد دليفري</td></tr>`;
+
+                // حسابات الموردين
+                data.suppliers.slice(1).forEach(s => {
+                    let sup = s[0]; let amt = parseFloat(s[4]) || 0;
+                    if(!suppliers[sup]) suppliers[sup] = 0; suppliers[sup] += amt;
+                });
+                document.getElementById('rep-suppliers').innerHTML = Object.keys(suppliers).map(s => 
+                    `<tr><td>${s}</td><td style="font-weight:bold; color:var(--danger);">${suppliers[s]} ج.م</td></tr>`
+                ).join('') || `<tr><td colspan="2">لا يوجد موردين</td></tr>`;
 
                 // حركة المنتجات
                 document.getElementById('mov-body').innerHTML = data.products.slice(1).map(p => {
                     let sold = data.sales.slice(1).reduce((acc, s) => { let i = JSON.parse(s[2]||"[]").find(x=>x.Barcode==p[0]); return acc + (i?i.qty:0); }, 0);
                     let ret = data.returns.slice(1).reduce((acc, r) => { let i = JSON.parse(r[2]||"[]").find(x=>x.Barcode==p[0]); return acc + (i?i.qty:0); }, 0);
-                    return `<tr class="searchable-row" data-text="${p[1]}"><td>${p[1]}</td><td style="color:green">${sold}</td><td style="color:red">${ret}</td></tr>`;
+                    return `<tr class="searchable-row" data-text="${p[1]}"><td>${p[1]}</td><td style="color:var(--success); font-weight:bold;">${sold}</td><td style="color:var(--danger); font-weight:bold;">${ret}</td></tr>`;
                 }).join('');
 
             } catch(e) {}
         }
 
-        // ================= أدوات مساعدة =================
+        // ================= أدوات مساعدة وفلاتر =================
         function filterTable(inputId, tbodyId) {
             let val = document.getElementById(inputId).value.toLowerCase();
             document.querySelectorAll(`#${tbodyId} .searchable-row`).forEach(row => {
@@ -577,11 +617,22 @@
         }
 
         function exportTableToExcel(tableId, filename) {
-            const wb = XLSX.utils.table_to_book(document.getElementById(tableId));
+            const table = document.getElementById(tableId);
+            
+            // نسخة من الجدول للتعامل مع الـ inputs
+            const tempTable = table.cloneNode(true);
+            const inputs = tempTable.querySelectorAll('input');
+            inputs.forEach(input => {
+                const textNode = document.createTextNode(input.value);
+                input.parentNode.replaceChild(textNode, input);
+            });
+            // مسح عمود الحفظ
+            tempTable.querySelectorAll('th:last-child, td:last-child').forEach(el => el.remove());
+
+            const wb = XLSX.utils.table_to_book(tempTable, {sheet: filename});
             XLSX.writeFile(wb, `${filename}.xlsx`);
         }
         
-        // طباعة الكاشير
         function printReceipt(invoiceData) {
             const printWin = window.open('', '_blank', 'width=400,height=600');
             let itemsHtml = invoiceData.items.map(item => `<div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:14px;"><span style="flex:2; text-align:right;">${item.Name} (x${item.qty})</span><span style="flex:1; text-align:left; font-weight:bold;">${(item.Price * item.qty).toFixed(2)}</span></div>`).join('');
