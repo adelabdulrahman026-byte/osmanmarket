@@ -96,15 +96,15 @@
             <li class="nav-pos" onclick="switchTab('pos-view', this)"><a href="#"><div><i class="fas fa-desktop"></i> الكاشير</div></a></li>
             <li class="nav-return" onclick="switchTab('return-view', this)"><a href="#"><div><i class="fas fa-undo"></i> المرتجعات</div></a></li>
             <li class="nav-inv" onclick="switchTab('inventory-view', this)"><a href="#"><div><i class="fas fa-box-open"></i> إدارة المخزن</div></a></li>
-            <li class="nav-admin" onclick="switchTab('suppliers-view', this)"><a href="#"><div><i class="fas fa-truck-loading"></i> الموردين والمشتريات</div></a></li>
-            <li class="nav-admin" onclick="switchTab('invoices-view', this)"><a href="#"><div><i class="fas fa-file-invoice"></i> الفواتير اليدوية</div></a></li>
+            <li class="nav-sup" onclick="switchTab('suppliers-view', this)"><a href="#"><div><i class="fas fa-truck-loading"></i> الموردين والمشتريات</div></a></li>
+            <li class="nav-invc" onclick="switchTab('invoices-view', this)"><a href="#"><div><i class="fas fa-file-invoice"></i> الفواتير اليدوية</div></a></li>
             <li class="nav-delivery" id="nav-delivery-item" onclick="switchTab('delivery-view', this)">
                 <a href="#">
                     <div><i class="fas fa-motorcycle"></i> شاشة الدليفري</div>
                     <i class="fas fa-bell notification-bell" id="delivery-bell" style="display:none;"></i>
                 </a>
             </li>
-            <li class="nav-admin" onclick="switchTab('reports-view', this)"><a href="#"><div><i class="fas fa-chart-pie"></i> الحسابات وتقارير المدير</div></a></li>
+            <li class="nav-rep" onclick="switchTab('reports-view', this)"><a href="#"><div><i class="fas fa-chart-pie"></i> الحسابات وتقارير المدير</div></a></li>
         </ul>
     </aside>
 
@@ -177,7 +177,6 @@
                 </div>
                 <input type="text" id="search-inv" placeholder="🔍 ابحث عن منتج هنا للتعديل عليه..." class="barcode-input" style="margin-bottom:15px;" oninput="filterTable('search-inv', 'inv-body')">
                 <div style="overflow-x:auto;">
-                    <!-- الجدول ده هيطلع في الإكسيل بكل تفاصيله -->
                     <table id="inventory-table">
                         <thead><tr><th>الباركود</th><th>اسم المنتج</th><th>القسم</th><th>التكلفة</th><th>سعر البيع</th><th>الكمية المتاحة</th><th>تحديث</th></tr></thead>
                         <tbody id="inv-body"></tbody>
@@ -273,7 +272,7 @@
                     <h3><i class="fas fa-exchange-alt"></i> حركة المنتجات (مباع ومرتجع)</h3>
                     <button class="btn-submit" style="background:var(--success);" onclick="exportTableToExcel('movement-table', 'حركة_المنتجات')">تصدير إكسيل</button>
                 </div>
-                <input type="text" id="search-mov" placeholder="🔍 بحث في حركة المنتجات بالاسم..." class="barcode-input" style="margin-bottom:15px;" oninput="filterTable('search-mov', 'mov-body')">
+                <input type="text" id="search-mov" placeholder="🔍 بحث في حركة المنتجات بالاسم أو الباركود..." class="barcode-input" style="margin-bottom:15px;" oninput="filterTable('search-mov', 'mov-body')">
                 <div style="max-height: 400px; overflow-y:auto;">
                     <table id="movement-table"><thead><tr><th>المنتج</th><th>إجمالي مباع</th><th>إجمالي مرتجع</th></tr></thead><tbody id="mov-body"></tbody></table>
                 </div>
@@ -282,7 +281,7 @@
     </main>
 
     <script>
-        // ⚠️⚠️ ضع رابط جوجل سكريبت هنا ⚠️⚠️
+        // ⚠️⚠️ ضع رابط جوجل سكريبت بتاعك هنا ⚠️⚠️
         const API_URL = "https://script.google.com/macros/s/AKfycbzwu52nB-rlQ0kF3jagZDJHqB7CmBICoVJTSV9dvvmmWtV5NBCxa7DvA7ATMTyY1GmJuw/exec";
         
         let productsDB = []; let saleCart = []; let returnCart = []; let currentUser = null;
@@ -299,7 +298,7 @@
             }
         }
 
-        // ================= الدخول والصلاحيات =================
+        // ================= الدخول والصلاحيات المتقدمة (بحث بالكلمة) =================
         window.onload = () => {
             const savedUser = localStorage.getItem('ossman_user');
             if(savedUser) {
@@ -331,18 +330,55 @@
             document.getElementById('current-user-name').innerText = currentUser.name;
             document.getElementById('current-user-role').innerText = currentUser.role;
 
-            const role = currentUser.role;
-            if(role === 'مدير') {
+            const roleStr = (currentUser.role || "").toLowerCase();
+            document.querySelectorAll('.nav-menu li').forEach(li => li.style.display = 'none');
+
+            let firstTab = null;
+
+            if (roleStr.includes('مدير') || roleStr.includes('ادارة') || roleStr.includes('إدارة')) {
                 document.querySelectorAll('.nav-menu li').forEach(li => li.style.display = 'block');
-                switchTab('pos-view', document.querySelector('.nav-pos'));
-            } else if(role === 'كاشير') {
-                document.querySelector('.nav-pos').style.display = 'block';
-                document.querySelector('.nav-return').style.display = 'block';
-                document.querySelector('.nav-delivery').style.display = 'block';
-                switchTab('pos-view', document.querySelector('.nav-pos'));
-            } else if(role === 'مخازن') {
-                document.querySelector('.nav-inv').style.display = 'block';
-                switchTab('inventory-view', document.querySelector('.nav-inv'));
+                firstTab = 'pos-view';
+            } 
+            else {
+                if (roleStr.includes('كاشير') || roleStr.includes('مبيعات')) {
+                    document.querySelector('.nav-pos').style.display = 'block';
+                    document.querySelector('.nav-return').style.display = 'block';
+                    document.querySelector('.nav-delivery').style.display = 'block';
+                    if(!firstTab) firstTab = 'pos-view';
+                }
+                if (roleStr.includes('مخازن') || roleStr.includes('مخزن')) {
+                    document.querySelector('.nav-inv').style.display = 'block';
+                    if(!firstTab) firstTab = 'inventory-view';
+                }
+                if (roleStr.includes('موردين') || roleStr.includes('مشتريات')) {
+                    document.querySelector('.nav-sup').style.display = 'block';
+                    if(!firstTab) firstTab = 'suppliers-view';
+                }
+                if (roleStr.includes('فواتير') || roleStr.includes('فاتورة')) {
+                    document.querySelector('.nav-invc').style.display = 'block';
+                    if(!firstTab) firstTab = 'invoices-view';
+                }
+                if (roleStr.includes('حسابات') || roleStr.includes('تقارير')) {
+                    document.querySelector('.nav-rep').style.display = 'block';
+                    document.querySelector('.nav-sup').style.display = 'block'; 
+                    document.querySelector('.nav-invc').style.display = 'block'; 
+                    if(!firstTab) firstTab = 'reports-view';
+                }
+                if (roleStr.includes('دليفري') || roleStr.includes('توصيل')) {
+                    document.querySelector('.nav-delivery').style.display = 'block';
+                    if(!firstTab) firstTab = 'delivery-view';
+                }
+                if (roleStr.includes('مرتجعات')) {
+                    document.querySelector('.nav-return').style.display = 'block';
+                    if(!firstTab) firstTab = 'return-view';
+                }
+            }
+
+            if (firstTab) {
+                const tabElement = document.querySelector(`.nav-menu li[onclick*="${firstTab}"]`);
+                switchTab(firstTab, tabElement);
+            } else {
+                alert("صلاحيات غير كافية للدخول.");
             }
         }
 
@@ -472,7 +508,7 @@
             if(data && data.status === 'success') { alert("تم التحديث!"); loadProducts(); }
         }
 
-        // ================= الموردين =================
+        // ================= الموردين والمشتريات =================
         async function saveSupplier(e) {
             e.preventDefault();
             const payload = {
@@ -522,6 +558,7 @@
         function simulateNewOrder() {
             document.getElementById('delivery-alert-box').style.display = 'none';
             document.getElementById('delivery-action-box').style.display = 'block';
+            
             // تغيير لون التاب وتشغيل الجرس
             const navItem = document.getElementById('nav-delivery-item');
             navItem.classList.add('alert-bg');
@@ -602,7 +639,7 @@
                 document.getElementById('mov-body').innerHTML = data.products.slice(1).map(p => {
                     let sold = data.sales.slice(1).reduce((acc, s) => { let i = JSON.parse(s[2]||"[]").find(x=>x.Barcode==p[0]); return acc + (i?i.qty:0); }, 0);
                     let ret = data.returns.slice(1).reduce((acc, r) => { let i = JSON.parse(r[2]||"[]").find(x=>x.Barcode==p[0]); return acc + (i?i.qty:0); }, 0);
-                    return `<tr class="searchable-row" data-text="${p[1]}"><td>${p[1]}</td><td style="color:var(--success); font-weight:bold;">${sold}</td><td style="color:var(--danger); font-weight:bold;">${ret}</td></tr>`;
+                    return `<tr class="searchable-row" data-text="${p[1]} ${p[0]}"><td>${p[1]}<br><small>${p[0]}</small></td><td style="color:var(--success); font-weight:bold;">${sold}</td><td style="color:var(--danger); font-weight:bold;">${ret}</td></tr>`;
                 }).join('');
 
             } catch(e) {}
@@ -619,7 +656,7 @@
         function exportTableToExcel(tableId, filename) {
             const table = document.getElementById(tableId);
             
-            // نسخة من الجدول للتعامل مع الـ inputs
+            // نسخة من الجدول للتعامل مع الـ inputs عشان تظهر قيمتهم في الإكسيل
             const tempTable = table.cloneNode(true);
             const inputs = tempTable.querySelectorAll('input');
             inputs.forEach(input => {
@@ -633,6 +670,7 @@
             XLSX.writeFile(wb, `${filename}.xlsx`);
         }
         
+        // طباعة الكاشير
         function printReceipt(invoiceData) {
             const printWin = window.open('', '_blank', 'width=400,height=600');
             let itemsHtml = invoiceData.items.map(item => `<div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:14px;"><span style="flex:2; text-align:right;">${item.Name} (x${item.qty})</span><span style="flex:1; text-align:left; font-weight:bold;">${(item.Price * item.qty).toFixed(2)}</span></div>`).join('');
