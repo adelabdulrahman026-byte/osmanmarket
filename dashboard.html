@@ -13,6 +13,7 @@
             --primary: #3699FF; --success: #1BC5BD; --danger: #F64E60; --warning: #FFA800;
             --text-main: #3F4254; --text-muted: #B5B5C3; --border: #EBEDF3;
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
         body { background-color: var(--bg-light); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; position: relative; }
 
@@ -25,14 +26,14 @@
         .btn-login { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-login:hover { background: #1B84FF; }
 
-        .sidebar { width: 260px; background-color: var(--bg-dark); display: flex; flex-direction: column; color: white; z-index: 10; overflow-y: auto;}
+        .sidebar { width: 260px; background-color: var(--bg-dark); display: flex; flex-direction: column; color: white; z-index: 10; }
         .brand { padding: 25px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .brand img { width: 70px; height: 70px; border-radius: 15px; border: 2px solid var(--primary); margin-bottom: 10px; }
         .brand-name { font-size: 1.3rem; font-weight: 900; }
         
         .nav-menu { list-style: none; padding: 20px 0; flex: 1; }
         .nav-menu li { display: none; }
-        .nav-menu li a { display: flex; align-items: center; justify-content: space-between; padding: 15px 25px; color: var(--text-muted); text-decoration: none; font-weight: 600; gap: 15px; cursor: pointer; transition: 0.3s; }
+        .nav-menu li a { display: flex; align-items: center; justify-content: space-between; padding: 15px 25px; color: var(--text-muted); text-decoration: none; font-weight: 600; cursor: pointer; transition: 0.3s; }
         .nav-menu li.active a, .nav-menu li a:hover { background-color: rgba(54,153,255,0.1); color: var(--primary); border-right: 4px solid var(--primary); }
 
         .workspace { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -81,7 +82,7 @@
         .supplier-item-row { display: flex; gap: 15px; background: var(--bg-light); padding: 15px; border-radius: 10px; margin-bottom: 10px; align-items: flex-end; }
         .search-container { display: flex; gap: 15px; margin-bottom: 20px; width: 100%; }
 
-        /* ستايلات تنبيه الدليفري */
+        /* ستايلات تنبيه الدليفري القوية */
         .alert-bg { background-color: rgba(246, 78, 96, 0.2) !important; border-right: 4px solid var(--danger) !important; animation: blinker 1.5s linear infinite;}
         .alert-bg div, .alert-bg i { color: var(--danger) !important; font-weight: 900 !important; }
         .notification-bell { animation: ring 1s infinite; color: var(--danger); font-size: 1.2rem; }
@@ -91,7 +92,8 @@
 </head>
 <body>
 
-    <audio id="alertSound" src="https://actions.google.com/sounds/v1/communications/chime_1.ogg" loop></audio>
+    <!-- ملف صوت MP3 قوي جداً ومدعوم في كل المتصفحات -->
+    <audio id="alertSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" loop></audio>
 
     <div id="login-overlay">
         <div class="login-box">
@@ -300,14 +302,14 @@
             <div class="inventory-card" id="delivery-action-box" style="display:none; border:3px solid var(--danger);">
                 <h2 style="color:var(--danger); margin-bottom:15px;"><i class="fas fa-exclamation-circle"></i> يوجد أوردر أونلاين جديد جاهز للتوصيل!</h2>
                 
-                <div id="online-order-details-display" style="background:#FFF4F4; padding:20px; border-radius:10px; border-right:5px solid var(--danger); margin-bottom:20px; font-weight:bold; font-size:1.2rem; line-height:1.8;"></div>
+                <div id="online-order-details-display" style="background:#FFF4F4; padding:20px; border-radius:10px; border-right:5px solid var(--danger); margin-bottom:20px; font-size:1.1rem; line-height:1.8;"></div>
                 
                 <div style="display: flex; gap: 15px; margin-bottom: 20px;">
                     <button class="btn-submit" style="background:var(--success); flex:1; font-size:1.2rem;" onclick="stopDeliveryAlert()">
                         <i class="fas fa-check-circle"></i> استلام الطلب وإيقاف الإنذار
                     </button>
                     <button class="btn-submit" style="background:var(--primary); flex:1; font-size:1.2rem;" onclick="printDeliveryOrder()">
-                        <i class="fas fa-print"></i> طباعة ريسيت الدليفري
+                        <i class="fas fa-print"></i> طباعة ريسيت الدليفري للطيار
                     </button>
                 </div>
                 
@@ -401,6 +403,7 @@
             }
         }
 
+        // إجبار المتصفح يوافق على تشغيل الصوت
         document.body.addEventListener('click', function() {
             if(!audioUnlocked) {
                 alertAudio.play().then(() => {
@@ -493,6 +496,9 @@
             else if(tabId === 'reports-view') loadAdminReports();
         }
 
+        // ===============================================
+        // شاشة الدليفري (حل مشكلة ظهور المنتجات والصوت)
+        // ===============================================
         async function checkOnlineOrders(manual = false) {
             try {
                 if(manual && event) {
@@ -510,19 +516,37 @@
                     document.getElementById('delivery-action-box').style.display = 'block';
                     
                     currentPendingOrderId = pendingOrder[0];
-                    currentPendingOrderDetails = pendingOrder[4] ? pendingOrder[4] : 'رقم الطلب: ' + pendingOrder[0];
+                    let orderDetailsStr = pendingOrder[4] ? pendingOrder[4] : '';
+                    
+                    // السحر هنا: بنجيب المنتجات المطلوبة من شيت المبيعات مباشرة عشان مفيش حاجة تضيع
+                    let itemsDisplay = '';
+                    let saleMatch = data.sales ? data.sales.slice(1).find(s => s[0] == currentPendingOrderId) : null;
+                    if(saleMatch) {
+                        try {
+                            let items = JSON.parse(saleMatch[2]);
+                            itemsDisplay = '<ul style="padding-right:20px; margin-top:10px; list-style-type:circle;">' + items.map(i => `<li><strong>${i.Name}</strong> - العدد: ${i.qty} (السعر: ${i.Price * i.qty} ج.م)</li>`).join('') + '</ul>';
+                            itemsDisplay += `<br><strong style="color:var(--primary); font-size:1.3rem;">الإجمالي المطلوب تحصيله: ${saleMatch[3]} ج.م</strong>`;
+                            itemsDisplay += `<br><strong>طريقة الدفع:</strong> <span style="color:var(--success);">${saleMatch[7] || 'كاش'}</span>`;
+                        } catch(e) {}
+                    }
+
+                    currentPendingOrderDetails = `
+                        <i class="fas fa-receipt"></i> <strong>رقم الطلب:</strong> ${currentPendingOrderId}<br><br>
+                        <div style="border:1px solid #ccc; padding:10px; border-radius:8px; margin-bottom:10px;">
+                            <strong>بيانات العميل والعنوان:</strong><br>${orderDetailsStr.replace(/\n/g, '<br>')}
+                        </div>
+                        <strong>المنتجات المطلوبة في الأوردر:</strong>
+                        ${itemsDisplay || '<br><span style="color:red;">المنتجات غير متوفرة في الفاتورة</span>'}
+                    `;
 
                     document.getElementById('del-order-id').value = currentPendingOrderId;
-                    document.getElementById('online-order-details-display').innerHTML = `
-                        <i class="fas fa-receipt"></i> تفاصيل الفاتورة والعميل:<br><br>
-                        ${currentPendingOrderDetails.replace(/\n/g, '<br>')}
-                    `;
+                    document.getElementById('online-order-details-display').innerHTML = currentPendingOrderDetails;
                     
                     const navItem = document.getElementById('nav-delivery-item');
                     navItem.classList.add('alert-bg');
                     document.getElementById('delivery-bell').style.display = 'inline-block';
                     
-                    if(alertAudio.paused && audioUnlocked) {
+                    if(alertAudio.paused) {
                         alertAudio.play().catch(e => console.log("الصوت محتاج تفاعل", e));
                     }
                 } else if(manual) {
@@ -545,8 +569,6 @@
         function printDeliveryOrder() {
             if(!currentPendingOrderDetails) return alert("لا توجد تفاصيل للطباعة!");
             const printWin = window.open('', '_blank', 'width=400,height=600');
-            const detailsHtml = currentPendingOrderDetails.replace(/\n/g, '<br>');
-            
             const html = `
                 <html dir="rtl" lang="ar">
                 <head>
@@ -555,7 +577,7 @@
                         .header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 10px; }
                         .header img { width: 70px; height: 70px; border-radius: 8px; margin-bottom: 5px; }
                         .header h2 { margin: 5px 0; font-size: 18px; }
-                        .content { line-height: 2; font-weight: bold; }
+                        .content { line-height: 2; font-size: 15px; }
                     </style>
                 </head>
                 <body>
@@ -566,7 +588,7 @@
                         <p>الوقت: ${new Date().toLocaleString('ar-EG')}</p>
                     </div>
                     <div class="content">
-                        ${detailsHtml}
+                        ${currentPendingOrderDetails}
                     </div>
                     <div style="border-top:2px dashed #000; margin-top:15px; padding-top:10px; text-align:center; font-weight:bold;">
                         <p>شكراً لطلبك من عثمان ماركت</p>
@@ -603,6 +625,9 @@
             btn.innerHTML = '<i class="fas fa-motorcycle"></i> اعتماد خروج الطيار بالطلب';
         }
 
+        // =====================================
+        // الكاشير والمخازن والتقارير
+        // =====================================
         async function loadProducts() {
             const data = await fetchAPI({ action: "getAllData" });
             if(data && data.products) {
@@ -686,19 +711,30 @@
         }
 
         async function renderInventoryEdit() {
-            document.getElementById('inv-body').innerHTML = `<tr><td colspan="7" style="text-align:center;">جاري التحميل...</td></tr>`;
+            const tbody = document.getElementById('rep-inventory');
+            if(!tbody) return;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">جاري التحميل...</td></tr>`;
             try {
                 const data = await fetchAPI({ action: "getAllData" });
                 if(data && data.products) {
-                    document.getElementById('inv-body').innerHTML = data.products.slice(1).map(p => `
+                    tbody.innerHTML = data.products.slice(1).map(p => {
+                        let sold = data.sales ? data.sales.slice(1).reduce((acc, s) => { let i = JSON.parse(s[2]||"[]").find(x=>x.Barcode==p[0]); return acc + (i?i.qty:0); }, 0) : 0;
+                        let ret = data.returns ? data.returns.slice(1).reduce((acc, r) => { let i = JSON.parse(r[2]||"[]").find(x=>x.Barcode==p[0]); return acc + (i?i.qty:0); }, 0) : 0;
+                        
+                        return `
                         <tr class="searchable-row" data-text="${p[1]} ${p[0]}">
-                            <td>${p[0]}</td><td style="font-weight:bold;">${p[1]}</td><td>${p[2]}</td><td>${p[3]}</td>
+                            <td>${p[1]}<br><small>${p[0]}</small></td>
+                            <td style="color:var(--success); font-weight:bold;">${sold}</td>
+                            <td style="color:var(--danger); font-weight:bold;">${ret}</td>
                             <td><input type="number" id="ep-${p[0]}" class="edit-input" value="${p[4]}"></td>
                             <td><input type="number" id="es-${p[0]}" class="edit-input" value="${p[5]}"></td>
                             <td><button class="btn-small" onclick="updateInvItem('${p[0]}')">حفظ</button></td>
-                        </tr>`).join('');
+                        </tr>`;
+                    }).join('');
                 }
-            } catch(e){}
+            } catch(e){
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">خطأ في الاتصال بالبيانات</td></tr>`;
+            }
         }
 
         async function updateInvItem(barcode) {
@@ -711,7 +747,7 @@
             e.preventDefault();
             const payload = { action: 'saveSupplier', supplier: document.getElementById('sup-name').value, company: document.getElementById('sup-company').value, product: document.getElementById('sup-product').value, qty: document.getElementById('sup-qty').value, amount: document.getElementById('sup-amount').value };
             const data = await fetchAPI(payload);
-            if(data && data.status === 'success') { printManualReceipt(`إيصال مورد: ${payload.supplier}`, `الشركة: ${payload.company}<br>البضاعة: ${payload.product}<br>الالكمية: ${payload.qty}`, payload.amount); alert("تم الحفظ!"); e.target.reset(); }
+            if(data && data.status === 'success') { printManualReceipt(`إيصال مورد: ${payload.supplier}`, `الشركة: ${payload.company}<br>البضاعة: ${payload.product}<br>الكمية: ${payload.qty}`, payload.amount); alert("تم الحفظ!"); e.target.reset(); }
         }
 
         function printManualInvoice(e) {
@@ -730,7 +766,7 @@
             try {
                 const data = await fetchAPI({ action: "getAllData" });
                 if(!data || !data.sales) {
-                    document.getElementById('rep-cashiers').innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">لا توجد بيانات أو فشل الاتصال</td></tr>`;
+                    document.getElementById('rep-cashiers').innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">لا توجد بيانات مبيعات</td></tr>`;
                     return;
                 }
 
@@ -783,12 +819,12 @@
             document.querySelectorAll(`#${tbodyId} .searchable-row`).forEach(row => { row.style.display = row.getAttribute('data-text').toLowerCase().includes(val) ? '' : 'none'; });
         }
 
-        function exportTableToExcel(tableId, filename) {
-            const table = document.getElementById(tableId);
+        function exportToExcel() {
+            const table = document.getElementById("inventory-report-table");
             const tempTable = table.cloneNode(true);
             tempTable.querySelectorAll('input').forEach(input => { input.parentNode.replaceChild(document.createTextNode(input.value), input); });
             tempTable.querySelectorAll('th:last-child, td:last-child').forEach(el => el.remove());
-            XLSX.writeFile(XLSX.utils.table_to_book(tempTable, {sheet: filename}), `${filename}.xlsx`);
+            XLSX.writeFile(XLSX.utils.table_to_book(tempTable, {sheet: "المخزن الحالي"}), "Osman_Market_Inventory.xlsx");
         }
     </script>
 </body>
