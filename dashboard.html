@@ -14,54 +14,74 @@
             --text-main: #3F4254; --text-muted: #B5B5C3; --border: #EBEDF3;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
-        body { background-color: var(--bg-light); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+        body { background-color: var(--bg-light); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; position: relative; }
 
         #login-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, var(--bg-dark), #112240); z-index: 9999; display: flex; justify-content: center; align-items: center; }
         .login-box { background: var(--card-bg); padding: 40px; border-radius: 20px; width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .login-box img { width: 100px; height: 100px; border-radius: 20px; border: 3px solid var(--primary); margin-bottom: 20px; }
-        .login-input { width: 100%; padding: 15px; margin-bottom: 15px; border: 2px solid var(--border); border-radius: 10px; font-size: 1.1rem; outline: none; }
-        .btn-login { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
+        .login-box h2 { margin-bottom: 25px; color: var(--text-main); font-weight: 900; }
+        .login-input { width: 100%; padding: 15px; margin-bottom: 15px; border: 2px solid var(--border); border-radius: 10px; font-size: 1.1rem; outline: none; transition: 0.3s; }
+        .login-input:focus { border-color: var(--primary); }
+        .btn-login { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-login:hover { background: #1B84FF; }
 
         .sidebar { width: 260px; background-color: var(--bg-dark); display: flex; flex-direction: column; color: white; z-index: 10; overflow-y: auto;}
         .brand { padding: 25px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .brand img { width: 70px; height: 70px; border-radius: 15px; border: 2px solid var(--primary); margin-bottom: 10px; }
-        .nav-menu { list-style: none; padding: 10px 0; flex: 1; }
-        .nav-menu li { display: none; } 
-        .nav-menu li a { display: flex; align-items: center; justify-content: space-between; padding: 15px 25px; color: var(--text-muted); text-decoration: none; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .brand-name { font-size: 1.3rem; font-weight: 900; }
+        
+        .nav-menu { list-style: none; padding: 20px 0; flex: 1; }
+        .nav-menu li { display: none; }
+        .nav-menu li a { display: flex; align-items: center; justify-content: space-between; padding: 15px 25px; color: var(--text-muted); text-decoration: none; font-weight: 600; gap: 15px; cursor: pointer; transition: 0.3s; }
         .nav-menu li.active a, .nav-menu li a:hover { background-color: rgba(54,153,255,0.1); color: var(--primary); border-right: 4px solid var(--primary); }
 
         .workspace { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .top-header { background: var(--card-bg); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); z-index: 5; }
         .status-badge { padding: 6px 15px; border-radius: 20px; font-weight: 700; font-size: 0.9rem; }
         .status-online { background-color: #D1F3E0; color: #0A7C43; }
-        .btn-logout { background: none; border: none; color: var(--danger); font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .btn-logout { background: none; border: none; color: var(--danger); font-weight: bold; cursor: pointer; display: flex; gap: 5px; align-items: center; font-size: 1rem; }
 
         .page-view { display: none; height: calc(100vh - 70px); overflow-y: auto; padding: 20px; }
         .page-view.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card { background: var(--card-bg); border-radius: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); padding: 20px; margin-bottom: 20px;}
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-        .form-group label { display: block; font-weight: 700; margin-bottom: 8px; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 8px; outline: none; font-family: 'Tajawal'; }
-        .btn-submit { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        
-        table { width: 100%; border-collapse: collapse; }
-        th { background: var(--bg-light); padding: 15px; text-align: right; color: var(--text-muted); }
-        td { padding: 15px; border-bottom: 1px solid var(--border); font-weight: 600; }
-        
         .pos-container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; height: 100%; }
         .pos-left { display: flex; flex-direction: column; gap: 20px; height: 100%; }
-        .barcode-input { width: 100%; padding: 15px 20px; font-size: 1.2rem; border: 2px solid var(--border); border-radius: 10px; }
+        .barcode-section, .cart-section, .pos-right { background: var(--card-bg); border-radius: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); padding: 20px; }
+        .barcode-input { flex: 1; padding: 15px 20px; font-size: 1.2rem; border: 2px solid var(--border); border-radius: 10px; outline: none; font-weight: 600; width: 100%; }
+        .barcode-input:focus { border-color: var(--primary); }
+        .cart-table { width: 100%; border-collapse: collapse; }
+        .cart-table th { background: var(--bg-light); padding: 15px; text-align: right; color: var(--text-muted); }
+        .cart-table td { padding: 15px; border-bottom: 1px solid var(--border); font-weight: 600; }
         .qty-btn { width: 32px; height: 32px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; background: var(--bg-light); }
+        
         .pos-right { display: flex; flex-direction: column; }
         .btn-pay { width: 100%; padding: 20px; background: var(--success); color: white; border: none; border-radius: 12px; font-size: 1.5rem; font-weight: 900; cursor: pointer; margin-top: auto; }
-        
-        .report-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
-        .report-box { background: var(--card-bg); padding: 20px; border-radius: 12px; text-align: center; border-bottom: 4px solid var(--primary); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .edit-input { width: 80px; padding: 8px; border: 1px solid var(--border); border-radius: 5px; font-weight: bold; text-align: center; }
-        .btn-small { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-pay:disabled { background: #B5B5C3; }
+        .input-group input { width: 100%; padding: 15px; font-size: 1.8rem; border: 2px solid var(--border); border-radius: 10px; margin-top: 8px; font-weight: bold; }
 
+        #return-view .barcode-input:focus { border-color: var(--warning); }
+        #return-view .btn-pay { background: var(--warning); }
+        #return-view .btn-pay:hover { background: #E59600; }
+
+        .inventory-card { background: var(--card-bg); border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); max-width: 1000px; margin: 0 auto; margin-bottom: 20px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+        .form-group label { display: block; font-weight: 700; margin-bottom: 8px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 10px; outline: none; font-size: 1rem; font-family: 'Tajawal';}
+        .btn-submit { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 10px; font-size: 1.2rem; font-weight: bold; width: 100%; cursor: pointer; }
+
+        .report-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+        .report-box { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; border-bottom: 4px solid var(--primary); }
+        .report-box h4 { color: var(--text-muted); margin-bottom: 10px; font-size: 1.1rem; }
+        .report-box h2 { color: var(--text-main); font-size: 2rem; font-weight: 900; }
+        .table-responsive { overflow-x: auto; background: var(--card-bg); border-radius: 16px; padding: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        .edit-input { padding: 8px; width: 90px; border: 1px solid var(--border); border-radius: 5px; font-weight: bold; text-align: center; }
+        .btn-small { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        
+        .supplier-item-row { display: flex; gap: 15px; background: var(--bg-light); padding: 15px; border-radius: 10px; margin-bottom: 10px; align-items: flex-end; }
+        .search-container { display: flex; gap: 15px; margin-bottom: 20px; width: 100%; }
+
+        /* ستايلات تنبيه الدليفري */
         .alert-bg { background-color: rgba(246, 78, 96, 0.2) !important; border-right: 4px solid var(--danger) !important; animation: blinker 1.5s linear infinite;}
         .alert-bg div, .alert-bg i { color: var(--danger) !important; font-weight: 900 !important; }
         .notification-bell { animation: ring 1s infinite; color: var(--danger); font-size: 1.2rem; }
@@ -86,7 +106,10 @@
     </div>
 
     <aside class="sidebar">
-        <div class="brand"><img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" alt="Logo"><div class="brand-name">OSSMAN MARKET</div></div>
+        <div class="brand">
+            <img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" alt="Logo">
+            <div class="brand-name">OSSMAN MARKET</div>
+        </div>
         <ul class="nav-menu" id="main-menu">
             <li class="nav-pos" onclick="switchTab('pos-view', this)"><a href="#"><div><i class="fas fa-desktop"></i> شاشة المبيعات</div></a></li>
             <li class="nav-return" onclick="switchTab('return-view', this)"><a href="#"><div><i class="fas fa-undo"></i> شاشة المرتجعات</div></a></li>
@@ -271,6 +294,7 @@
                 <i class="fas fa-motorcycle" style="font-size:4rem; color:var(--text-muted); margin-bottom:15px;"></i>
                 <h2>شاشة انتظار الأوردرات</h2>
                 <p style="color:var(--text-muted);">السيستم بيفحص الشيت تلقائياً كل 10 ثواني، الأوردر الأونلاين هيرن هنا أوتوماتيك ويظهر إشعار أحمر.</p>
+                <button class="btn-submit" style="width:auto; margin-top:20px; background:var(--secondary);" onclick="checkOnlineOrders(true)"><i class="fas fa-sync"></i> فحص الأوردرات يدوياً</button>
             </div>
             
             <div class="inventory-card" id="delivery-action-box" style="display:none; border:3px solid var(--danger);">
@@ -324,6 +348,28 @@
                     </table>
                 </div>
             </div>
+
+            <div class="card">
+                <h3 style="margin-bottom:15px;"><i class="fas fa-truck"></i> حسابات وفواتير الموردين (المشتريات)</h3>
+                <table class="cart-table">
+                    <thead><tr><th>اسم المورد</th><th>إجمالي المبالغ المستحقة والمسددة</th></tr></thead>
+                    <tbody id="rep-suppliers"></tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                    <h3><i class="fas fa-exchange-alt"></i> حركة جميع المنتجات (مباع ومرتجع أوتوماتيك)</h3>
+                    <button class="btn-submit" style="background:var(--success); width:auto;" onclick="exportTableToExcel('movement-table', 'حركة_المنتجات_العامة')">تصدير حركة الأصناف</button>
+                </div>
+                <input type="text" id="search-mov" placeholder="🔍 ابحث في حركة البضائع بالاسم أو الباركود..." class="barcode-input" style="margin-bottom:15px;" oninput="filterTable('search-mov', 'mov-body')">
+                <div style="max-height: 400px; overflow-y:auto;">
+                    <table id="movement-table" class="cart-table">
+                        <thead><tr><th>المنتج والباركود</th><th>إجمالي مباع</th><th>إجمالي مرتجع</th></tr></thead>
+                        <tbody id="mov-body"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -339,10 +385,6 @@
         let audioUnlocked = false;
         const alertAudio = document.getElementById('alertSound');
 
-        // =====================================
-        // المحرك الأساسي للـ Fetch (تخطي الـ CORS)
-        // بيبعت كل حاجة كأنها POST عشان يضمن إن جوجل تستقبلها وترد
-        // =====================================
         async function fetchAPI(payload) {
             try {
                 const res = await fetch(API_URL, {
@@ -451,10 +493,15 @@
             else if(tabId === 'reports-view') loadAdminReports();
         }
 
-        async function checkOnlineOrders() {
+        async function checkOnlineOrders(manual = false) {
             try {
-                // تعديل هنا: بنستخدم الـ POST السليم
+                if(manual && event) {
+                    event.target.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الفحص...';
+                }
                 const data = await fetchAPI({ action: "getAllData" });
+                if(manual && event) {
+                    event.target.innerHTML = '<i class="fas fa-sync"></i> فحص الأوردرات يدوياً';
+                }
                 if(!data || !data.delivery) return;
                 
                 let pendingOrder = data.delivery.slice(1).find(d => d[2] === 'قيد الانتظار');
@@ -478,8 +525,12 @@
                     if(alertAudio.paused && audioUnlocked) {
                         alertAudio.play().catch(e => console.log("الصوت محتاج تفاعل", e));
                     }
+                } else if(manual) {
+                    alert("لا توجد أوردرات أونلاين جديدة حالياً.");
                 }
-            } catch(e){}
+            } catch(e){
+                if(manual) alert("فشل الاتصال أثناء جلب الأوردرات.");
+            }
         }
 
         function stopDeliveryAlert() {
@@ -553,7 +604,6 @@
         }
 
         async function loadProducts() {
-            // تعديل هنا: بنستخدم الـ POST
             const data = await fetchAPI({ action: "getAllData" });
             if(data && data.products) {
                 productsDB = data.products.slice(1).map(r => ({Barcode:r[0], Name:r[1], Category:r[2], Cost:r[3], Price:r[4], Stock:r[5]}));
@@ -638,7 +688,6 @@
         async function renderInventoryEdit() {
             document.getElementById('inv-body').innerHTML = `<tr><td colspan="7" style="text-align:center;">جاري التحميل...</td></tr>`;
             try {
-                // تعديل هنا: بنستخدم الـ POST
                 const data = await fetchAPI({ action: "getAllData" });
                 if(data && data.products) {
                     document.getElementById('inv-body').innerHTML = data.products.slice(1).map(p => `
@@ -679,7 +728,6 @@
         async function loadAdminReports() {
             document.getElementById('rep-cashiers').innerHTML = `<tr><td colspan="5" style="text-align:center;">جاري التحميل...</td></tr>`;
             try {
-                // تعديل هنا: الـ try catch عشان لو مفيش داتا خالص
                 const data = await fetchAPI({ action: "getAllData" });
                 if(!data || !data.sales) {
                     document.getElementById('rep-cashiers').innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">لا توجد بيانات أو فشل الاتصال</td></tr>`;
@@ -687,7 +735,7 @@
                 }
 
                 const t = new Date(); let gDay=0, gWeek=0, gMonth=0, gYear=0; 
-                let cashiers = {}; let deliveries = {}; 
+                let cashiers = {}; let deliveries = {}; let suppliers = {};
                 let startOfWeek = new Date(t); startOfWeek.setDate(t.getDate() - t.getDay()); startOfWeek.setHours(0,0,0,0);
 
                 data.sales.slice(1).forEach(s => {
@@ -699,13 +747,30 @@
                     if(d.getFullYear() === t.getFullYear()) { gYear += amt; cashiers[cashier].year += amt; }
                 });
 
-                document.getElementById('rep-day').innerText = gDay.toFixed(2); document.getElementById('rep-week').innerText = gWeek.toFixed(2);
-                document.getElementById('rep-month').innerText = gMonth.toFixed(2); document.getElementById('rep-year').innerText = gYear.toFixed(2);
+                document.getElementById('rep-global-day').innerText = gDay.toFixed(2); 
+                document.getElementById('rep-global-week').innerText = gWeek.toFixed(2);
+                document.getElementById('rep-global-month').innerText = gMonth.toFixed(2); 
+                document.getElementById('rep-global-year').innerText = gYear.toFixed(2);
 
-                document.getElementById('rep-cashiers').innerHTML = Object.keys(cashiers).map(c => `<tr><td>${c}</td><td>${cashiers[c].day}</td><td>${cashiers[c].week}</td><td>${cashiers[c].month}</td><td>${cashiers[c].year}</td></tr>`).join('') || `<tr><td colspan="5">لا يوجد مبيعات</td></tr>`;
+                document.getElementById('rep-cashiers').innerHTML = Object.keys(cashiers).map(c => `<tr><td>${c}</td><td>${cashiers[c].day.toFixed(2)}</td><td>${cashiers[c].week.toFixed(2)}</td><td>${cashiers[c].month.toFixed(2)}</td><td>${cashiers[c].year.toFixed(2)}</td></tr>`).join('') || `<tr><td colspan="5">لا يوجد مبيعات</td></tr>`;
 
-                data.delivery.slice(1).forEach(d => { if(d[1] && d[1] !== 'طلب جديد (أونلاين)') { let man = d[1]; if(!deliveries[man]) deliveries[man] = 0; deliveries[man]++; } });
+                if(data.delivery) {
+                    data.delivery.slice(1).forEach(d => { if(d[1] && d[1] !== 'طلب جديد (أونلاين)') { let man = d[1]; if(!deliveries[man]) deliveries[man] = 0; deliveries[man]++; } });
+                }
                 document.getElementById('rep-delivery-reports').innerHTML = Object.keys(deliveries).map(d => `<tr><td>${d}</td><td style="color:var(--primary); font-weight:bold;">${deliveries[d]} أوردر ناجح</td></tr>`).join('') || `<tr><td colspan="2">لا توجد بيانات دليفري معتمدة</td></tr>`;
+
+                if(data.suppliers) {
+                    data.suppliers.slice(1).forEach(s => { let sup = s[0]; let amt = parseFloat(s[4]) || 0; if(!suppliers[sup]) suppliers[sup] = 0; suppliers[sup] += amt; });
+                }
+                document.getElementById('rep-suppliers').innerHTML = Object.keys(suppliers).map(s => `<tr><td>${s}</td><td style="color:var(--danger); font-weight:bold;">${suppliers[s].toFixed(2)} ج.م</td></tr>`).join('') || `<tr><td colspan="2">لا يوجد موردين</td></tr>`;
+
+                if(data.products) {
+                    document.getElementById('mov-body').innerHTML = data.products.slice(1).map(p => {
+                        let sold = data.sales ? data.sales.slice(1).reduce((acc, s) => { let i = JSON.parse(s[2]||"[]").find(x=>x.Barcode==p[0]); return acc + (i?i.qty:0); }, 0) : 0;
+                        let ret = data.returns ? data.returns.slice(1).reduce((acc, r) => { let i = JSON.parse(r[2]||"[]").find(x=>x.Barcode==p[0]); return acc + (i?i.qty:0); }, 0) : 0;
+                        return `<tr class="searchable-row" data-text="${p[1]} ${p[0]}"><td>${p[1]}<br><small>${p[0]}</small></td><td style="color:var(--success); font-weight:bold;">${sold}</td><td style="color:var(--danger); font-weight:bold;">${ret}</td></tr>`;
+                    }).join('');
+                }
 
             } catch(e) {
                 console.error(e);
@@ -718,12 +783,12 @@
             document.querySelectorAll(`#${tbodyId} .searchable-row`).forEach(row => { row.style.display = row.getAttribute('data-text').toLowerCase().includes(val) ? '' : 'none'; });
         }
 
-        function exportToExcel() {
-            const table = document.getElementById("inventory-report-table");
+        function exportTableToExcel(tableId, filename) {
+            const table = document.getElementById(tableId);
             const tempTable = table.cloneNode(true);
             tempTable.querySelectorAll('input').forEach(input => { input.parentNode.replaceChild(document.createTextNode(input.value), input); });
             tempTable.querySelectorAll('th:last-child, td:last-child').forEach(el => el.remove());
-            XLSX.writeFile(XLSX.utils.table_to_book(tempTable, {sheet: "المخزن الحالي"}), "Osman_Market_Inventory.xlsx");
+            XLSX.writeFile(XLSX.utils.table_to_book(tempTable, {sheet: filename}), `${filename}.xlsx`);
         }
     </script>
 </body>
