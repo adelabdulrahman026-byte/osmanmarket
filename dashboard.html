@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSSMAN MARKET - لوحة النظام</title>
+    <title>OSSMAN MARKET - لوحة النظام الشاملة</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -13,7 +13,6 @@
             --primary: #3699FF; --success: #1BC5BD; --danger: #F64E60; --warning: #FFA800;
             --text-main: #3F4254; --text-muted: #B5B5C3; --border: #EBEDF3;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
         body { background-color: var(--bg-light); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; position: relative; }
 
@@ -26,14 +25,14 @@
         .btn-login { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-login:hover { background: #1B84FF; }
 
-        .sidebar { width: 260px; background-color: var(--bg-dark); display: flex; flex-direction: column; color: white; z-index: 10; }
+        .sidebar { width: 260px; background-color: var(--bg-dark); display: flex; flex-direction: column; color: white; z-index: 10; overflow-y: auto;}
         .brand { padding: 25px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .brand img { width: 70px; height: 70px; border-radius: 15px; border: 2px solid var(--primary); margin-bottom: 10px; }
         .brand-name { font-size: 1.3rem; font-weight: 900; }
         
         .nav-menu { list-style: none; padding: 20px 0; flex: 1; }
         .nav-menu li { display: none; }
-        .nav-menu li a { display: flex; align-items: center; justify-content: space-between; padding: 15px 25px; color: var(--text-muted); text-decoration: none; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .nav-menu li a { display: flex; align-items: center; justify-content: space-between; padding: 15px 25px; color: var(--text-muted); text-decoration: none; font-weight: 600; gap: 15px; cursor: pointer; transition: 0.3s; }
         .nav-menu li.active a, .nav-menu li a:hover { background-color: rgba(54,153,255,0.1); color: var(--primary); border-right: 4px solid var(--primary); }
 
         .workspace { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -358,13 +357,37 @@
         let productsDB = []; let saleCart = []; let returnCart = []; let currentUser = null;
         let supplierInvoices = JSON.parse(localStorage.getItem('ossman_supplier_invoices') || '[]');
         
-        // متغيرات الدليفري الشاملة
         let currentPendingOrderDetails = "";
         let currentPendingOrderId = "";
         let audioUnlocked = false;
         const alertAudio = document.getElementById('alertSound');
 
-        // كود سحري لتفعيل الصوت بمجرد ما المستخدم يعمل كليك في أي حتة بالشاشة
+        // =====================================
+        // المحرك الأساسي للـ Fetch (بيدعم تخطي الـ CORS)
+        // =====================================
+        async function fetchAPI(payload, isGet = false, getAction = "") {
+            try {
+                let res;
+                if (isGet) {
+                    res = await fetch(API_URL + "?action=" + getAction, { redirect: 'follow' });
+                } else {
+                    res = await fetch(API_URL, {
+                        method: 'POST',
+                        redirect: 'follow', // السماح بإعادة التوجيه (ضروري لجوجل سكريبت)
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8' // سر تخطي مشكلة الـ CORS
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                }
+                const text = await res.text();
+                return JSON.parse(text);
+            } catch(e) {
+                console.error("فشل الاتصال:", e);
+                return null;
+            }
+        }
+
         document.body.addEventListener('click', function() {
             if(!audioUnlocked) {
                 alertAudio.play().then(() => {
@@ -382,7 +405,7 @@
                 applyPermissions();
                 loadProducts();
                 renderSupplierTable();
-                setInterval(checkOnlineOrders, 10000); // يفحص كل 10 ثواني
+                setInterval(checkOnlineOrders, 10000); 
             } else {
                 document.getElementById('login-overlay').style.display = 'flex';
             }
@@ -393,29 +416,24 @@
             const btn = document.getElementById('btn-login-submit');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحقق...';
             
-            // تفعيل الصوت عند الضغط على الدخول
             if(!audioUnlocked) {
                 alertAudio.play().then(() => { alertAudio.pause(); audioUnlocked = true; }).catch(e=>{});
             }
 
             const payload = { action: 'login', username: document.getElementById('login-username').value, password: document.getElementById('login-password').value };
 
-            try {
-                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-                const data = await response.json();
-                
-                if(data && data.status === 'success') {
-                    currentUser = data.user;
-                    localStorage.setItem('ossman_user', JSON.stringify(currentUser));
-                    applyPermissions();
-                    loadProducts();
-                    renderSupplierTable();
-                    setInterval(checkOnlineOrders, 10000);
-                } else {
-                    alert(data.message || "بيانات الدخول غير صحيحة");
-                }
-            } catch(error) {
-                alert("تعذر الاتصال بقاعدة البيانات.");
+            // استخدام المحرك الجديد (fetchAPI) بدلاً من fetch القديمة
+            const data = await fetchAPI(payload);
+            
+            if(data && data.status === 'success') {
+                currentUser = data.user;
+                localStorage.setItem('ossman_user', JSON.stringify(currentUser));
+                applyPermissions();
+                loadProducts();
+                renderSupplierTable();
+                setInterval(checkOnlineOrders, 10000);
+            } else {
+                alert(data ? (data.message || "بيانات الدخول غير صحيحة") : "تعذر الاتصال بقاعدة البيانات. راجع الإعدادات!");
             }
             btn.innerHTML = 'دخول';
         }
@@ -463,21 +481,17 @@
             else if(tabId === 'reports-view') loadAdminReports();
         }
 
-        // =====================================
-        // نظام الدليفري واستقبال الطلبات الذكي
-        // =====================================
         async function checkOnlineOrders() {
             try {
-                const res = await fetch(API_URL + "?action=getAllData");
-                const data = await res.json();
+                // استخدام المحرك الجديد
+                const data = await fetchAPI(null, true, "getAllData");
+                if(!data) return;
                 
-                // البحث عن أول أوردر لسه "قيد الانتظار"
                 let pendingOrder = data.delivery.slice(1).find(d => d[2] === 'قيد الانتظار');
                 if(pendingOrder) {
                     document.getElementById('delivery-alert-box').style.display = 'none';
                     document.getElementById('delivery-action-box').style.display = 'block';
                     
-                    // حفظ البيانات في المتغيرات للطباعة
                     currentPendingOrderId = pendingOrder[0];
                     currentPendingOrderDetails = pendingOrder[4] ? pendingOrder[4] : 'رقم الطلب: ' + pendingOrder[0];
 
@@ -487,12 +501,10 @@
                         ${currentPendingOrderDetails.replace(/\n/g, '<br>')}
                     `;
                     
-                    // تنشيط الإنذار الجانبي
                     const navItem = document.getElementById('nav-delivery-item');
                     navItem.classList.add('alert-bg');
                     document.getElementById('delivery-bell').style.display = 'inline-block';
                     
-                    // تشغيل الصوت
                     if(alertAudio.paused && audioUnlocked) {
                         alertAudio.play().catch(e => console.log("الصوت محتاج تفاعل", e));
                     }
@@ -556,30 +568,25 @@
             const btn = e.target.querySelector('button'); 
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التسجيل...';
             
-            try {
-                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-                const data = await response.json();
-                if(data && data.status === 'success') {
-                    alert("تم إسناد الطلب بنجاح للطيار وتغيير حالته!");
-                    document.getElementById('delivery-alert-box').style.display = 'block';
-                    document.getElementById('delivery-action-box').style.display = 'none';
-                    document.getElementById('deliveryForm').style.display = 'none';
-                    e.target.reset();
-                    loadAdminReports(); // تحديث تقارير الطيارين
-                }
-            } catch(e) { alert("خطأ في الاتصال"); }
+            const data = await fetchAPI(payload);
+            if(data && data.status === 'success') {
+                alert("تم إسناد الطلب بنجاح للطيار وتغيير حالته!");
+                document.getElementById('delivery-alert-box').style.display = 'block';
+                document.getElementById('delivery-action-box').style.display = 'none';
+                document.getElementById('deliveryForm').style.display = 'none';
+                e.target.reset();
+                loadAdminReports();
+            } else {
+                alert("حدث خطأ أثناء إسناد الطلب.");
+            }
             btn.innerHTML = '<i class="fas fa-motorcycle"></i> اعتماد خروج الطيار بالطلب';
         }
 
-        // =====================================
-        // باقي أكواد الكاشير والمخازن والتقارير
-        // =====================================
         async function loadProducts() {
-            try {
-                const res = await fetch(API_URL + "?action=getAllData");
-                const data = await res.json();
+            const data = await fetchAPI(null, true, "getAllData");
+            if(data && data.products) {
                 productsDB = data.products.slice(1).map(r => ({Barcode:r[0], Name:r[1], Category:r[2], Cost:r[3], Price:r[4], Stock:r[5]}));
-            } catch(e) {}
+            }
         }
 
         document.getElementById('barcode-scanner').addEventListener('keypress', e => { if(e.key === 'Enter') scanBarcode('sale'); });
@@ -632,16 +639,14 @@
             } else { payload = { action: 'processReturn', return_id: 'RET-'+Date.now(), cashier_id: currentUser.name, items: cart, total: total }; }
             
             const btn = document.getElementById(type === 'sale' ? 'btn-process-sale' : 'btn-process-return'); btn.innerHTML = 'جاري الحفظ...';
-            try {
-                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-                const data = await response.json();
-                if(data && data.status === 'success') { 
-                    if (type === 'sale') printReceiptPOS(payload); 
-                    alert("تمت العملية بنجاح!"); 
-                    if(type === 'sale') { saleCart = []; document.getElementById('amount-paid').value=''; } else { returnCart = []; } 
-                    updateUI(type); loadProducts(); 
-                }
-            } catch(e){}
+            
+            const data = await fetchAPI(payload);
+            if(data && data.status === 'success') { 
+                if (type === 'sale') printReceiptPOS(payload); 
+                alert("تمت العملية بنجاح!"); 
+                if(type === 'sale') { saleCart = []; document.getElementById('amount-paid').value=''; } else { returnCart = []; } 
+                updateUI(type); loadProducts(); 
+            }
             btn.innerHTML = type === 'sale' ? '<i class="fas fa-print"></i> فاتورة' : '<i class="fas fa-undo"></i> تأكيد';
         }
 
@@ -655,15 +660,14 @@
         async function submitProduct(e) {
             e.preventDefault();
             const payload = { action: 'addProduct', barcode: document.getElementById('inv-barcode').value, name: document.getElementById('inv-name').value, category: document.getElementById('inv-category').value, stock: document.getElementById('inv-stock').value, cost: document.getElementById('inv-cost').value, price: document.getElementById('inv-price').value, image_url: "" };
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-            const data = await res.json();
+            const data = await fetchAPI(payload);
             if(data && data.status === 'success') { alert("تم الإضافة صنف جديد!"); loadProducts(); renderInventoryEdit(); e.target.reset(); }
         }
 
         async function renderInventoryEdit() {
             document.getElementById('inv-body').innerHTML = `<tr><td colspan="7" style="text-align:center;">جاري التحميل...</td></tr>`;
-            try {
-                const res = await fetch(API_URL + "?action=getAllData"); const data = await res.json();
+            const data = await fetchAPI(null, true, "getAllData");
+            if(data && data.products) {
                 document.getElementById('inv-body').innerHTML = data.products.slice(1).map(p => `
                     <tr class="searchable-row" data-text="${p[1]} ${p[0]}">
                         <td>${p[0]}</td><td style="font-weight:bold;">${p[1]}</td><td>${p[2]}</td><td>${p[3]}</td>
@@ -671,56 +675,58 @@
                         <td><input type="number" id="es-${p[0]}" class="edit-input" value="${p[5]}"></td>
                         <td><button class="btn-small" onclick="updateInvItem('${p[0]}')">حفظ</button></td>
                     </tr>`).join('');
-            } catch(e){}
+            }
         }
 
         async function updateInvItem(barcode) {
             const price = document.getElementById(`ep-${barcode}`).value; const stock = document.getElementById(`es-${barcode}`).value;
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({action: 'updateProductDetails', barcode: barcode, price: price, stock: stock}) });
-            const data = await res.json();
+            const data = await fetchAPI({action: 'updateProductDetails', barcode: barcode, price: price, stock: stock});
             if(data && data.status === 'success') { alert("تم تحديث المخزن!"); loadProducts(); }
         }
 
         async function saveSupplier(e) {
             e.preventDefault();
             const payload = { action: 'saveSupplier', supplier: document.getElementById('sup-name').value, company: document.getElementById('sup-company').value, product: document.getElementById('sup-product').value, qty: document.getElementById('sup-qty').value, amount: document.getElementById('sup-amount').value };
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-            const data = await res.json();
-            if(data && data.status === 'success') { alert("تم الحفظ!"); e.target.reset(); }
+            const data = await fetchAPI(payload);
+            if(data && data.status === 'success') { printManualReceipt(`إيصال مورد: ${payload.supplier}`, `الشركة: ${payload.company}<br>البضاعة: ${payload.product}<br>الالكمية: ${payload.qty}`, payload.amount); alert("تم الحفظ!"); e.target.reset(); }
         }
 
         function printManualInvoice(e) {
             e.preventDefault();
+            printManualReceipt(`فاتورة حساب لـ: ${document.getElementById('man-client').value}<br>التاريخ: ${document.getElementById('man-date').value}`, document.getElementById('man-details').value.replace(/\n/g, "<br>"), document.getElementById('man-total').value);
+        }
+
+        function printManualReceipt(title, details, total) {
             const win = window.open('', '_blank', 'width=400,height=600');
-            const details = document.getElementById('man-details').value.replace(/\n/g, "<br>");
-            win.document.write(`<html dir="rtl"><head><style>body{font-family:sans-serif; text-align:center; padding:20px; width:80mm;} img{width:70px;} .line{border-bottom:1px dashed #000; margin:10px 0;} </style></head><body><img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png"><h2>OSSMAN MARKET</h2><div class="line"></div><h3>فاتورة حساب لـ: ${document.getElementById('man-client').value}</h3><div class="line"></div><p style="text-align:right; font-size:16px; font-weight:bold;">${details}</p><div class="line"></div><h2>الإجمالي: ${document.getElementById('man-total').value} ج.م</h2><script>window.onload=function(){window.print(); window.close();}<\/script></body></html>`);
+            win.document.write(`<html dir="rtl"><head><style>body{font-family:sans-serif; text-align:center; padding:20px; width:80mm;} img{width:70px;} .line{border-bottom:1px dashed #000; margin:10px 0;} </style></head><body><img src="${LOGO_URL}"><h2>OSSMAN MARKET</h2><div class="line"></div><h3>${title}</h3><div class="line"></div><p style="text-align:right; font-size:16px; font-weight:bold;">${details}</p><div class="line"></div><h2>الإجمالي: ${total} ج.م</h2><script>window.onload=function(){window.print(); window.close();}<\/script></body></html>`);
             win.document.close();
         }
 
         async function loadAdminReports() {
-            try {
-                const res = await fetch(API_URL + "?action=getAllData"); const data = await res.json();
-                const t = new Date(); let gDay=0, gWeek=0, gMonth=0, gYear=0; 
-                let cashiers = {}; let deliveries = {}; let suppliers = {};
-                let startOfWeek = new Date(t); startOfWeek.setDate(t.getDate() - t.getDay()); startOfWeek.setHours(0,0,0,0);
+            document.getElementById('rep-cashiers').innerHTML = `<tr><td colspan="5" style="text-align:center;">جاري التحميل...</td></tr>`;
+            const data = await fetchAPI(null, true, "getAllData");
+            if(!data) return;
 
-                data.sales.slice(1).forEach(s => {
-                    let d = new Date(s[6]); let amt = parseFloat(s[3]) || 0; let cashier = s[1];
-                    if(!cashiers[cashier]) cashiers[cashier] = {day:0, week:0, month:0, year:0};
-                    if(d.toDateString() === t.toDateString()) { gDay += amt; cashiers[cashier].day += amt; }
-                    if(d >= startOfWeek) { gWeek += amt; cashiers[cashier].week += amt; }
-                    if(d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear()) { gMonth += amt; cashiers[cashier].month += amt; }
-                    if(d.getFullYear() === t.getFullYear()) { gYear += amt; cashiers[cashier].year += amt; }
-                });
+            const t = new Date(); let gDay=0, gWeek=0, gMonth=0, gYear=0; 
+            let cashiers = {}; let deliveries = {}; let suppliers = {};
+            let startOfWeek = new Date(t); startOfWeek.setDate(t.getDate() - t.getDay()); startOfWeek.setHours(0,0,0,0);
 
-                document.getElementById('rep-day').innerText = gDay.toFixed(2); document.getElementById('rep-week').innerText = gWeek.toFixed(2);
-                document.getElementById('rep-month').innerText = gMonth.toFixed(2); document.getElementById('rep-year').innerText = gYear.toFixed(2);
-                document.getElementById('rep-cashiers').innerHTML = Object.keys(cashiers).map(c => `<tr><td>${c}</td><td>${cashiers[c].day}</td><td>${cashiers[c].week}</td><td>${cashiers[c].month}</td><td>${cashiers[c].year}</td></tr>`).join('');
+            data.sales.slice(1).forEach(s => {
+                let d = new Date(s[6]); let amt = parseFloat(s[3]) || 0; let cashier = s[1];
+                if(!cashiers[cashier]) cashiers[cashier] = {day:0, week:0, month:0, year:0};
+                if(d.toDateString() === t.toDateString()) { gDay += amt; cashiers[cashier].day += amt; }
+                if(d >= startOfWeek) { gWeek += amt; cashiers[cashier].week += amt; }
+                if(d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear()) { gMonth += amt; cashiers[cashier].month += amt; }
+                if(d.getFullYear() === t.getFullYear()) { gYear += amt; cashiers[cashier].year += amt; }
+            });
 
-                data.delivery.slice(1).forEach(d => { if(d[1] && d[1] !== 'طلب جديد (أونلاين)') { let man = d[1]; if(!deliveries[man]) deliveries[man] = 0; deliveries[man]++; } });
-                document.getElementById('rep-delivery-reports').innerHTML = Object.keys(deliveries).map(d => `<tr><td>${d}</td><td style="color:var(--primary); font-weight:bold;">${deliveries[d]} أوردر ناجح</td></tr>`).join('') || `<tr><td colspan="2">لا توجد بيانات دليفري معتمدة</td></tr>`;
+            document.getElementById('rep-day').innerText = gDay.toFixed(2); document.getElementById('rep-week').innerText = gWeek.toFixed(2);
+            document.getElementById('rep-month').innerText = gMonth.toFixed(2); document.getElementById('rep-year').innerText = gYear.toFixed(2);
 
-            } catch(e) {}
+            document.getElementById('rep-cashiers').innerHTML = Object.keys(cashiers).map(c => `<tr><td>${c}</td><td>${cashiers[c].day}</td><td>${cashiers[c].week}</td><td>${cashiers[c].month}</td><td>${cashiers[c].year}</td></tr>`).join('') || `<tr><td colspan="5">لا يوجد مبيعات</td></tr>`;
+
+            data.delivery.slice(1).forEach(d => { if(d[1] && d[1] !== 'طلب جديد (أونلاين)') { let man = d[1]; if(!deliveries[man]) deliveries[man] = 0; deliveries[man]++; } });
+            document.getElementById('rep-delivery-reports').innerHTML = Object.keys(deliveries).map(d => `<tr><td>${d}</td><td style="color:var(--primary); font-weight:bold;">${deliveries[d]} أوردر ناجح</td></tr>`).join('') || `<tr><td colspan="2">لا توجد بيانات دليفري معتمدة</td></tr>`;
         }
 
         function filterTable(inputId, tbodyId) {
@@ -735,6 +741,16 @@
             tempTable.querySelectorAll('th:last-child, td:last-child').forEach(el => el.remove());
             XLSX.writeFile(XLSX.utils.table_to_book(tempTable, {sheet: "المخزن الحالي"}), "Osman_Market_Inventory.xlsx");
         }
+
+        document.body.addEventListener('click', function(e) {
+            if(e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
+                const activePage = document.querySelector('.page-view.active');
+                if(activePage) {
+                    if(activePage.id === 'pos-view') document.getElementById('barcode-scanner').focus();
+                    else if(activePage.id === 'return-view') document.getElementById('return-barcode-scanner').focus();
+                }
+            }
+        });
     </script>
 </body>
 </html>
