@@ -13,7 +13,6 @@
             --primary: #3699FF; --success: #1BC5BD; --danger: #F64E60; --warning: #FFA800;
             --text-main: #3F4254; --text-muted: #B5B5C3; --border: #EBEDF3;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
         body { background-color: var(--bg-light); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; position: relative; }
 
@@ -26,14 +25,14 @@
         .btn-login { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-login:hover { background: #1B84FF; }
 
-        .sidebar { width: 260px; background-color: var(--bg-dark); display: flex; flex-direction: column; color: white; z-index: 10; }
+        .sidebar { width: 260px; background-color: var(--bg-dark); display: flex; flex-direction: column; color: white; z-index: 10; overflow-y: auto;}
         .brand { padding: 25px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .brand img { width: 70px; height: 70px; border-radius: 15px; border: 2px solid var(--primary); margin-bottom: 10px; }
         .brand-name { font-size: 1.3rem; font-weight: 900; }
         
         .nav-menu { list-style: none; padding: 20px 0; flex: 1; }
         .nav-menu li { display: none; }
-        .nav-menu li a { display: flex; align-items: center; justify-content: space-between; padding: 15px 25px; color: var(--text-muted); text-decoration: none; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .nav-menu li a { display: flex; align-items: center; justify-content: space-between; padding: 15px 25px; color: var(--text-muted); text-decoration: none; font-weight: 600; gap: 15px; cursor: pointer; transition: 0.3s; }
         .nav-menu li.active a, .nav-menu li a:hover { background-color: rgba(54,153,255,0.1); color: var(--primary); border-right: 4px solid var(--primary); }
 
         .workspace { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -82,7 +81,6 @@
         .supplier-item-row { display: flex; gap: 15px; background: var(--bg-light); padding: 15px; border-radius: 10px; margin-bottom: 10px; align-items: flex-end; }
         .search-container { display: flex; gap: 15px; margin-bottom: 20px; width: 100%; }
 
-        /* ستايلات تنبيه الدليفري القوية */
         .alert-bg { background-color: rgba(246, 78, 96, 0.2) !important; border-right: 4px solid var(--danger) !important; animation: blinker 1.5s linear infinite;}
         .alert-bg div, .alert-bg i { color: var(--danger) !important; font-weight: 900 !important; }
         .notification-bell { animation: ring 1s infinite; color: var(--danger); font-size: 1.2rem; }
@@ -92,8 +90,7 @@
 </head>
 <body>
 
-    <!-- ملف صوت MP3 قوي جداً ومدعوم في كل المتصفحات -->
-    <audio id="alertSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" loop></audio>
+    <audio id="alertSound" src="https://actions.google.com/sounds/v1/communications/chime_1.ogg" loop></audio>
 
     <div id="login-overlay">
         <div class="login-box">
@@ -141,6 +138,7 @@
             </div>
         </header>
 
+        <!-- الكاشير -->
         <div id="pos-view" class="page-view active">
             <div class="pos-container">
                 <div class="pos-left">
@@ -166,6 +164,7 @@
             </div>
         </div>
 
+        <!-- المرتجعات -->
         <div id="return-view" class="page-view">
             <div class="pos-container">
                 <div class="pos-left">
@@ -190,6 +189,7 @@
             </div>
         </div>
 
+        <!-- المخازن -->
         <div id="inventory-view" class="page-view">
             <div class="inventory-card">
                 <h3 style="margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px;">إضافة منتج جديد للمخزن</h3>
@@ -230,6 +230,7 @@
             </div>
         </div>
 
+        <!-- الموردين (تم تصليح حفظ وطباعة الفاتورة وعرض التقارير) -->
         <div id="suppliers-view" class="page-view">
             <div class="inventory-card">
                 <h3 style="margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; color: var(--primary);"><i class="fas fa-file-invoice"></i> تسجيل فاتورة مشتريات من مورد</h3>
@@ -276,6 +277,7 @@
             </div>
         </div>
 
+        <!-- الفواتير اليدوية -->
         <div id="invoices-view" class="page-view">
             <div class="inventory-card">
                 <h3 style="margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; color: var(--primary);"><i class="fas fa-file-invoice"></i> إصدار فاتورة حرة (يدوية)</h3>
@@ -291,18 +293,19 @@
             </div>
         </div>
 
+        <!-- الدليفري (تم تصليح التفاصيل والفحص التلقائي) -->
         <div id="delivery-view" class="page-view">
             <div class="inventory-card" id="delivery-alert-box" style="text-align:center; padding:40px; background:var(--bg-light);">
                 <i class="fas fa-motorcycle" style="font-size:4rem; color:var(--text-muted); margin-bottom:15px;"></i>
                 <h2>شاشة انتظار الأوردرات</h2>
                 <p style="color:var(--text-muted);">السيستم بيفحص الشيت تلقائياً كل 10 ثواني، الأوردر الأونلاين هيرن هنا أوتوماتيك ويظهر إشعار أحمر.</p>
-                <button class="btn-submit" style="width:auto; margin-top:20px; background:var(--secondary);" onclick="checkOnlineOrders(true)"><i class="fas fa-sync"></i> فحص الأوردرات يدوياً</button>
+                <button class="btn-submit" style="width:auto; margin-top:20px; background:var(--secondary);" onclick="checkOnlineOrders(this)"><i class="fas fa-sync"></i> فحص الأوردرات يدوياً</button>
             </div>
             
             <div class="inventory-card" id="delivery-action-box" style="display:none; border:3px solid var(--danger);">
                 <h2 style="color:var(--danger); margin-bottom:15px;"><i class="fas fa-exclamation-circle"></i> يوجد أوردر أونلاين جديد جاهز للتوصيل!</h2>
                 
-                <div id="online-order-details-display" style="background:#FFF4F4; padding:20px; border-radius:10px; border-right:5px solid var(--danger); margin-bottom:20px; font-size:1.1rem; line-height:1.8;"></div>
+                <div id="online-order-details-display" style="background:#FFF4F4; padding:20px; border-radius:10px; border-right:5px solid var(--danger); margin-bottom:20px; font-weight:bold; font-size:1.2rem; line-height:1.8;"></div>
                 
                 <div style="display: flex; gap: 15px; margin-bottom: 20px;">
                     <button class="btn-submit" style="background:var(--success); flex:1; font-size:1.2rem;" onclick="stopDeliveryAlert()">
@@ -328,10 +331,10 @@
         <div id="reports-view" class="page-view">
             <h3 style="margin-bottom: 15px;"><i class="fas fa-money-bill-wave"></i> إجمالي المبيعات العامة والأرباح</h3>
             <div class="report-grid">
-                <div class="report-box"><h4>دخل اليوم</h4><h2 id="rep-global-day">0.00</h2></div>
-                <div class="report-box" style="border-bottom-color: var(--success)"><h4>دخل الأسبوع</h4><h2 id="rep-global-week">0.00</h2></div>
-                <div class="report-box" style="border-bottom-color: var(--warning)"><h4>دخل الشهر</h4><h2 id="rep-global-month">0.00</h2></div>
-                <div class="report-box" style="border-bottom-color: var(--danger)"><h4>دخل السنة</h4><h2 id="rep-global-year">0.00</h2></div>
+                <div class="report-box"><h4>دخل اليوم</h4><h2 id="rep-day">0.00</h2></div>
+                <div class="report-box" style="border-bottom-color: var(--success)"><h4>دخل الأسبوع</h4><h2 id="rep-week">0.00</h2></div>
+                <div class="report-box" style="border-bottom-color: var(--warning)"><h4>دخل الشهر</h4><h2 id="rep-month">0.00</h2></div>
+                <div class="report-box" style="border-bottom-color: var(--danger)"><h4>دخل السنة</h4><h2 id="rep-year">0.00</h2></div>
             </div>
 
             <div class="form-grid">
@@ -380,13 +383,11 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbwBwcQphswSQ7OUosBnpf3DBgc1Ljjy6JRaM8dxA3su5VPVizkS2TR1cwNrFRqKozXLOw/exec";
         
         let productsDB = []; let saleCart = []; let returnCart = []; let currentUser = null;
-        let supplierInvoices = JSON.parse(localStorage.getItem('ossman_supplier_invoices') || '[]');
-        
-        let currentPendingOrderDetails = "";
-        let currentPendingOrderId = "";
+        let currentPendingOrderDetails = ""; let currentPendingOrderId = "";
         let audioUnlocked = false;
         const alertAudio = document.getElementById('alertSound');
 
+        // المحرك الأساسي
         async function fetchAPI(payload) {
             try {
                 const res = await fetch(API_URL, {
@@ -397,22 +398,17 @@
                 });
                 const text = await res.text();
                 return JSON.parse(text);
-            } catch(e) {
-                console.error("فشل الاتصال:", e);
-                return null;
-            }
+            } catch(e) { return null; }
         }
 
-        // إجبار المتصفح يوافق على تشغيل الصوت
-        document.body.addEventListener('click', function() {
+        // تفعيل الصوت من أول ضغطة
+        window.addEventListener('click', function() {
             if(!audioUnlocked) {
                 alertAudio.play().then(() => {
-                    alertAudio.pause();
-                    alertAudio.currentTime = 0;
-                    audioUnlocked = true;
+                    alertAudio.pause(); alertAudio.currentTime = 0; audioUnlocked = true;
                 }).catch(e => {});
             }
-        });
+        }, { once: true });
 
         window.onload = () => {
             const savedUser = localStorage.getItem('ossman_user');
@@ -420,11 +416,8 @@
                 currentUser = JSON.parse(savedUser);
                 applyPermissions();
                 loadProducts();
-                renderSupplierTable();
-                setInterval(checkOnlineOrders, 10000); 
-            } else {
-                document.getElementById('login-overlay').style.display = 'flex';
-            }
+                setInterval(() => checkOnlineOrders(), 10000); 
+            } else { document.getElementById('login-overlay').style.display = 'flex'; }
         };
 
         async function handleLogin(e) {
@@ -432,12 +425,7 @@
             const btn = document.getElementById('btn-login-submit');
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحقق...';
             
-            if(!audioUnlocked) {
-                alertAudio.play().then(() => { alertAudio.pause(); audioUnlocked = true; }).catch(e=>{});
-            }
-
             const payload = { action: 'login', username: document.getElementById('login-username').value, password: document.getElementById('login-password').value };
-
             const data = await fetchAPI(payload);
             
             if(data && data.status === 'success') {
@@ -445,11 +433,8 @@
                 localStorage.setItem('ossman_user', JSON.stringify(currentUser));
                 applyPermissions();
                 loadProducts();
-                renderSupplierTable();
-                setInterval(checkOnlineOrders, 10000);
-            } else {
-                alert(data ? (data.message || "بيانات الدخول غير صحيحة") : "تعذر الاتصال بقاعدة البيانات. راجع الإعدادات!");
-            }
+                setInterval(() => checkOnlineOrders(), 10000);
+            } else { alert("بيانات الدخول غير صحيحة"); }
             btn.innerHTML = 'دخول';
         }
 
@@ -462,7 +447,6 @@
 
             const roleStr = (currentUser.role || "").toLowerCase();
             document.querySelectorAll('.nav-menu li').forEach(li => li.style.display = 'none');
-
             let firstTab = null;
 
             if (roleStr.includes('مدير') || roleStr.includes('ادارة') || roleStr.includes('إدارة')) {
@@ -479,8 +463,7 @@
             }
 
             if (firstTab) {
-                const tabElement = document.querySelector(`.nav-menu li[onclick*="${firstTab}"]`);
-                switchTab(firstTab, tabElement);
+                switchTab(firstTab, document.querySelector(`.nav-menu li[onclick*="${firstTab}"]`));
             }
         }
 
@@ -496,18 +479,15 @@
             else if(tabId === 'reports-view') loadAdminReports();
         }
 
-        // ===============================================
-        // شاشة الدليفري (حل مشكلة ظهور المنتجات والصوت)
-        // ===============================================
-        async function checkOnlineOrders(manual = false) {
+        // =====================================
+        // الدليفري الذكي (مُصلّح التفاصيل والفحص التلقائي)
+        // =====================================
+        async function checkOnlineOrders(btn = null) {
             try {
-                if(manual && event) {
-                    event.target.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الفحص...';
-                }
+                if(btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الفحص...';
                 const data = await fetchAPI({ action: "getAllData" });
-                if(manual && event) {
-                    event.target.innerHTML = '<i class="fas fa-sync"></i> فحص الأوردرات يدوياً';
-                }
+                if(btn) btn.innerHTML = '<i class="fas fa-sync"></i> فحص الأوردرات يدوياً';
+                
                 if(!data || !data.delivery) return;
                 
                 let pendingOrder = data.delivery.slice(1).find(d => d[2] === 'قيد الانتظار');
@@ -516,52 +496,32 @@
                     document.getElementById('delivery-action-box').style.display = 'block';
                     
                     currentPendingOrderId = pendingOrder[0];
-                    let orderDetailsStr = pendingOrder[4] ? pendingOrder[4] : '';
-                    
-                    // السحر هنا: بنجيب المنتجات المطلوبة من شيت المبيعات مباشرة عشان مفيش حاجة تضيع
-                    let itemsDisplay = '';
-                    let saleMatch = data.sales ? data.sales.slice(1).find(s => s[0] == currentPendingOrderId) : null;
-                    if(saleMatch) {
-                        try {
-                            let items = JSON.parse(saleMatch[2]);
-                            itemsDisplay = '<ul style="padding-right:20px; margin-top:10px; list-style-type:circle;">' + items.map(i => `<li><strong>${i.Name}</strong> - العدد: ${i.qty} (السعر: ${i.Price * i.qty} ج.م)</li>`).join('') + '</ul>';
-                            itemsDisplay += `<br><strong style="color:var(--primary); font-size:1.3rem;">الإجمالي المطلوب تحصيله: ${saleMatch[3]} ج.م</strong>`;
-                            itemsDisplay += `<br><strong>طريقة الدفع:</strong> <span style="color:var(--success);">${saleMatch[7] || 'كاش'}</span>`;
-                        } catch(e) {}
-                    }
-
-                    currentPendingOrderDetails = `
-                        <i class="fas fa-receipt"></i> <strong>رقم الطلب:</strong> ${currentPendingOrderId}<br><br>
-                        <div style="border:1px solid #ccc; padding:10px; border-radius:8px; margin-bottom:10px;">
-                            <strong>بيانات العميل والعنوان:</strong><br>${orderDetailsStr.replace(/\n/g, '<br>')}
-                        </div>
-                        <strong>المنتجات المطلوبة في الأوردر:</strong>
-                        ${itemsDisplay || '<br><span style="color:red;">المنتجات غير متوفرة في الفاتورة</span>'}
-                    `;
+                    currentPendingOrderDetails = pendingOrder[4] ? pendingOrder[4] : 'رقم الطلب: ' + pendingOrder[0];
 
                     document.getElementById('del-order-id').value = currentPendingOrderId;
-                    document.getElementById('online-order-details-display').innerHTML = currentPendingOrderDetails;
+                    document.getElementById('online-order-details-display').innerHTML = `
+                        <i class="fas fa-receipt"></i> تفاصيل الفاتورة والعميل:<br><br>
+                        ${currentPendingOrderDetails.replace(/\n/g, '<br>')}
+                    `;
                     
                     const navItem = document.getElementById('nav-delivery-item');
                     navItem.classList.add('alert-bg');
                     document.getElementById('delivery-bell').style.display = 'inline-block';
                     
-                    if(alertAudio.paused) {
-                        alertAudio.play().catch(e => console.log("الصوت محتاج تفاعل", e));
+                    if(alertAudio.paused && audioUnlocked) {
+                        alertAudio.play().catch(e => console.log(e));
                     }
-                } else if(manual) {
+                } else if(btn) {
                     alert("لا توجد أوردرات أونلاين جديدة حالياً.");
                 }
             } catch(e){
-                if(manual) alert("فشل الاتصال أثناء جلب الأوردرات.");
+                if(btn) btn.innerHTML = '<i class="fas fa-sync"></i> فحص الأوردرات يدوياً';
             }
         }
 
         function stopDeliveryAlert() {
-            alertAudio.pause(); 
-            alertAudio.currentTime = 0;
-            const navItem = document.getElementById('nav-delivery-item');
-            navItem.classList.remove('alert-bg');
+            alertAudio.pause(); alertAudio.currentTime = 0;
+            document.getElementById('nav-delivery-item').classList.remove('alert-bg');
             document.getElementById('delivery-bell').style.display = 'none';
             document.getElementById('deliveryForm').style.display = 'block';
         }
@@ -576,23 +536,17 @@
                         body { font-family: 'Tajawal', sans-serif; margin: 0; padding: 15px; width: 80mm; color: #000; font-size: 16px;}
                         .header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 10px; }
                         .header img { width: 70px; height: 70px; border-radius: 8px; margin-bottom: 5px; }
-                        .header h2 { margin: 5px 0; font-size: 18px; }
-                        .content { line-height: 2; font-size: 15px; }
+                        .content { line-height: 2; font-weight: bold; }
                     </style>
                 </head>
                 <body>
                     <div class="header">
-                        <img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png" alt="Logo">
+                        <img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png">
                         <h2>OSSMAN MARKET</h2>
                         <h3>أوردر دليفري (توصيل)</h3>
-                        <p>الوقت: ${new Date().toLocaleString('ar-EG')}</p>
+                        <p>${new Date().toLocaleString('ar-EG')}</p>
                     </div>
-                    <div class="content">
-                        ${currentPendingOrderDetails}
-                    </div>
-                    <div style="border-top:2px dashed #000; margin-top:15px; padding-top:10px; text-align:center; font-weight:bold;">
-                        <p>شكراً لطلبك من عثمان ماركت</p>
-                    </div>
+                    <div class="content">${currentPendingOrderDetails.replace(/\n/g, '<br>')}</div>
                     <script>window.onload = function() { setTimeout(function(){ window.print(); window.close(); }, 500); }<\/script>
                 </body>
                 </html>
@@ -602,27 +556,90 @@
 
         async function assignDelivery(e) {
             e.preventDefault();
-            const payload = {
-                action: 'updateDeliveryStatus',
-                order_id: document.getElementById('del-order-id').value,
-                delivery_man: document.getElementById('del-man').value,
-                status: 'خرج مع الطيار'
-            };
-            const btn = e.target.querySelector('button'); 
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التسجيل...';
+            const payload = { action: 'updateDeliveryStatus', order_id: document.getElementById('del-order-id').value, delivery_man: document.getElementById('del-man').value, status: 'خرج مع الطيار' };
+            const btn = e.target.querySelector('button'); btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التسجيل...';
             
             const data = await fetchAPI(payload);
             if(data && data.status === 'success') {
-                alert("تم إسناد الطلب بنجاح للطيار وتغيير حالته!");
+                alert("تم إسناد الطلب بنجاح!");
                 document.getElementById('delivery-alert-box').style.display = 'block';
                 document.getElementById('delivery-action-box').style.display = 'none';
                 document.getElementById('deliveryForm').style.display = 'none';
-                e.target.reset();
-                loadAdminReports();
-            } else {
-                alert("حدث خطأ أثناء إسناد الطلب.");
+                e.target.reset(); loadAdminReports();
             }
             btn.innerHTML = '<i class="fas fa-motorcycle"></i> اعتماد خروج الطيار بالطلب';
+        }
+
+        // =====================================
+        // الموردين (إصلاح الحفظ والعرض)
+        // =====================================
+        function addSupplierItemField() {
+            const container = document.getElementById('supplier-items-container');
+            const row = document.createElement('div');
+            row.className = 'supplier-item-row';
+            row.innerHTML = `
+                <div class="form-group" style="flex:2;"><label>اسم المنتج / الباركود</label><input type="text" class="sup-item-name" required></div>
+                <div class="form-group" style="flex:1;"><label>الكمية المستلمة</label><input type="number" class="sup-item-qty" required oninput="calculateSupplierTotal()"></div>
+                <div class="form-group" style="flex:1;"><label>سعر الشراء</label><input type="number" class="sup-item-cost" required oninput="calculateSupplierTotal()"></div>
+                <button type="button" class="btn-small" style="background:var(--danger); height:45px;" onclick="this.parentElement.remove(); calculateSupplierTotal();"><i class="fas fa-trash"></i></button>
+            `;
+            container.appendChild(row);
+        }
+
+        function calculateSupplierTotal() {
+            let total = 0;
+            document.querySelectorAll('.supplier-item-row').forEach(row => {
+                let qty = parseFloat(row.querySelector('.sup-item-qty').value) || 0;
+                let cost = parseFloat(row.querySelector('.sup-item-cost').value) || 0;
+                total += (qty * cost);
+            });
+            document.getElementById('sup-invoice-total').innerText = total.toFixed(2);
+        }
+
+        async function saveSupplierInvoice(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-supplier');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+            
+            let items = [];
+            document.querySelectorAll('.supplier-item-row').forEach(row => {
+                items.push({
+                    name: row.querySelector('.sup-item-name').value,
+                    qty: parseFloat(row.querySelector('.sup-item-qty').value) || 0,
+                    cost: parseFloat(row.querySelector('.sup-item-cost').value) || 0
+                });
+            });
+
+            const payload = {
+                action: 'saveSupplier',
+                supplier: document.getElementById('sup-name').value,
+                company: document.getElementById('sup-inv-id').value,
+                product: JSON.stringify(items),
+                qty: items.length,
+                amount: parseFloat(document.getElementById('sup-invoice-total').innerText)
+            };
+
+            const data = await fetchAPI(payload);
+            if(data && data.status === 'success') {
+                alert("تم حفظ فاتورة المورد بنجاح!");
+                e.target.reset();
+                document.getElementById('supplier-items-container').innerHTML = `
+                    <div class="supplier-item-row">
+                        <div class="form-group" style="flex:2;"><label>اسم المنتج / الباركود</label><input type="text" class="sup-item-name" required></div>
+                        <div class="form-group" style="flex:1;"><label>الكمية المستلمة</label><input type="number" class="sup-item-qty" required oninput="calculateSupplierTotal()"></div>
+                        <div class="form-group" style="flex:1;"><label>سعر الشراء (التكلفة)</label><input type="number" class="sup-item-cost" required oninput="calculateSupplierTotal()"></div>
+                    </div>`;
+                document.getElementById('sup-invoice-total').innerText = "0.00";
+                loadAdminReports();
+            }
+            btn.innerHTML = '<i class="fas fa-print"></i> حفظ وطباعة إيصال التوريد';
+        }
+
+        function filterSupplierTable() {
+            let val = document.getElementById('search-supplier-input').value.toLowerCase();
+            document.querySelectorAll('#supplier-logs-body .sup-searchable-row').forEach(row => {
+                row.style.display = row.getAttribute('data-text').toLowerCase().includes(val) ? '' : 'none';
+            });
         }
 
         // =====================================
@@ -685,7 +702,6 @@
             } else { payload = { action: 'processReturn', return_id: 'RET-'+Date.now(), cashier_id: currentUser.name, items: cart, total: total }; }
             
             const btn = document.getElementById(type === 'sale' ? 'btn-process-sale' : 'btn-process-return'); btn.innerHTML = 'جاري الحفظ...';
-            
             const data = await fetchAPI(payload);
             if(data && data.status === 'success') { 
                 if (type === 'sale') printReceiptPOS(payload); 
@@ -699,7 +715,7 @@
         function printReceiptPOS(invoiceData) {
             const printWin = window.open('', '_blank', 'width=400,height=600');
             let itemsHtml = invoiceData.items.map(item => `<div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:14px;"><span style="flex:2; text-align:right;">${item.Name} (x${item.qty})</span><span style="flex:1; text-align:left; font-weight:bold;">${(item.Price * item.qty).toFixed(2)}</span></div>`).join('');
-            printWin.document.write(`<html dir="rtl"><head><style>body{font-family:'Tajawal',sans-serif;margin:0;padding:15px;width:80mm;} .h{text-align:center;border-bottom:2px dashed #000;padding-bottom:15px;margin-bottom:15px;} .h img{width:70px;height:70px;} .row{display:flex;justify-content:space-between;font-weight:bold;margin-bottom:8px;}</style></head><body><div class="h"><img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png"><h2>OSSMAN MARKET</h2><p>الكاشير: ${invoiceData.cashier_id}</p><p>تاريخ: ${new Date().toLocaleString('ar-EG')}</p></div>${itemsHtml}<div style="border-top:2px dashed #000; margin-top:15px; padding-top:15px;"><div class="row"><span>الإجمالي:</span><span>${invoiceData.total.toFixed(2)}</span></div><div class="row"><span>المدفوع:</span><span>${invoiceData.paid.toFixed(2)}</span></div><div class="row"><span>الباقي:</span><span>${invoiceData.change.toFixed(2)}</span></div></div><script>window.onload=function(){setTimeout(function(){window.print();window.close();},500);}<\/script></body></html>`);
+            printWin.document.write(`<html dir="rtl"><head><style>body{font-family:'Tajawal',sans-serif;margin:0;padding:15px;width:80mm;} .h{text-align:center;border-bottom:2px dashed #000;padding-bottom:15px;margin-bottom:15px;} .h img{width:70px;} .row{display:flex;justify-content:space-between;font-weight:bold;margin-bottom:8px;}</style></head><body><div class="h"><img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png"><h2>OSSMAN MARKET</h2><p>الكاشير: ${invoiceData.cashier_id}</p><p>تاريخ: ${new Date().toLocaleString('ar-EG')}</p></div>${itemsHtml}<div style="border-top:2px dashed #000; margin-top:15px; padding-top:15px;"><div class="row"><span>الإجمالي:</span><span>${invoiceData.total.toFixed(2)}</span></div><div class="row"><span>المدفوع:</span><span>${invoiceData.paid.toFixed(2)}</span></div><div class="row"><span>الباقي:</span><span>${invoiceData.change.toFixed(2)}</span></div></div><script>window.onload=function(){setTimeout(function(){window.print();window.close();},500);}<\/script></body></html>`);
             printWin.document.close();
         }
 
@@ -712,7 +728,6 @@
 
         async function renderInventoryEdit() {
             const tbody = document.getElementById('rep-inventory');
-            if(!tbody) return;
             tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">جاري التحميل...</td></tr>`;
             try {
                 const data = await fetchAPI({ action: "getAllData" });
@@ -720,7 +735,6 @@
                     tbody.innerHTML = data.products.slice(1).map(p => {
                         let sold = data.sales ? data.sales.slice(1).reduce((acc, s) => { let i = JSON.parse(s[2]||"[]").find(x=>x.Barcode==p[0]); return acc + (i?i.qty:0); }, 0) : 0;
                         let ret = data.returns ? data.returns.slice(1).reduce((acc, r) => { let i = JSON.parse(r[2]||"[]").find(x=>x.Barcode==p[0]); return acc + (i?i.qty:0); }, 0) : 0;
-                        
                         return `
                         <tr class="searchable-row" data-text="${p[1]} ${p[0]}">
                             <td>${p[1]}<br><small>${p[0]}</small></td>
@@ -732,9 +746,7 @@
                         </tr>`;
                     }).join('');
                 }
-            } catch(e){
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">خطأ في الاتصال بالبيانات</td></tr>`;
-            }
+            } catch(e){}
         }
 
         async function updateInvItem(barcode) {
@@ -743,62 +755,61 @@
             if(data && data.status === 'success') { alert("تم تحديث المخزن!"); loadProducts(); }
         }
 
-        async function saveSupplier(e) {
-            e.preventDefault();
-            const payload = { action: 'saveSupplier', supplier: document.getElementById('sup-name').value, company: document.getElementById('sup-company').value, product: document.getElementById('sup-product').value, qty: document.getElementById('sup-qty').value, amount: document.getElementById('sup-amount').value };
-            const data = await fetchAPI(payload);
-            if(data && data.status === 'success') { printManualReceipt(`إيصال مورد: ${payload.supplier}`, `الشركة: ${payload.company}<br>البضاعة: ${payload.product}<br>الكمية: ${payload.qty}`, payload.amount); alert("تم الحفظ!"); e.target.reset(); }
-        }
-
         function printManualInvoice(e) {
             e.preventDefault();
-            printManualReceipt(`فاتورة حساب لـ: ${document.getElementById('man-client').value}<br>التاريخ: ${document.getElementById('man-date').value}`, document.getElementById('man-details').value.replace(/\n/g, "<br>"), document.getElementById('man-total').value);
-        }
-
-        function printManualReceipt(title, details, total) {
             const win = window.open('', '_blank', 'width=400,height=600');
-            win.document.write(`<html dir="rtl"><head><style>body{font-family:sans-serif; text-align:center; padding:20px; width:80mm;} img{width:70px;} .line{border-bottom:1px dashed #000; margin:10px 0;} </style></head><body><img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png"><h2>OSSMAN MARKET</h2><div class="line"></div><h3>${title}</h3><div class="line"></div><p style="text-align:right; font-size:16px; font-weight:bold;">${details}</p><div class="line"></div><h2>الإجمالي: ${total} ج.م</h2><script>window.onload=function(){window.print(); window.close();}<\/script></body></html>`);
+            const details = document.getElementById('man-details').value.replace(/\n/g, "<br>");
+            win.document.write(`<html dir="rtl"><head><style>body{font-family:sans-serif; text-align:center; padding:20px; width:80mm;} img{width:70px;} .line{border-bottom:1px dashed #000; margin:10px 0;} </style></head><body><img src="https://adelabdulrahman026-byte.github.io/dashboard/Gemini_Generated_Image_2whe032whe032whe.png"><h2>OSSMAN MARKET</h2><div class="line"></div><h3>فاتورة حساب لـ: ${document.getElementById('man-client').value}</h3><div class="line"></div><p style="text-align:right; font-size:16px; font-weight:bold;">${details}</p><div class="line"></div><h2>الإجمالي: ${document.getElementById('man-total').value} ج.م</h2><script>window.onload=function(){window.print(); window.close();}<\/script></body></html>`);
             win.document.close();
         }
 
         async function loadAdminReports() {
-            document.getElementById('rep-cashiers').innerHTML = `<tr><td colspan="5" style="text-align:center;">جاري التحميل...</td></tr>`;
             try {
                 const data = await fetchAPI({ action: "getAllData" });
-                if(!data || !data.sales) {
-                    document.getElementById('rep-cashiers').innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">لا توجد بيانات مبيعات</td></tr>`;
-                    return;
+                if(!data) return;
+
+                // تحديث جدول الموردين في شاشتهم
+                if(data.suppliers) {
+                    let supplierLogsHtml = data.suppliers.slice(1).reverse().map(s => `
+                        <tr class="sup-searchable-row" data-text="${s[0]} ${s[1]}">
+                            <td>${s[1]}</td><td>${s[0]}</td><td>${s[3]} صنف</td>
+                            <td style="color:var(--danger); font-weight:bold;">${parseFloat(s[4]).toFixed(2)} ج.م</td>
+                            <td>${new Date(s[5]).toLocaleDateString('ar-EG')}</td>
+                            <td>-</td>
+                        </tr>
+                    `).join('');
+                    document.getElementById('supplier-logs-body').innerHTML = supplierLogsHtml || `<tr><td colspan="6" style="text-align:center;">لا توجد فواتير مشتريات</td></tr>`;
                 }
 
+                // الحسابات العامة
                 const t = new Date(); let gDay=0, gWeek=0, gMonth=0, gYear=0; 
                 let cashiers = {}; let deliveries = {}; let suppliers = {};
                 let startOfWeek = new Date(t); startOfWeek.setDate(t.getDate() - t.getDay()); startOfWeek.setHours(0,0,0,0);
 
-                data.sales.slice(1).forEach(s => {
-                    let d = new Date(s[6]); let amt = parseFloat(s[3]) || 0; let cashier = s[1];
-                    if(!cashiers[cashier]) cashiers[cashier] = {day:0, week:0, month:0, year:0};
-                    if(d.toDateString() === t.toDateString()) { gDay += amt; cashiers[cashier].day += amt; }
-                    if(d >= startOfWeek) { gWeek += amt; cashiers[cashier].week += amt; }
-                    if(d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear()) { gMonth += amt; cashiers[cashier].month += amt; }
-                    if(d.getFullYear() === t.getFullYear()) { gYear += amt; cashiers[cashier].year += amt; }
-                });
+                if(data.sales) {
+                    data.sales.slice(1).forEach(s => {
+                        let d = new Date(s[6]); let amt = parseFloat(s[3]) || 0; let cashier = s[1];
+                        if(!cashiers[cashier]) cashiers[cashier] = {day:0, week:0, month:0, year:0};
+                        if(d.toDateString() === t.toDateString()) { gDay += amt; cashiers[cashier].day += amt; }
+                        if(d >= startOfWeek) { gWeek += amt; cashiers[cashier].week += amt; }
+                        if(d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear()) { gMonth += amt; cashiers[cashier].month += amt; }
+                        if(d.getFullYear() === t.getFullYear()) { gYear += amt; cashiers[cashier].year += amt; }
+                    });
+                }
 
-                document.getElementById('rep-global-day').innerText = gDay.toFixed(2); 
-                document.getElementById('rep-global-week').innerText = gWeek.toFixed(2);
-                document.getElementById('rep-global-month').innerText = gMonth.toFixed(2); 
-                document.getElementById('rep-global-year').innerText = gYear.toFixed(2);
-
-                document.getElementById('rep-cashiers').innerHTML = Object.keys(cashiers).map(c => `<tr><td>${c}</td><td>${cashiers[c].day.toFixed(2)}</td><td>${cashiers[c].week.toFixed(2)}</td><td>${cashiers[c].month.toFixed(2)}</td><td>${cashiers[c].year.toFixed(2)}</td></tr>`).join('') || `<tr><td colspan="5">لا يوجد مبيعات</td></tr>`;
+                document.getElementById('rep-day').innerText = gDay.toFixed(2); document.getElementById('rep-week').innerText = gWeek.toFixed(2);
+                document.getElementById('rep-month').innerText = gMonth.toFixed(2); document.getElementById('rep-year').innerText = gYear.toFixed(2);
+                document.getElementById('rep-cashiers').innerHTML = Object.keys(cashiers).map(c => `<tr><td>${c}</td><td>${cashiers[c].day.toFixed(2)}</td><td>${cashiers[c].week.toFixed(2)}</td><td>${cashiers[c].month.toFixed(2)}</td><td>${cashiers[c].year.toFixed(2)}</td></tr>`).join('') || `<tr><td colspan="5" style="text-align:center;">لا يوجد مبيعات</td></tr>`;
 
                 if(data.delivery) {
                     data.delivery.slice(1).forEach(d => { if(d[1] && d[1] !== 'طلب جديد (أونلاين)') { let man = d[1]; if(!deliveries[man]) deliveries[man] = 0; deliveries[man]++; } });
                 }
-                document.getElementById('rep-delivery-reports').innerHTML = Object.keys(deliveries).map(d => `<tr><td>${d}</td><td style="color:var(--primary); font-weight:bold;">${deliveries[d]} أوردر ناجح</td></tr>`).join('') || `<tr><td colspan="2">لا توجد بيانات دليفري معتمدة</td></tr>`;
+                document.getElementById('rep-delivery-reports').innerHTML = Object.keys(deliveries).map(d => `<tr><td>${d}</td><td style="color:var(--primary); font-weight:bold;">${deliveries[d]} أوردر ناجح</td></tr>`).join('') || `<tr><td colspan="2" style="text-align:center;">لا توجد بيانات دليفري</td></tr>`;
 
                 if(data.suppliers) {
                     data.suppliers.slice(1).forEach(s => { let sup = s[0]; let amt = parseFloat(s[4]) || 0; if(!suppliers[sup]) suppliers[sup] = 0; suppliers[sup] += amt; });
                 }
-                document.getElementById('rep-suppliers').innerHTML = Object.keys(suppliers).map(s => `<tr><td>${s}</td><td style="color:var(--danger); font-weight:bold;">${suppliers[s].toFixed(2)} ج.م</td></tr>`).join('') || `<tr><td colspan="2">لا يوجد موردين</td></tr>`;
+                document.getElementById('rep-suppliers').innerHTML = Object.keys(suppliers).map(s => `<tr><td>${s}</td><td style="color:var(--danger); font-weight:bold;">${suppliers[s].toFixed(2)} ج.م</td></tr>`).join('') || `<tr><td colspan="2" style="text-align:center;">لا يوجد موردين</td></tr>`;
 
                 if(data.products) {
                     document.getElementById('mov-body').innerHTML = data.products.slice(1).map(p => {
@@ -807,16 +818,12 @@
                         return `<tr class="searchable-row" data-text="${p[1]} ${p[0]}"><td>${p[1]}<br><small>${p[0]}</small></td><td style="color:var(--success); font-weight:bold;">${sold}</td><td style="color:var(--danger); font-weight:bold;">${ret}</td></tr>`;
                     }).join('');
                 }
-
-            } catch(e) {
-                console.error(e);
-                document.getElementById('rep-cashiers').innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">حدث خطأ في عرض التقارير</td></tr>`;
-            }
+            } catch(e) {}
         }
 
         function filterTable(inputId, tbodyId) {
             let val = document.getElementById(inputId).value.toLowerCase();
-            document.querySelectorAll(`#${tbodyId} .searchable-row`).forEach(row => { row.style.display = row.getAttribute('data-text').toLowerCase().includes(val) ? '' : 'none'; });
+            document.querySelectorAll(`#${tbodyId} .searchable-row, #${tbodyId} .sup-searchable-row`).forEach(row => { row.style.display = row.getAttribute('data-text').toLowerCase().includes(val) ? '' : 'none'; });
         }
 
         function exportToExcel() {
@@ -825,6 +832,10 @@
             tempTable.querySelectorAll('input').forEach(input => { input.parentNode.replaceChild(document.createTextNode(input.value), input); });
             tempTable.querySelectorAll('th:last-child, td:last-child').forEach(el => el.remove());
             XLSX.writeFile(XLSX.utils.table_to_book(tempTable, {sheet: "المخزن الحالي"}), "Osman_Market_Inventory.xlsx");
+        }
+        function exportTableToExcel(tableId, filename) {
+            const table = document.getElementById(tableId);
+            XLSX.writeFile(XLSX.utils.table_to_book(table, {sheet: filename}), `${filename}.xlsx`);
         }
     </script>
 </body>
